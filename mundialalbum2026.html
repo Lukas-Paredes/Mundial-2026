@@ -89,6 +89,12 @@
   .search input{width:100%; background:var(--surface); border:1px solid var(--line2); color:var(--ink);
     border-radius:12px; padding:0 12px; height:40px; font-size:14px; box-shadow:var(--shadow-sm);}
   .search input:focus{outline:none; border-color:var(--c-blue);}
+  .recent{display:flex; gap:7px; margin-top:9px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px; align-items:center;}
+  .recent::-webkit-scrollbar{display:none;}
+  .recent .rlabel{flex:0 0 auto; font-size:11px; color:var(--mut2); font-weight:700; text-transform:uppercase; letter-spacing:.4px;}
+  .recent .rchip{flex:0 0 auto; display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px; border:1px solid rgba(0,182,118,.4); background:rgba(0,182,118,.09); color:var(--ok-d); font-family:"JetBrains Mono",monospace; font-weight:700; font-size:12.5px; cursor:pointer; white-space:nowrap;}
+  .recent .rchip:active{transform:scale(.94);}
+  .recent .rchip .u{opacity:.55; font-weight:800;}
 
   /* CONTENT */
   main{padding:14px 12px 0; max-width:680px; margin:0 auto;}
@@ -273,6 +279,7 @@
     <input id="quickAdd" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
     <button id="qaBtn">+ Sumar</button>
   </div>
+  <div id="recentTray" class="recent" style="display:none"></div>
   <div class="filters" id="filters">
     <button class="fbtn active" data-f="all">Todas <span class="b" id="cAll">0</span></button>
     <button class="fbtn" data-f="have">Que tengo <span class="b" id="cHave">0</span></button>
@@ -547,17 +554,35 @@ function refreshTeamProgress(teamEl){
 }
 function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
 
+/* ---------- recién agregadas (sesión) ---------- */
+let recent=[];
+function pushRecent(code){ recent.unshift(code); if(recent.length>25) recent.pop(); renderRecent(); }
+function renderRecent(){
+  const tray=document.getElementById("recentTray");
+  if(!recent.length){ tray.style.display="none"; tray.innerHTML=""; return; }
+  tray.style.display="flex"; tray.innerHTML="";
+  const lab=document.createElement("span"); lab.className="rlabel"; lab.textContent="Recién:"; tray.appendChild(lab);
+  recent.slice(0,18).forEach(code=>{
+    const c=document.createElement("button"); c.className="rchip"; c.title="Tocar para deshacer";
+    const t=document.createElement("span"); t.textContent=displayCode(code);
+    const u=document.createElement("span"); u.className="u"; u.textContent="✕";
+    c.appendChild(t); c.appendChild(u);
+    c.onclick=()=>{ setCount(code,getCount(code)-1); refreshCellInDom(code); updateStats(); const i=recent.indexOf(code); if(i>=0) recent.splice(i,1); renderRecent(); toast("Deshecho "+displayCode(code)); };
+    tray.appendChild(c);
+  });
+}
+
 /* ---------- quick add ---------- */
 function addByCode(raw,silent){
   const c=normalize(raw); if(!c){ if(!silent) toast("Código no válido ✗"); return false; }
-  setCount(c,getCount(c)+1); refreshCellInDom(c); updateStats(); const n=getCount(c);
+  setCount(c,getCount(c)+1); refreshCellInDom(c); updateStats(); pushRecent(c); const n=getCount(c);
   toast(displayCode(c)+(n===1?" ✓ registrada":" · repetida ×"+n)); return true;
 }
 const qa=document.getElementById("quickAdd");
 function doQuickAdd(){
-  const v=qa.value.trim(); if(!v) return; const codes=findCodes(v);
-  if(codes.length>1){ let ok=0; codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); ok++; }); updateStats(); toast(ok+" láminas sumadas ✓"); }
-  else { addByCode(v,false); } qa.value="";
+  const v=qa.value.trim(); if(!v){ qa.focus(); return; } const codes=findCodes(v);
+  if(codes.length>1){ codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); pushRecent(c); }); updateStats(); toast(codes.length+" láminas sumadas ✓"); }
+  else { addByCode(v,false); } qa.value=""; qa.focus();
 }
 document.getElementById("qaBtn").onclick=doQuickAdd;
 qa.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doQuickAdd(); }});
@@ -581,7 +606,8 @@ async function ocrImage(src, psm){
   try{ const r=await Tesseract.recognize(src,"eng",{ tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " }); return (r&&r.data&&r.data.text)||""; }catch(e){ return ""; }
 }
 function loadImg(file){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=()=>rej(new Error("img")); img.src=URL.createObjectURL(file); }); }
-function preprocess(img, region, scale){
+function preprocess(img, region, scale, opts){
+  opts=opts||{};
   const r=region||{sx:0,sy:0,sw:1,sh:1}; scale=scale||2;
   const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
   const sw=iw*r.sw, sh=ih*r.sh, sx=iw*r.sx, sy=ih*r.sy;
@@ -591,11 +617,25 @@ function preprocess(img, region, scale){
   cw=Math.max(1,cw); ch=Math.max(1,ch);
   const cvs=document.createElement("canvas"); cvs.width=cw; cvs.height=ch;
   const ctx=cvs.getContext("2d"); ctx.drawImage(img, sx,sy,sw,sh, 0,0,cw,ch);
-  try{ const id=ctx.getImageData(0,0,cw,ch), d=id.data, C=1.75, I=128*(1-C);
-    for(let i=0;i<d.length;i+=4){ let g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]; g=g*C+I; g=g<0?0:g>255?255:g; d[i]=d[i+1]=d[i+2]=g; }
+  try{ const id=ctx.getImageData(0,0,cw,ch), d=id.data, C=opts.contrast||1.8, I=128*(1-C), inv=!!opts.invert;
+    for(let i=0;i<d.length;i+=4){ let g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]; if(inv) g=255-g; g=g*C+I; g=g<0?0:g>255?255:g; d[i]=d[i+1]=d[i+2]=g; }
     ctx.putImageData(id,0,0);
   }catch(e){}
   return cvs;
+}
+async function scanImage(file, thorough){
+  const img=await loadImg(file); const found=new Set();
+  const top={sx:0,sy:0,sw:1,sh:0.38}, bottom={sx:0,sy:0.60,sw:1,sh:0.40};
+  const variants = thorough
+    ? [ [top,3,{}], [top,3,{invert:true}], [bottom,3,{}], [null,2,{}], [null,2,{invert:true}] ]
+    : [ [top,3,{}], [null,2,{}] ];
+  try{
+    for(let v=0; v<variants.length; v++){
+      const txt=await ocrImage(preprocess(img, variants[v][0], variants[v][1], variants[v][2]), 11);
+      [...findCodes(txt), ...fuzzyCodes(txt)].forEach(c=>found.add(c));
+    }
+  } finally { try{ URL.revokeObjectURL(img.src); }catch(e){} }
+  return [...found];
 }
 function fuzzyCodes(text){
   const up=(text||"").toUpperCase(); const out=new Set();
@@ -622,18 +662,11 @@ async function handleScanFiles(fileList){
   foundWrap.style.display="none"; foundList.innerHTML="";
   scanProg.style.display="block"; scanProgBar.style.width="0";
   if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; return; }
-  const all=new Set();
+  const all=new Set(); const thorough = files.length===1;
   for(let i=0;i<files.length;i++){
-    scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Leyendo la lámina…";
+    scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Leyendo la lámina (probando varios filtros)…";
     scanProgBar.style.width=Math.round(i/files.length*100)+"%";
-    try{
-      const img=await loadImg(files[i]); let text="";
-      try{
-        text += " " + await ocrImage(preprocess(img,{sx:0,sy:0,sw:1,sh:0.34},3), 11);
-        text += " " + await ocrImage(preprocess(img,null,2), 11);
-      }finally{ try{ URL.revokeObjectURL(img.src); }catch(e){} }
-      [...findCodes(text), ...fuzzyCodes(text)].forEach(c=>all.add(c));
-    }catch(err){}
+    try{ (await scanImage(files[i], thorough)).forEach(c=>all.add(c)); }catch(err){}
   }
   scanProgBar.style.width="100%"; scanProg.style.display="none";
   const codes=[...all];
@@ -646,7 +679,7 @@ async function handleScanFiles(fileList){
       const allBtn=document.createElement("button");
       allBtn.className="btn btn-grn"; allBtn.style.width="100%"; allBtn.style.marginBottom="10px";
       allBtn.textContent="✓ Registrar todas ("+codes.length+")";
-      allBtn.onclick=()=>{ codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); }); updateStats(); allBtn.textContent="✓ Registradas"; allBtn.disabled=true; [...foundList.querySelectorAll(".pill")].forEach(p=>{ if(!p.classList.contains("added")){ p.classList.add("added"); const pl=p.querySelector(".plus"); if(pl) pl.textContent="✓"; } }); toast(codes.length+" láminas registradas ✓"); };
+      allBtn.onclick=()=>{ codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); pushRecent(c); }); updateStats(); allBtn.textContent="✓ Registradas"; allBtn.disabled=true; [...foundList.querySelectorAll(".pill")].forEach(p=>{ if(!p.classList.contains("added")){ p.classList.add("added"); const pl=p.querySelector(".plus"); if(pl) pl.textContent="✓"; } }); toast(codes.length+" láminas registradas ✓"); };
       foundList.appendChild(allBtn);
     }
     codes.forEach(c=>foundList.appendChild(makePill(c)));
@@ -660,7 +693,7 @@ function makePill(code){
   const p=document.createElement("button"); p.className="pill";
   const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
   const lab=document.createElement("span"); lab.textContent=" "+displayCode(code); p.appendChild(plus); p.appendChild(lab);
-  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); toast(displayCode(code)+(n===1?" ✓ registrada":" · repetida ×"+n)); });
+  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); pushRecent(code); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); toast(displayCode(code)+(n===1?" ✓ registrada":" · repetida ×"+n)); });
   return p;
 }
 const manualCode=document.getElementById("manualCode");
