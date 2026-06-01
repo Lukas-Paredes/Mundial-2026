@@ -304,10 +304,10 @@
   <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
   <div class="scan-opts">
     <label class="drop" for="scanCam"><div class="ic">📷</div><div class="t">Tomar foto</div><div class="s">Usa la cámara y apunta al código (ej. ARG 5)</div></label>
-    <label class="drop" for="scanGal"><div class="ic">🖼️</div><div class="t">Elegir de la galería</div><div class="s">Sube una foto que ya tengas guardada</div></label>
+    <label class="drop" for="scanGal"><div class="ic">🖼️</div><div class="t">Elegir de la galería</div><div class="s">Sube varias fotos a la vez y las marca todas</div></label>
   </div>
   <input id="scanCam" type="file" accept="image/*" capture="environment" hidden />
-  <input id="scanGal" type="file" accept="image/*" hidden />
+  <input id="scanGal" type="file" accept="image/*" multiple hidden />
   <div class="prog" id="scanProg"><i id="scanProgBar"></i></div>
   <div class="scan-status" id="scanStatus"></div>
   <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
@@ -572,21 +572,43 @@ const ovScan=document.getElementById("ovScan"),scanCam=document.getElementById("
 const scanProg=document.getElementById("scanProg"),scanProgBar=document.getElementById("scanProgBar"),foundWrap=document.getElementById("foundWrap"),foundList=document.getElementById("foundList");
 document.getElementById("fab").onclick=()=>{ resetScan(); ovScan.classList.add("show"); };
 function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; scanCam.value=""; scanGal.value=""; }
-async function handleScanFile(file){
-  if(!file) return; foundWrap.style.display="none"; foundList.innerHTML="";
-  scanProg.style.display="block"; scanProgBar.style.width="0"; scanStatus.textContent="Leyendo la lámina…";
-  try{
-    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; return; }
-    const url=URL.createObjectURL(file);
-    const res=await Tesseract.recognize(url,"eng",{ logger:m=>{ if(m.status==="recognizing text") scanProgBar.style.width=Math.round(m.progress*100)+"%"; }, tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " });
-    URL.revokeObjectURL(url); scanProg.style.display="none";
-    const text=(res&&res.data&&res.data.text)||""; const codes=findCodes(text);
-    if(codes.length){ scanStatus.textContent="Encontré "+codes.length+" código(s). Confirma cuáles registrar:"; foundWrap.style.display="block"; codes.forEach(c=>foundList.appendChild(makePill(c))); }
-    else scanStatus.textContent="No reconocí ningún código 😕. Prueba otra foto más nítida o escríbelo abajo.";
-  }catch(err){ scanProg.style.display="none"; scanStatus.textContent="Error al leer la imagen. Escribe el código abajo."; }
+async function handleScanFiles(fileList){
+  const files=[...fileList]; if(!files.length) return;
+  foundWrap.style.display="none"; foundList.innerHTML="";
+  scanProg.style.display="block"; scanProgBar.style.width="0";
+  if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; return; }
+  const all=new Set(); let okPhotos=0;
+  for(let i=0;i<files.length;i++){
+    scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Leyendo la lámina…";
+    try{
+      const url=URL.createObjectURL(files[i]);
+      const res=await Tesseract.recognize(url,"eng",{ logger:m=>{ if(m.status==="recognizing text"){ const base=i/files.length, frac=m.progress/files.length; scanProgBar.style.width=Math.round((base+frac)*100)+"%"; } }, tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " });
+      URL.revokeObjectURL(url);
+      const text=(res&&res.data&&res.data.text)||""; const found=findCodes(text);
+      if(found.length) okPhotos++; found.forEach(c=>all.add(c));
+    }catch(err){}
+  }
+  scanProg.style.display="none";
+  const codes=[...all];
+  if(codes.length){
+    scanStatus.textContent = files.length>1
+      ? ("Encontré "+codes.length+" código(s) en "+files.length+" fotos. Revisa y toca para registrar:")
+      : ("Encontré "+codes.length+" código(s). Confirma cuáles registrar:");
+    foundWrap.style.display="block";
+    if(codes.length>1){
+      const allBtn=document.createElement("button");
+      allBtn.className="btn btn-grn"; allBtn.style.width="100%"; allBtn.style.marginBottom="10px";
+      allBtn.textContent="✓ Registrar todas ("+codes.length+")";
+      allBtn.onclick=()=>{ codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); }); updateStats(); allBtn.textContent="✓ Registradas"; allBtn.disabled=true; [...foundList.querySelectorAll(".pill")].forEach(p=>{ if(!p.classList.contains("added")){ p.classList.add("added"); const pl=p.querySelector(".plus"); if(pl) pl.textContent="✓"; } }); toast(codes.length+" láminas registradas ✓"); };
+      foundList.appendChild(allBtn);
+    }
+    codes.forEach(c=>foundList.appendChild(makePill(c)));
+  } else {
+    scanStatus.textContent = files.length>1 ? "No reconocí códigos en esas fotos 😕. Prueba con fotos más nítidas del código, o escríbelos abajo." : "No reconocí ningún código 😕. Prueba otra foto más nítida o escríbelo abajo.";
+  }
 }
-scanCam.addEventListener("change",e=>{ handleScanFile(e.target.files[0]); scanCam.value=""; });
-scanGal.addEventListener("change",e=>{ handleScanFile(e.target.files[0]); scanGal.value=""; });
+scanCam.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanCam.value=""; });
+scanGal.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanGal.value=""; });
 function makePill(code){
   const p=document.createElement("button"); p.className="pill";
   const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
