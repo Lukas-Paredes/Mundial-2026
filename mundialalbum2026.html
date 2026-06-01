@@ -173,6 +173,8 @@
   .drop .ic{font-size:38px;}
   .drop .t{font-weight:700; margin-top:8px;}
   .drop .s{color:var(--mut); font-size:12.5px; margin-top:4px;}
+  .scan-opts{display:flex; flex-direction:column; gap:10px;}
+  .scan-opts .drop{padding:18px 16px;}
   .scan-status{text-align:center; color:var(--mut); font-size:13.5px; margin:14px 0 4px; min-height:20px;}
   .prog{height:6px; background:var(--surface2); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:8px 0 4px; display:none;}
   .prog i{display:block; height:100%; width:0; background:var(--c-green); transition:width .2s;}
@@ -300,8 +302,12 @@
 <!-- SCAN -->
 <div class="ov" id="ovScan"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
-  <label class="drop" for="scanFile"><div class="ic">📷</div><div class="t">Saca una foto al reverso de la lámina</div><div class="s">Apunta al código (ej. ARG 5 o FW 3). También puedes elegir una foto.</div></label>
-  <input id="scanFile" type="file" accept="image/*" capture="environment" hidden />
+  <div class="scan-opts">
+    <label class="drop" for="scanCam"><div class="ic">📷</div><div class="t">Tomar foto</div><div class="s">Usa la cámara y apunta al código (ej. ARG 5)</div></label>
+    <label class="drop" for="scanGal"><div class="ic">🖼️</div><div class="t">Elegir de la galería</div><div class="s">Sube una foto que ya tengas guardada</div></label>
+  </div>
+  <input id="scanCam" type="file" accept="image/*" capture="environment" hidden />
+  <input id="scanGal" type="file" accept="image/*" hidden />
   <div class="prog" id="scanProg"><i id="scanProgBar"></i></div>
   <div class="scan-status" id="scanStatus"></div>
   <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
@@ -562,15 +568,15 @@ document.getElementById("filters").addEventListener("click",e=>{ const b=e.targe
 let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
 
 /* ---------- scan ---------- */
-const ovScan=document.getElementById("ovScan"),scanFile=document.getElementById("scanFile"),scanStatus=document.getElementById("scanStatus");
+const ovScan=document.getElementById("ovScan"),scanCam=document.getElementById("scanCam"),scanGal=document.getElementById("scanGal"),scanStatus=document.getElementById("scanStatus");
 const scanProg=document.getElementById("scanProg"),scanProgBar=document.getElementById("scanProgBar"),foundWrap=document.getElementById("foundWrap"),foundList=document.getElementById("foundList");
 document.getElementById("fab").onclick=()=>{ resetScan(); ovScan.classList.add("show"); };
-function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; }
-scanFile.addEventListener("change",async e=>{
-  const file=e.target.files[0]; if(!file) return; foundWrap.style.display="none"; foundList.innerHTML="";
+function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; scanCam.value=""; scanGal.value=""; }
+async function handleScanFile(file){
+  if(!file) return; foundWrap.style.display="none"; foundList.innerHTML="";
   scanProg.style.display="block"; scanProgBar.style.width="0"; scanStatus.textContent="Leyendo la lámina…";
   try{
-    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; scanFile.value=""; return; }
+    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; return; }
     const url=URL.createObjectURL(file);
     const res=await Tesseract.recognize(url,"eng",{ logger:m=>{ if(m.status==="recognizing text") scanProgBar.style.width=Math.round(m.progress*100)+"%"; }, tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " });
     URL.revokeObjectURL(url); scanProg.style.display="none";
@@ -578,8 +584,9 @@ scanFile.addEventListener("change",async e=>{
     if(codes.length){ scanStatus.textContent="Encontré "+codes.length+" código(s). Confirma cuáles registrar:"; foundWrap.style.display="block"; codes.forEach(c=>foundList.appendChild(makePill(c))); }
     else scanStatus.textContent="No reconocí ningún código 😕. Prueba otra foto más nítida o escríbelo abajo.";
   }catch(err){ scanProg.style.display="none"; scanStatus.textContent="Error al leer la imagen. Escribe el código abajo."; }
-  scanFile.value="";
-});
+}
+scanCam.addEventListener("change",e=>{ handleScanFile(e.target.files[0]); scanCam.value=""; });
+scanGal.addEventListener("change",e=>{ handleScanFile(e.target.files[0]); scanGal.value=""; });
 function makePill(code){
   const p=document.createElement("button"); p.className="pill";
   const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
