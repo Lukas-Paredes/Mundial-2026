@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Mi Álbum Mundial 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  :root{
+    --bg:#f3f5fb; --surface:#ffffff; --surface2:#f7f9fd;
+    --ink:#0f1830; --ink2:#26314c; --mut:#69768f; --mut2:#9aa6bf;
+    --line:#e7ebf3; --line2:#dfe5f0;
+    --c-blue:#2b6bff; --c-pink:#ff2d6f; --c-green:#00b676; --c-amber:#ffb020; --c-violet:#7c5cff;
+    --ok:#00b676; --ok-d:#009c63; --dup:#ffae00; --dup-d:#e09600; --red:#ff4d5e;
+    --radius:18px; --tap:44px;
+    --shadow:0 6px 22px rgba(22,32,64,.07); --shadow-sm:0 2px 8px rgba(22,32,64,.06);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased;}
+  body{padding-bottom:100px;}
+  .disp{font-family:"Anton",Impact,system-ui,sans-serif; font-weight:400; letter-spacing:.5px; text-transform:uppercase;}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;}
+  button{font-family:inherit;}
+
+  /* HEADER */
+  header{position:relative; overflow:hidden; background:var(--surface); border-bottom:1px solid var(--line);
+    padding:16px 16px 14px;}
+  header:before{content:""; position:absolute; inset:0; pointer-events:none; opacity:.9;
+    background:
+      radial-gradient(60% 90% at 88% -10%, rgba(255,45,111,.10), transparent 60%),
+      radial-gradient(55% 80% at 8% -10%, rgba(43,107,255,.10), transparent 60%),
+      radial-gradient(50% 70% at 50% 120%, rgba(0,182,118,.08), transparent 60%);}
+  .htop{position:relative; display:flex; align-items:center; gap:13px;}
+  .ring{flex:0 0 auto;}
+  .htitle{flex:1; min-width:0;}
+  .htitle .kick{font-size:11px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase;
+    color:var(--c-blue); display:flex; align-items:center; gap:6px;}
+  .htitle .kick .dot{width:7px;height:7px;border-radius:50%;background:var(--c-pink);}
+  .htitle h1{font-size:27px; line-height:.92; margin:3px 0 0; color:var(--ink);}
+  .hbtns{display:flex; gap:8px; flex:0 0 auto;}
+  .icbtn{width:var(--tap); height:var(--tap); border:1px solid var(--line2); background:var(--surface);
+    color:var(--ink2); border-radius:13px; font-size:19px; cursor:pointer; box-shadow:var(--shadow-sm);}
+  .icbtn:active{transform:scale(.94);}
+
+  .cloudpill{position:relative; display:inline-flex; align-items:center; gap:7px; margin-top:12px;
+    padding:7px 12px; border-radius:999px; border:1px solid var(--line2); background:var(--surface2);
+    font-size:12.5px; font-weight:600; color:var(--mut); cursor:pointer; max-width:100%;}
+  .cloudpill .ic{font-size:14px;}
+  .cloudpill b{color:var(--ink2); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .cloudpill.on{border-color:rgba(0,182,118,.4); background:rgba(0,182,118,.08); color:var(--ok-d);}
+  .cloudpill.on b{color:var(--ok-d);}
+
+  .chips{position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:13px;}
+  .chip{background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:10px 6px; text-align:center; box-shadow:var(--shadow-sm);}
+  .chip .n{font-family:"Anton",sans-serif; font-size:26px; line-height:1;}
+  .chip .l{font-size:10px; color:var(--mut); text-transform:uppercase; letter-spacing:.5px; margin-top:3px; font-weight:600;}
+  .chip.tengo .n{color:var(--ok);}
+  .chip.faltan .n{color:var(--ink);}
+  .chip.repe .n{color:var(--dup-d);}
+  .chip.total .n{color:var(--c-blue);}
+
+  /* TOOLBAR */
+  .toolbar{position:sticky; top:0; z-index:30; background:rgba(243,245,251,.9); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line); padding:10px 12px;}
+  .qa{display:flex; gap:8px;}
+  .qa input{flex:1; min-width:0; background:var(--surface); border:1px solid var(--line2); color:var(--ink);
+    border-radius:13px; padding:0 14px; height:46px; font-size:16px; font-family:"JetBrains Mono",monospace;
+    letter-spacing:1px; text-transform:uppercase; box-shadow:var(--shadow-sm);}
+  .qa input::placeholder{color:var(--mut2); text-transform:none; letter-spacing:0; font-family:"Inter",sans-serif;}
+  .qa input:focus{outline:none; border-color:var(--c-blue); box-shadow:0 0 0 3px rgba(43,107,255,.14);}
+  .qa button{flex:0 0 auto; height:46px; padding:0 16px; border-radius:13px; border:none;
+    background:var(--c-blue); color:#fff; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 4px 14px rgba(43,107,255,.3);}
+  .qa button:active{transform:scale(.96);}
+
+  .filters{display:flex; gap:7px; margin-top:9px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
+  .filters::-webkit-scrollbar{display:none;}
+  .fbtn{flex:0 0 auto; padding:7px 13px; border-radius:999px; border:1px solid var(--line2);
+    background:var(--surface); color:var(--mut); font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;}
+  .fbtn.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .fbtn .b{font-family:"JetBrains Mono",monospace; opacity:.65; margin-left:5px; font-size:11.5px;}
+  .search{margin-top:9px;}
+  .search input{width:100%; background:var(--surface); border:1px solid var(--line2); color:var(--ink);
+    border-radius:12px; padding:0 12px; height:40px; font-size:14px; box-shadow:var(--shadow-sm);}
+  .search input:focus{outline:none; border-color:var(--c-blue);}
+
+  /* CONTENT */
+  main{padding:14px 12px 0; max-width:680px; margin:0 auto;}
+  .grp{margin-bottom:6px;}
+  .grp-h{display:flex; align-items:center; gap:10px; margin:18px 2px 10px;}
+  .grp-h .tag{font-family:"Anton",sans-serif; font-size:13px; letter-spacing:1px; color:#fff;
+    padding:4px 11px; border-radius:9px;}
+  .grp-h .line{flex:1; height:2px; background:var(--line); border-radius:2px;}
+
+  .team{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:13px 13px 14px; margin-bottom:11px; box-shadow:var(--shadow);}
+  .team-h{display:flex; align-items:center; gap:10px; margin-bottom:11px;}
+  .flag{font-size:23px; line-height:1; width:30px; text-align:center;}
+  .team-name{flex:1; min-width:0;}
+  .team-name .nm{font-weight:700; font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
+  .team-name .cd{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--mut2); margin-top:1px;}
+  .tprog{flex:0 0 auto; text-align:right;}
+  .tprog .fr{font-family:"JetBrains Mono",monospace; font-size:13px; font-weight:700; color:var(--mut);}
+  .tprog .bar{width:56px; height:6px; background:var(--surface2); border:1px solid var(--line); border-radius:4px; margin-top:5px; overflow:hidden;}
+  .tprog .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--c-blue),var(--c-green)); border-radius:4px; transition:width .25s;}
+  .full .fr{color:var(--ok-d);}
+  .full .bar i{background:var(--ok);}
+
+  .cells{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;}
+  .cell{position:relative; aspect-ratio:1/1; border-radius:12px; border:1.5px solid var(--line2);
+    background:var(--surface2); color:var(--mut2); display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono",monospace; font-size:14px; font-weight:700; cursor:pointer; user-select:none;
+    transition:transform .08s, background .15s, border-color .15s, color .15s;}
+  .cell:active{transform:scale(.9);}
+  .cell.have{background:linear-gradient(160deg,var(--ok),var(--ok-d)); color:#fff; border-color:transparent; box-shadow:0 3px 10px rgba(0,182,118,.28);}
+  .cell.dup{background:linear-gradient(160deg,var(--dup),var(--dup-d)); color:#3a2a00; border-color:transparent; box-shadow:0 3px 10px rgba(255,174,0,.3);}
+  .cell .badge{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff;
+    font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:flex;
+    align-items:center; justify-content:center; padding:0 3px; border:2px solid var(--surface);}
+  .cell.hide{display:none;}
+  .team.hide{display:none;}
+  .grp.hide{display:none;}
+
+  /* FAB */
+  .fab{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom));
+    height:58px; padding:0 22px 0 18px; border-radius:30px; border:none; z-index:40;
+    background:linear-gradient(135deg,var(--c-pink),var(--c-violet)); color:#fff; font-weight:700; font-size:16px;
+    box-shadow:0 10px 26px rgba(124,92,255,.4); cursor:pointer; display:flex; align-items:center; gap:8px;}
+  .fab:active{transform:scale(.95);}
+  .fab svg{width:22px; height:22px;}
+
+  /* MODALS */
+  .ov{position:fixed; inset:0; z-index:50; background:rgba(15,24,48,.4); backdrop-filter:blur(4px);
+    display:none; align-items:flex-end; justify-content:center;}
+  .ov.show{display:flex;}
+  .sheet{width:100%; max-width:520px; background:var(--surface); border-radius:24px 24px 0 0;
+    padding:18px 16px calc(20px + env(safe-area-inset-bottom)); max-height:92vh; overflow-y:auto;
+    box-shadow:0 -8px 40px rgba(15,24,48,.18); animation:up .22s ease;}
+  @keyframes up{from{transform:translateY(40px); opacity:.6;} to{transform:translateY(0); opacity:1;}}
+  .sheet-h{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .sheet-h h2{font-size:23px;}
+  .x{width:36px; height:36px; border-radius:11px; border:1px solid var(--line2); background:var(--surface2);
+    color:var(--ink2); font-size:17px; cursor:pointer;}
+
+  .ed-code{text-align:center; margin:6px 0 16px;}
+  .ed-code .big{font-family:"Anton",sans-serif; font-size:44px; line-height:1; letter-spacing:2px; color:var(--ink);}
+  .ed-code .who{color:var(--mut); font-size:14px; margin-top:3px;}
+  .ed-code .st{display:inline-block; margin-top:10px; font-size:12px; padding:4px 12px; border-radius:999px; font-weight:700;}
+  .st.s0{background:var(--surface2); color:var(--mut); border:1px solid var(--line2);}
+  .st.s1{background:rgba(0,182,118,.12); color:var(--ok-d);}
+  .st.s2{background:rgba(255,174,0,.14); color:var(--dup-d);}
+  .stepper{display:flex; align-items:center; justify-content:center; gap:18px; margin:6px 0 16px;}
+  .stepper button{width:60px; height:60px; border-radius:50%; border:1px solid var(--line2);
+    background:var(--surface2); color:var(--ink); font-size:30px; cursor:pointer; line-height:1; box-shadow:var(--shadow-sm);}
+  .stepper button:active{transform:scale(.92);}
+  .stepper .cnt{font-family:"Anton",sans-serif; font-size:50px; min-width:64px; text-align:center; color:var(--ink);}
+  .ed-actions{display:flex; gap:10px;}
+  .btn{flex:1; height:50px; border-radius:14px; border:none; font-size:15px; font-weight:700; cursor:pointer;}
+  .btn:active{transform:scale(.97);}
+  .btn-mut{background:var(--surface2); color:var(--ink2); border:1px solid var(--line2);}
+  .btn-red{background:rgba(255,77,94,.1); color:var(--red); border:1px solid rgba(255,77,94,.3);}
+  .btn-grn{background:var(--ok); color:#fff;}
+  .btn-blue{background:var(--c-blue); color:#fff;}
+
+  .drop{border:2px dashed var(--line2); border-radius:16px; padding:26px 16px; text-align:center; cursor:pointer; background:var(--surface2);}
+  .drop:active{border-color:var(--c-pink);}
+  .drop .ic{font-size:38px;}
+  .drop .t{font-weight:700; margin-top:8px;}
+  .drop .s{color:var(--mut); font-size:12.5px; margin-top:4px;}
+  .scan-status{text-align:center; color:var(--mut); font-size:13.5px; margin:14px 0 4px; min-height:20px;}
+  .prog{height:6px; background:var(--surface2); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:8px 0 4px; display:none;}
+  .prog i{display:block; height:100%; width:0; background:var(--c-green); transition:width .2s;}
+  .found-wrap{margin-top:14px;}
+  .found-wrap h3{font-size:13px; color:var(--mut); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; font-weight:700;}
+  .found{display:flex; flex-wrap:wrap; gap:8px;}
+  .pill{padding:9px 13px; border-radius:12px; border:1px solid var(--ok); background:rgba(0,182,118,.1);
+    color:var(--ok-d); font-family:"JetBrains Mono",monospace; font-weight:700; font-size:15px; cursor:pointer; display:flex; align-items:center; gap:7px;}
+  .pill:active{transform:scale(.95);}
+  .pill .plus{background:var(--ok); color:#fff; width:18px; height:18px; border-radius:6px; font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .pill.added{border-color:var(--dup-d); background:rgba(255,174,0,.12); color:var(--dup-d);}
+  .pill.added .plus{background:var(--dup-d);}
+  .manual{margin-top:16px; display:flex; gap:8px;}
+  .manual input{flex:1; background:var(--surface2); border:1px solid var(--line2); color:var(--ink); border-radius:12px;
+    height:48px; padding:0 14px; font-family:"JetBrains Mono",monospace; text-transform:uppercase; letter-spacing:1px; font-size:16px;}
+  .manual input:focus{outline:none; border-color:var(--ok);}
+  .manual button{flex:0 0 auto; padding:0 18px; border-radius:12px; border:none; background:var(--ok); color:#fff; font-weight:700; cursor:pointer;}
+  .tip{font-size:11.5px; color:var(--mut2); text-align:center; margin-top:12px; line-height:1.45;}
+
+  .set-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--line);}
+  .set-row:last-child{border-bottom:none;}
+  .set-row .lab{font-weight:600;}
+  .set-row .des{font-size:12px; color:var(--mut); margin-top:2px;}
+  .switch{position:relative; width:48px; height:28px; flex:0 0 auto;}
+  .switch input{display:none;}
+  .switch .tr{position:absolute; inset:0; background:var(--line2); border-radius:999px; transition:.2s; cursor:pointer;}
+  .switch .tr:before{content:""; position:absolute; width:22px; height:22px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .switch input:checked + .tr{background:var(--ok);}
+  .switch input:checked + .tr:before{transform:translateX(20px);}
+  .set-btn{width:100%; height:46px; border-radius:12px; border:1px solid var(--line2); background:var(--surface2);
+    color:var(--ink2); font-weight:600; font-size:14px; cursor:pointer; margin-top:10px;}
+  .set-btn.danger{color:var(--red); border-color:rgba(255,77,94,.3);}
+
+  /* cloud panel */
+  .field{margin-top:12px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink2); margin-bottom:5px;}
+  .field input, .field textarea{width:100%; background:var(--surface2); border:1px solid var(--line2); color:var(--ink);
+    border-radius:12px; padding:11px 13px; font-size:15px; font-family:"Inter",sans-serif;}
+  .field textarea{min-height:120px; font-family:"JetBrains Mono",monospace; font-size:12px; resize:vertical;}
+  .field input:focus, .field textarea:focus{outline:none; border-color:var(--c-blue);}
+  .steps{background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:13px 14px 13px 30px; margin:6px 0 4px; font-size:13px; color:var(--ink2); line-height:1.5;}
+  .steps li{margin-bottom:5px;}
+  .steps a{color:var(--c-blue); font-weight:600;}
+  .codebox{display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px dashed var(--line2); border-radius:12px; padding:10px 12px; margin-top:6px;}
+  .codebox .v{flex:1; font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--ink); overflow:hidden; text-overflow:ellipsis;}
+  .codebox button{flex:0 0 auto; border:none; background:var(--c-blue); color:#fff; border-radius:9px; padding:7px 12px; font-weight:700; font-size:12px; cursor:pointer;}
+  .who-tag{display:flex; align-items:center; gap:9px; background:rgba(0,182,118,.08); border:1px solid rgba(0,182,118,.3); border-radius:13px; padding:11px 13px; margin-bottom:6px;}
+  .who-tag .av{width:34px; height:34px; border-radius:50%; background:var(--ok); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .who-tag .em{flex:1; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis;}
+  .seg{display:flex; gap:6px; background:var(--surface2); border:1px solid var(--line2); border-radius:12px; padding:4px; margin-top:4px;}
+  .seg button{flex:1; height:38px; border:none; background:transparent; border-radius:9px; font-weight:700; font-size:13.5px; color:var(--mut); cursor:pointer;}
+  .seg button.active{background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm);}
+  .err{color:var(--red); font-size:12.5px; margin-top:8px; min-height:16px;}
+
+  .toast{position:fixed; left:50%; bottom:84px; transform:translateX(-50%); z-index:60; background:var(--ink); color:#fff;
+    padding:11px 18px; border-radius:12px; font-weight:600; font-size:14px; opacity:0; pointer-events:none; transition:.25s; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.25);}
+  .toast.show{opacity:1; bottom:96px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htop">
+    <div class="ring">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2b6bff"/><stop offset=".5" stop-color="#00b676"/><stop offset="1" stop-color="#ff2d6f"/>
+          </linearGradient>
+        </defs>
+        <circle cx="30" cy="30" r="25" fill="none" stroke="#e7ebf3" stroke-width="7"/>
+        <circle id="ringFill" cx="30" cy="30" r="25" fill="none" stroke="url(#ringGrad)" stroke-width="7"
+          stroke-linecap="round" stroke-dasharray="157.1" stroke-dashoffset="157.1" transform="rotate(-90 30 30)"/>
+        <text id="ringTxt" x="30" y="31" text-anchor="middle" dominant-baseline="central" fill="#0f1830" font-family="Anton,sans-serif" font-size="15">0%</text>
+      </svg>
+    </div>
+    <div class="htitle">
+      <div class="kick"><span class="dot"></span> Mundial 2026</div>
+      <h1 class="disp">Mi Álbum</h1>
+    </div>
+    <div class="hbtns">
+      <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
+    </div>
+  </div>
+  <div class="cloudpill" id="cloudPill"><span class="ic">☁️</span> <span id="cloudPillTxt">Solo en este equipo · <b>toca para sincronizar</b></span></div>
+  <div class="chips">
+    <div class="chip tengo"><div class="n" id="stTengo">0</div><div class="l">Tengo</div></div>
+    <div class="chip faltan"><div class="n" id="stFaltan">980</div><div class="l">Faltan</div></div>
+    <div class="chip repe"><div class="n" id="stRepe">0</div><div class="l">Repetidas</div></div>
+    <div class="chip total"><div class="n" id="stTotal">980</div><div class="l">Total</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="qa">
+    <input id="quickAdd" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
+    <button id="qaBtn">+ Sumar</button>
+  </div>
+  <div class="filters" id="filters">
+    <button class="fbtn active" data-f="all">Todas <span class="b" id="cAll">0</span></button>
+    <button class="fbtn" data-f="have">Que tengo <span class="b" id="cHave">0</span></button>
+    <button class="fbtn" data-f="miss">Que faltan <span class="b" id="cMiss">0</span></button>
+    <button class="fbtn" data-f="dup">Repetidas <span class="b" id="cDup">0</span></button>
+  </div>
+  <div class="search"><input id="search" type="text" placeholder="🔎 Buscar selección (ej. argentina, esp)…" autocomplete="off"/></div>
+</div>
+
+<main id="main"></main>
+
+<button class="fab" id="fab">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+  </svg>
+  Escanear
+</button>
+
+<!-- CELL EDITOR -->
+<div class="ov" id="ovEdit"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Lámina</h2><button class="x" data-close>✕</button></div>
+  <div class="ed-code"><div class="big" id="edCode">—</div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
+  <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
+  <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
+</div></div>
+
+<!-- SCAN -->
+<div class="ov" id="ovScan"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
+  <label class="drop" for="scanFile"><div class="ic">📷</div><div class="t">Saca una foto al reverso de la lámina</div><div class="s">Apunta al código (ej. ARG 5 o FW 3). También puedes elegir una foto.</div></label>
+  <input id="scanFile" type="file" accept="image/*" capture="environment" hidden />
+  <div class="prog" id="scanProg"><i id="scanProgBar"></i></div>
+  <div class="scan-status" id="scanStatus"></div>
+  <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
+  <div class="manual"><input id="manualCode" type="text" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off"/><button id="manualBtn">Agregar</button></div>
+  <div class="tip">Las láminas brillan y a veces el lector falla. Por eso siempre confirmas tú antes de registrar. 💪</div>
+</div></div>
+
+<!-- CLOUD -->
+<div class="ov" id="ovCloud"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Nube y compartir</h2><button class="x" data-close>✕</button></div>
+  <div id="cloudSetup">
+    <p style="font-size:13.5px;color:var(--ink2);line-height:1.5;margin:0 0 8px">Para sincronizar en tiempo real y compartir con alguien, conecta tu proyecto gratis de Firebase (4 pasos):</p>
+    <ol class="steps">
+      <li>Entra a <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> y crea un proyecto.</li>
+      <li>Menú <b>Compilación → Firestore Database → Crear</b> (modo de prueba).</li>
+      <li>Menú <b>Compilación → Authentication → Comenzar → Correo/contraseña → Activar</b>.</li>
+      <li>Engranaje ⚙ → <b>Configuración del proyecto</b> → en "Tus apps" crea una app <b>Web (&lt;/&gt;)</b> y copia el bloque <span class="mono">firebaseConfig</span>.</li>
+    </ol>
+    <div class="field"><label>Pega aquí tu firebaseConfig</label>
+      <textarea id="cfgInput" placeholder='const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  appId: "..."
+};'></textarea></div>
+    <div class="err" id="cfgErr"></div>
+    <button class="btn btn-blue" style="width:100%;margin-top:10px" id="cfgSave">Guardar y conectar</button>
+    <div class="tip">Tus claves quedan solo en tu navegador. Súbela a internet (GitHub Pages) y agrega ese dominio en Firebase → Authentication → Settings → Dominios autorizados.</div>
+  </div>
+
+  <div id="cloudAuth" style="display:none">
+    <div class="seg"><button id="segLogin" class="active">Entrar</button><button id="segSignup">Crear cuenta</button></div>
+    <div class="field"><label>Correo</label><input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"/></div>
+    <div class="field"><label>Contraseña</label><input id="authPass" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres"/></div>
+    <div class="err" id="authErr"></div>
+    <button class="btn btn-blue" style="width:100%;margin-top:12px" id="authGo">Entrar</button>
+    <button class="set-btn" id="cfgEdit" style="margin-top:14px">Cambiar configuración de Firebase</button>
+  </div>
+
+  <div id="cloudUser" style="display:none">
+    <div class="who-tag"><div class="av" id="userAv">?</div><div class="em" id="userEmail">—</div><span style="color:var(--ok-d);font-size:18px">✓</span></div>
+    <p style="font-size:12.5px;color:var(--mut);margin:10px 2px 4px">Comparte este código con alguien y, al unirse, los dos editan <b>el mismo álbum</b> en vivo:</p>
+    <div class="field"><label>Mi código de álbum</label>
+      <div class="codebox"><span class="v" id="myAlbumCode">—</span><button id="copyCode">Copiar</button></div></div>
+    <div class="field"><label>Unirme a un álbum compartido (opcional)</label>
+      <input id="joinCode" type="text" placeholder="Pega el código que te pasaron"/></div>
+    <button class="btn btn-blue" style="width:100%;margin-top:10px" id="joinGo">Usar este álbum</button>
+    <div class="tip" id="syncTip">Sincronizado ✓ — los cambios se guardan solos.</div>
+    <button class="set-btn danger" id="signOut" style="margin-top:8px">Cerrar sesión</button>
+  </div>
+</div></div>
+
+<!-- SETTINGS -->
+<div class="ov" id="ovSet"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
+  <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
+  <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
+  <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
+  <button class="set-btn" id="btnExport">⬇️ Exportar respaldo (JSON)</button>
+  <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
+  <input id="importFile" type="file" accept="application/json,.json" hidden />
+  <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- DATA: tu formato exacto ---------- */
+const GROUPS = [
+  {id:"A", color:"#2b6bff", teams:[["MEX","México","🇲🇽"],["RSA","Sudáfrica","🇿🇦"],["KOR","Corea del Sur","🇰🇷"],["CZE","República Checa","🇨🇿"]]},
+  {id:"B", color:"#ff2d6f", teams:[["CAN","Canadá","🇨🇦"],["BIH","Bosnia y Herzegovina","🇧🇦"],["QAT","Catar","🇶🇦"],["SUI","Suiza","🇨🇭"]]},
+  {id:"C", color:"#00b676", teams:[["BRA","Brasil","🇧🇷"],["MAR","Marruecos","🇲🇦"],["HAI","Haití","🇭🇹"],["SCO","Escocia","🏴󠁧󠁢󠁳󠁣󠁴󠁿"]]},
+  {id:"D", color:"#7c5cff", teams:[["USA","Estados Unidos","🇺🇸"],["PAR","Paraguay","🇵🇾"],["AUS","Australia","🇦🇺"],["TUR","Turquía","🇹🇷"]]},
+  {id:"E", color:"#ff8a00", teams:[["GER","Alemania","🇩🇪"],["CUW","Curazao","🇨🇼"],["CIV","Costa de Marfil","🇨🇮"],["ECU","Ecuador","🇪🇨"]]},
+  {id:"F", color:"#2b6bff", teams:[["NED","Países Bajos","🇳🇱"],["JAP","Japón","🇯🇵"],["SWE","Suecia","🇸🇪"],["TUN","Túnez","🇹🇳"]]},
+  {id:"G", color:"#ff2d6f", teams:[["BEL","Bélgica","🇧🇪"],["EGY","Egipto","🇪🇬"],["IRN","Irán","🇮🇷"],["NZL","Nueva Zelanda","🇳🇿"]]},
+  {id:"H", color:"#00b676", teams:[["ESP","España","🇪🇸"],["CPV","Cabo Verde","🇨🇻"],["KSA","Arabia Saudita","🇸🇦"],["URU","Uruguay","🇺🇾"]]},
+  {id:"I", color:"#7c5cff", teams:[["FRA","Francia","🇫🇷"],["SEN","Senegal","🇸🇳"],["IRQ","Irak","🇮🇶"],["NOR","Noruega","🇳🇴"]]},
+  {id:"J", color:"#ff8a00", teams:[["ARG","Argentina","🇦🇷"],["ALG","Argelia","🇩🇿"],["AUT","Austria","🇦🇹"],["JOR","Jordania","🇯🇴"]]},
+  {id:"K", color:"#2b6bff", teams:[["POR","Portugal","🇵🇹"],["COD","RD Congo","🇨🇩"],["UZB","Uzbekistán","🇺🇿"],["COL","Colombia","🇨🇴"]]},
+  {id:"L", color:"#ff2d6f", teams:[["ENG","Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],["CRO","Croacia","🇭🇷"],["GHA","Ghana","🇬🇭"],["PAN","Panamá","🇵🇦"]]},
+];
+const SPECIAL_CODES = ["00"]; for(let i=1;i<=19;i++) SPECIAL_CODES.push("FW"+i);
+const EXTRA_COLORS = [["O","Oro","🥇"],["P","Plata","🥈"],["B","Bronce","🥉"],["M","Morado","🟣"]];
+const EXTRA_COUNT = 20;
+
+const CODE_TEAM = {}; const ALL_TEAM_CODES = [];
+GROUPS.forEach(g=>g.teams.forEach(t=>{ const code=t[0],name=t[1],flag=t[2];
+  for(let n=1;n<=20;n++){ const c=code+n; CODE_TEAM[c]={name,code,flag,group:g.id}; ALL_TEAM_CODES.push(c); } }));
+const VALID_TEAM = new Set(ALL_TEAM_CODES);
+const VALID_SPECIAL = new Set(SPECIAL_CODES);
+
+/* ---------- state ---------- */
+const KEY="albumMundial2026_v2";
+let state = load();
+function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; return r; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); }
+function getCount(c){ return state.counts[c]||0; }
+function setCount(c,v){ v=Math.max(0,v|0); if(v===0) delete state.counts[c]; else state.counts[c]=v; save(); }
+
+/* ---------- code parsing ---------- */
+function normalize(raw){
+  let s=raw.toUpperCase().replace(/[^A-Z0-9]/g,""); if(!s) return null;
+  if(s==="00") return state.config.specials?"00":null;
+  let m=s.match(/^FW(\d{1,2})$/); if(m){ const c="FW"+parseInt(m[1],10); return (state.config.specials&&VALID_SPECIAL.has(c))?c:null; }
+  m=s.match(/^([A-Z]{3})0*(\d{1,2})$/); if(m){ const c=m[1]+parseInt(m[2],10); return VALID_TEAM.has(c)?c:null; }
+  return null;
+}
+function findCodes(text){
+  const up=text.toUpperCase(); const out=[]; const seen=new Set();
+  const push=c=>{ if(c&&!seen.has(c)){ seen.add(c); out.push(c); } };
+  let m; const reTeam=/([A-Z]{3})\s*[-–—]?\s*0*(\d{1,2})/g;
+  while((m=reTeam.exec(up))){ const c=m[1]+parseInt(m[2],10); if(VALID_TEAM.has(c)) push(c); }
+  const reFW=/F\s*W\s*[-–—]?\s*0*(\d{1,2})/g;
+  while((m=reFW.exec(up))){ const c="FW"+parseInt(m[1],10); if(state.config.specials&&VALID_SPECIAL.has(c)) push(c); }
+  if(state.config.specials && /(^|[^0-9])0\s*0([^0-9]|$)/.test(up)) push("00");
+  return out;
+}
+
+/* ---------- rendering ---------- */
+const main=document.getElementById("main");
+let currentFilter="all", searchTerm="";
+function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
+function buildCell(code,label){
+  const n=getCount(code),st=cellState(code);
+  const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.textContent=label;
+  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
+  d.addEventListener("click",()=>openEditor(code)); return d;
+}
+function render(){
+  main.innerHTML=""; const term=searchTerm.trim().toLowerCase();
+  GROUPS.forEach(g=>{
+    const gWrap=document.createElement("div"); gWrap.className="grp";
+    const gh=document.createElement("div"); gh.className="grp-h";
+    gh.innerHTML='<span class="tag" style="background:'+g.color+'">Grupo '+g.id+'</span><span class="line"></span>';
+    gWrap.appendChild(gh); let groupHasVisible=false;
+    g.teams.forEach(t=>{
+      const code=t[0],name=t[1],flag=t[2];
+      const matchTeam=!term||name.toLowerCase().includes(term)||code.toLowerCase().includes(term);
+      const team=document.createElement("div"); team.className="team";
+      let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
+      const pct=Math.round(have/20*100);
+      const th=document.createElement("div"); th.className="team-h";
+      th.innerHTML='<span class="flag">'+flag+'</span><div class="team-name"><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+      team.appendChild(th);
+      const cells=document.createElement("div"); cells.className="cells"; let vis=0;
+      for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i)); const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
+      team.appendChild(cells); if(vis===0) team.classList.add("hide"); else groupHasVisible=true; gWrap.appendChild(team);
+    });
+    if(!groupHasVisible) gWrap.classList.add("hide"); main.appendChild(gWrap);
+  });
+  if(state.config.specials){
+    const matchS=!term||"especiales fifa fw 00".includes(term);
+    const gWrap=document.createElement("div"); gWrap.className="grp";
+    gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#ffb020,#ff8a00)">Especiales</span><span class="line"></span></div>';
+    const team=document.createElement("div"); team.className="team"; let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
+    const pct=Math.round(have/SPECIAL_CODES.length*100);
+    team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FW1–FW19</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
+    const cells=document.createElement("div"); cells.className="cells"; let vis=0;
+    SPECIAL_CODES.forEach(c=>{ const cell=buildCell(c,c==="00"?"00":c.replace("FW","")); const show=matchS&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
+    team.appendChild(cells); if(vis===0){ team.classList.add("hide"); if(term) gWrap.classList.add("hide"); } gWrap.appendChild(team); main.appendChild(gWrap);
+  }
+  if(state.config.extras){
+    const matchE=!term||"extra stickers foil leyendas oro plata bronce morado".includes(term);
+    const gWrap=document.createElement("div"); gWrap.className="grp";
+    gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#7c5cff,#ff2d6f)">Extra</span><span class="line"></span></div>';
+    for(let p=1;p<=EXTRA_COUNT;p++){
+      const team=document.createElement("div"); team.className="team";
+      const pname=state.config.extraNames["p"+p]||("Jugador "+p);
+      let have=0; EXTRA_COLORS.forEach(a=>{ if(getCount("X"+p+a[0])>0) have++; });
+      team.innerHTML='<div class="team-h"><span class="flag">✨</span><div class="team-name"><div class="nm" contenteditable="true" data-pl="'+p+'" spellcheck="false">'+pname+'</div><div class="cd">Extra · 4 colores</div></div><div class="tprog '+(have===4?'full':'')+'"><div class="fr">'+have+'/4</div><div class="bar"><i style="width:'+(have/4*100)+'%"></i></div></div></div>';
+      const cells=document.createElement("div"); cells.className="cells"; cells.style.gridTemplateColumns="repeat(4,1fr)"; let vis=0;
+      EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0]; const cell=buildCell(c,a[2]); const show=matchE&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
+      team.appendChild(cells); if(vis===0) team.classList.add("hide");
+      const nmEl=team.querySelector("[data-pl]"); nmEl.addEventListener("blur",()=>{ state.config.extraNames["p"+p]=nmEl.textContent.trim()||("Jugador "+p); save(); });
+      gWrap.appendChild(team);
+    }
+    main.appendChild(gWrap);
+  }
+  updateStats();
+}
+function passFilter(c){ const n=getCount(c); if(currentFilter==="have")return n>=1; if(currentFilter==="miss")return n===0; if(currentFilter==="dup")return n>=2; return true; }
+
+/* ---------- stats ---------- */
+function allActiveCodes(){ const arr=[...ALL_TEAM_CODES]; if(state.config.specials) arr.push(...SPECIAL_CODES); if(state.config.extras) for(let p=1;p<=EXTRA_COUNT;p++) EXTRA_COLORS.forEach(a=>arr.push("X"+p+a[0])); return arr; }
+function updateStats(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0,repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1) tengo++; if(n>=2) repe+=n-1; });
+  const faltan=total-tengo;
+  document.getElementById("stTengo").textContent=tengo; document.getElementById("stFaltan").textContent=faltan;
+  document.getElementById("stRepe").textContent=repe; document.getElementById("stTotal").textContent=total;
+  document.getElementById("cAll").textContent=total; document.getElementById("cHave").textContent=tengo;
+  document.getElementById("cMiss").textContent=faltan; document.getElementById("cDup").textContent=repe;
+  const pct=total?tengo/total:0, circ=157.1;
+  const rf=document.getElementById("ringFill"); rf.style.strokeDashoffset=(circ*(1-pct)).toFixed(1);
+  document.getElementById("ringTxt").textContent=Math.round(pct*100)+"%";
+}
+
+/* ---------- editor ---------- */
+let editCode=null; const ovEdit=document.getElementById("ovEdit");
+function openEditor(code){
+  editCode=code; const meta=CODE_TEAM[code]; let who="Especial FIFA";
+  if(meta) who=meta.flag+" "+meta.name+" · Grupo "+meta.group;
+  else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
+  document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").textContent=who;
+  refreshEditor(); ovEdit.classList.add("show");
+}
+function displayCode(code){
+  if(code[0]==="X"){ const m=code.match(/X(\d+)([A-Z])/); const col=EXTRA_COLORS.find(c=>c[0]===m[2]); return "#"+m[1]+" "+(col?col[1]:""); }
+  const meta=CODE_TEAM[code]; if(meta){ return meta.code+" "+code.slice(meta.code.length); } return code;
+}
+function refreshEditor(){
+  const n=getCount(editCode); document.getElementById("edCnt").textContent=n; const st=document.getElementById("edSt");
+  if(n===0){ st.className="st s0"; st.textContent="No la tengo"; }
+  else if(n===1){ st.className="st s1"; st.textContent="✓ La tengo"; }
+  else { st.className="st s2"; st.textContent="Repetida ×"+n+" ("+(n-1)+" para cambio)"; }
+}
+document.getElementById("edPlus").onclick=()=>{ setCount(editCode,getCount(editCode)+1); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
+document.getElementById("edMinus").onclick=()=>{ setCount(editCode,getCount(editCode)-1); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
+document.getElementById("edRemove").onclick=()=>{ setCount(editCode,0); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
+document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show"); if(currentFilter!=="all") render(); };
+function refreshCellInDom(code){
+  const cell=main.querySelector('.cell[data-code="'+cssEsc(code)+'"]'); if(!cell) return;
+  const n=getCount(code),st=cellState(code); cell.classList.remove("have","dup");
+  if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
+  const old=cell.querySelector(".badge"); if(old) old.remove();
+  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); cell.appendChild(b); }
+  const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl);
+}
+function refreshTeamProgress(teamEl){
+  const cells=[...teamEl.querySelectorAll(".cell")]; let have=0; cells.forEach(c=>{ if(getCount(c.dataset.code)>0) have++; });
+  const tot=cells.length; const fr=teamEl.querySelector(".fr"),bar=teamEl.querySelector(".bar i"),tp=teamEl.querySelector(".tprog");
+  if(fr) fr.textContent=have+"/"+tot; if(bar) bar.style.width=(have/tot*100)+"%"; if(tp) tp.classList.toggle("full",have===tot);
+}
+function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
+
+/* ---------- quick add ---------- */
+function addByCode(raw,silent){
+  const c=normalize(raw); if(!c){ if(!silent) toast("Código no válido ✗"); return false; }
+  setCount(c,getCount(c)+1); refreshCellInDom(c); updateStats(); const n=getCount(c);
+  toast(displayCode(c)+(n===1?" ✓ registrada":" · repetida ×"+n)); return true;
+}
+const qa=document.getElementById("quickAdd");
+function doQuickAdd(){
+  const v=qa.value.trim(); if(!v) return; const codes=findCodes(v);
+  if(codes.length>1){ let ok=0; codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); ok++; }); updateStats(); toast(ok+" láminas sumadas ✓"); }
+  else { addByCode(v,false); } qa.value="";
+}
+document.getElementById("qaBtn").onclick=doQuickAdd;
+qa.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doQuickAdd(); }});
+
+/* ---------- filters + search ---------- */
+document.getElementById("filters").addEventListener("click",e=>{ const b=e.target.closest(".fbtn"); if(!b) return;
+  document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active")); b.classList.add("active"); currentFilter=b.dataset.f; render(); });
+let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
+
+/* ---------- scan ---------- */
+const ovScan=document.getElementById("ovScan"),scanFile=document.getElementById("scanFile"),scanStatus=document.getElementById("scanStatus");
+const scanProg=document.getElementById("scanProg"),scanProgBar=document.getElementById("scanProgBar"),foundWrap=document.getElementById("foundWrap"),foundList=document.getElementById("foundList");
+document.getElementById("fab").onclick=()=>{ resetScan(); ovScan.classList.add("show"); };
+function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; }
+scanFile.addEventListener("change",async e=>{
+  const file=e.target.files[0]; if(!file) return; foundWrap.style.display="none"; foundList.innerHTML="";
+  scanProg.style.display="block"; scanProgBar.style.width="0"; scanStatus.textContent="Leyendo la lámina…";
+  try{
+    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; scanFile.value=""; return; }
+    const url=URL.createObjectURL(file);
+    const res=await Tesseract.recognize(url,"eng",{ logger:m=>{ if(m.status==="recognizing text") scanProgBar.style.width=Math.round(m.progress*100)+"%"; }, tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " });
+    URL.revokeObjectURL(url); scanProg.style.display="none";
+    const text=(res&&res.data&&res.data.text)||""; const codes=findCodes(text);
+    if(codes.length){ scanStatus.textContent="Encontré "+codes.length+" código(s). Confirma cuáles registrar:"; foundWrap.style.display="block"; codes.forEach(c=>foundList.appendChild(makePill(c))); }
+    else scanStatus.textContent="No reconocí ningún código 😕. Prueba otra foto más nítida o escríbelo abajo.";
+  }catch(err){ scanProg.style.display="none"; scanStatus.textContent="Error al leer la imagen. Escribe el código abajo."; }
+  scanFile.value="";
+});
+function makePill(code){
+  const p=document.createElement("button"); p.className="pill";
+  const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
+  const lab=document.createElement("span"); lab.textContent=" "+displayCode(code); p.appendChild(plus); p.appendChild(lab);
+  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); toast(displayCode(code)+(n===1?" ✓ registrada":" · repetida ×"+n)); });
+  return p;
+}
+const manualCode=document.getElementById("manualCode");
+document.getElementById("manualBtn").onclick=()=>{ if(addByCode(manualCode.value,false)) manualCode.value=""; };
+manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(addByCode(manualCode.value,false)) manualCode.value=""; }});
+
+/* ---------- settings ---------- */
+const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
+document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; ovSet.classList.add("show"); };
+tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
+tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
+document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="album-mundial-2026-respaldo.json"; a.click(); URL.revokeObjectURL(a.href); toast("Respaldo descargado ⬇️"); };
+const importFile=document.getElementById("importFile");
+document.getElementById("btnImport").onclick=()=>importFile.click();
+importFile.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); if(d&&d.counts){ state=normState(d); save(); render(); ovSet.classList.remove("show"); toast("Respaldo importado ✓"); } else toast("Archivo no válido ✗"); }catch(err){ toast("No se pudo leer el archivo ✗"); } };
+  r.readAsText(f); importFile.value=""; });
+document.getElementById("btnReset").onclick=()=>{ if(confirm("¿Seguro? Esto borra TODO tu registro. Te conviene exportar un respaldo antes.")){ state=normState({}); save(); render(); ovSet.classList.remove("show"); toast("Listo, empezaste de cero"); } };
+document.getElementById("btnCloud2").onclick=()=>{ ovSet.classList.remove("show"); openCloud(); };
+
+/* ---------- overlays close ---------- */
+document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
+
+/* ---------- toast ---------- */
+let toastTimer; function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),1900); }
+
+/* ================= CLOUD (Firebase) ================= */
+const CFG_KEY="albumCloudCfg_v1";
+const cloud={ ready:false, auth:null, db:null, user:null, albumId:null, unsub:null, applyingRemote:false, writeTimer:null };
+const ovCloud=document.getElementById("ovCloud");
+document.getElementById("cloudPill").onclick=openCloud;
+
+function getSavedCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; } }
+function parseFirebaseConfig(text){
+  const keys=["apiKey","authDomain","projectId","storageBucket","messagingSenderId","appId"]; const cfg={};
+  keys.forEach(k=>{ const m=text.match(new RegExp(k+"\\s*:\\s*[\"']([^\"']+)[\"']")); if(m) cfg[k]=m[1]; });
+  if(!cfg.authDomain && cfg.projectId) cfg.authDomain=cfg.projectId+".firebaseapp.com";
+  return (cfg.apiKey&&cfg.projectId&&cfg.appId)?cfg:null;
+}
+function initCloud(){
+  const cfg=getSavedCfg(); if(!cfg||!cfg.apiKey) return false;
+  if(typeof firebase==="undefined") return false;
+  try{ if(!firebase.apps.length) firebase.initializeApp(cfg); cloud.auth=firebase.auth(); cloud.db=firebase.firestore(); cloud.ready=true;
+    cloud.auth.onAuthStateChanged(u=>{ cloud.user=u; onAuthChange(u); }); return true;
+  }catch(e){ console.warn("Firebase init",e); return false; }
+}
+function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
+
+function onAuthChange(u){
+  updateCloudUI();
+  if(u){ subscribeAlbum(); } else { if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } }
+}
+function subscribeAlbum(){
+  if(!cloud.user||!cloud.db) return; if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; }
+  cloud.albumId=currentAlbumId();
+  const ref=cloud.db.collection("albums").doc(cloud.albumId);
+  cloud.unsub=ref.onSnapshot(doc=>{
+    if(!doc.exists){ pushCloud(true); return; }
+    const data=doc.data()||{};
+    cloud.applyingRemote=true;
+    if(data.counts && typeof data.counts==="object") state.counts=data.counts;
+    if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
+    try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
+    render(); cloud.applyingRemote=false;
+  }, err=>{ toast("Nube: "+(err.code||"error de lectura")); });
+}
+function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
+function pushCloud(seed){
+  if(!cloud.ready||!cloud.user||!cloud.db) return; const id=currentAlbumId(); if(!id) return;
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, updatedAt:Date.now() },{merge:true}).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+}
+
+function openCloud(){ updateCloudUI(); ovCloud.classList.add("show"); }
+function updateCloudUI(){
+  const cfg=getSavedCfg();
+  const setup=document.getElementById("cloudSetup"), auth=document.getElementById("cloudAuth"), usr=document.getElementById("cloudUser");
+  const pill=document.getElementById("cloudPill"), pillTxt=document.getElementById("cloudPillTxt");
+  if(!cfg||!cfg.apiKey){ setup.style.display="block"; auth.style.display="none"; usr.style.display="none"; pill.classList.remove("on"); pillTxt.innerHTML="Solo en este equipo · <b>toca para sincronizar</b>"; return; }
+  if(!cloud.ready) initCloud();
+  if(cloud.user){
+    setup.style.display="none"; auth.style.display="none"; usr.style.display="block";
+    const email=cloud.user.email||"cuenta"; document.getElementById("userEmail").textContent=email;
+    document.getElementById("userAv").textContent=(email[0]||"?").toUpperCase();
+    document.getElementById("myAlbumCode").textContent=currentAlbumId();
+    document.getElementById("joinCode").value=state.config.sharedCode||"";
+    pill.classList.add("on"); pillTxt.innerHTML='<b>'+email+'</b> · sincronizado';
+  } else {
+    setup.style.display="none"; auth.style.display="block"; usr.style.display="none";
+    pill.classList.remove("on"); pillTxt.innerHTML="Nube lista · <b>inicia sesión</b>";
+  }
+}
+/* save config */
+document.getElementById("cfgSave").onclick=()=>{
+  const cfg=parseFirebaseConfig(document.getElementById("cfgInput").value); const err=document.getElementById("cfgErr");
+  if(!cfg){ err.textContent="No pude leer la config. Pega el bloque completo (apiKey, projectId y appId)."; return; }
+  err.textContent=""; localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+  cloud.ready=false; const ok=initCloud();
+  if(ok){ toast("Nube conectada ☁️"); updateCloudUI(); } else { err.textContent="Se guardó, recarga la página para activar."; }
+};
+document.getElementById("cfgEdit").onclick=()=>{ const cfg=getSavedCfg(); document.getElementById("cfgInput").value=cfg?JSON.stringify(cfg,null,2):""; document.getElementById("cloudAuth").style.display="none"; document.getElementById("cloudSetup").style.display="block"; };
+/* auth segmented */
+let authMode="login";
+document.getElementById("segLogin").onclick=()=>{ authMode="login"; document.getElementById("segLogin").classList.add("active"); document.getElementById("segSignup").classList.remove("active"); document.getElementById("authGo").textContent="Entrar"; document.getElementById("authErr").textContent=""; };
+document.getElementById("segSignup").onclick=()=>{ authMode="signup"; document.getElementById("segSignup").classList.add("active"); document.getElementById("segLogin").classList.remove("active"); document.getElementById("authGo").textContent="Crear cuenta"; document.getElementById("authErr").textContent=""; };
+document.getElementById("authGo").onclick=async()=>{
+  if(!cloud.ready && !initCloud()){ document.getElementById("authErr").textContent="Configura Firebase primero."; return; }
+  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr");
+  if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
+  err.textContent="Conectando…";
+  try{
+    if(authMode==="signup") await cloud.auth.createUserWithEmailAndPassword(email,pass);
+    else await cloud.auth.signInWithEmailAndPassword(email,pass);
+    err.textContent=""; document.getElementById("authPass").value=""; toast("¡Listo! Sesión iniciada ✓");
+  }catch(e){
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No existe esa cuenta. Crea una.","auth/wrong-password":"Contraseña incorrecta.","auth/invalid-credential":"Correo o contraseña incorrectos.","auth/email-already-in-use":"Ese correo ya tiene cuenta. Entra.","auth/weak-password":"Contraseña muy débil (6+).","auth/network-request-failed":"Sin conexión.","auth/operation-not-allowed":"Activa Correo/contraseña en Firebase → Authentication."};
+    err.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  }
+};
+document.getElementById("signOut").onclick=()=>{ if(cloud.auth) cloud.auth.signOut(); toast("Sesión cerrada"); };
+document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
+document.getElementById("joinGo").onclick=()=>{
+  const v=document.getElementById("joinCode").value.trim();
+  state.config.sharedCode = v||""; save();
+  subscribeAlbum(); updateCloudUI();
+  toast(v?"Usando álbum compartido ✓":"Volviste a tu álbum");
+};
+
+/* ---------- go ---------- */
+render();
+initCloud();
+updateCloudUI();
+</script>
+</body>
+</html>
