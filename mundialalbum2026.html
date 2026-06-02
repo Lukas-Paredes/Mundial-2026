@@ -89,6 +89,10 @@
   .search input{width:100%; background:var(--surface); border:1px solid var(--line2); color:var(--ink);
     border-radius:12px; padding:0 12px; height:40px; font-size:14px; box-shadow:var(--shadow-sm);}
   .search input:focus{outline:none; border-color:var(--c-blue);}
+  .empty{text-align:center; padding:54px 20px 30px; color:var(--mut2);}
+  .empty-ico{font-size:40px; margin-bottom:10px; opacity:.85;}
+  .empty-t{font-weight:800; font-size:17px; color:var(--ink); margin-bottom:5px;}
+  .empty-s{font-size:13.5px; max-width:340px; margin:0 auto; line-height:1.5;}
   .recent{display:flex; gap:7px; margin-top:9px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px; align-items:center;}
   .recent::-webkit-scrollbar{display:none;}
   .recent .rlabel{flex:0 0 auto; font-size:11px; color:var(--mut2); font-weight:700; text-transform:uppercase; letter-spacing:.4px;}
@@ -238,6 +242,24 @@
   .toast{position:fixed; left:50%; bottom:84px; transform:translateX(-50%); z-index:60; background:var(--ink); color:#fff;
     padding:11px 18px; border-radius:12px; font-weight:600; font-size:14px; opacity:0; pointer-events:none; transition:.25s; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.25);}
   .toast.show{opacity:1; bottom:96px;}
+
+  /* orden A–Z */
+  .sortrow{display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;}
+  .sortrow .slbl{font-size:12.5px; color:var(--mut); font-weight:700;}
+  .sortseg{display:inline-flex; background:var(--surface); border:1px solid var(--line2); border-radius:999px; padding:3px; gap:3px;}
+  .sortseg button{border:none; background:transparent; color:var(--ink2); font-weight:700; font-size:12.5px; padding:7px 15px; border-radius:999px; cursor:pointer; font-family:inherit;}
+  .sortseg button.active{background:var(--c-blue); color:#fff;}
+
+  /* lector con IA */
+  .aibar{margin-bottom:12px;}
+  .ai-cta{width:100%; border:1px solid var(--c-blue); background:rgba(43,107,255,.08); color:var(--c-blue); font-weight:800; font-size:13.5px; padding:12px; border-radius:14px; cursor:pointer; font-family:inherit;}
+  .ai-on{display:inline-flex; align-items:center; gap:6px; background:rgba(0,182,118,.12); color:var(--ok-d); font-weight:800; font-size:13px; padding:8px 13px; border-radius:999px;}
+  .ai-link{background:none; border:none; color:var(--c-pink); font-weight:700; font-size:12.5px; cursor:pointer; margin-left:10px; text-decoration:underline; font-family:inherit;}
+  .aisetup{margin-bottom:14px;}
+
+  /* listas de canje */
+  .trade-count{font-size:13px; color:var(--mut); font-weight:700; margin:10px 2px;}
+  .trade-text{width:100%; min-height:230px; resize:vertical; background:var(--surface); border:1px solid var(--line2); border-radius:14px; padding:12px 14px; color:var(--ink); font-family:"JetBrains Mono",monospace; font-size:12.5px; line-height:1.55;}
 </style>
 </head>
 <body>
@@ -276,7 +298,7 @@
 
 <div class="toolbar">
   <div class="qa">
-    <input id="quickAdd" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
+    <input id="quickAdd" type="text" name="album-codigo" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
     <button id="qaBtn">+ Sumar</button>
   </div>
   <div id="recentTray" class="recent" style="display:none"></div>
@@ -286,7 +308,14 @@
     <button class="fbtn" data-f="miss">Que faltan <span class="b" id="cMiss">0</span></button>
     <button class="fbtn" data-f="dup">Repetidas <span class="b" id="cDup">0</span></button>
   </div>
-  <div class="search"><input id="search" type="text" placeholder="🔎 Buscar selección (ej. argentina, esp)…" autocomplete="off"/></div>
+  <div class="search"><input id="search" type="text" name="album-buscar" placeholder="🔎 Buscar selección (ej. argentina, esp)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
+  <div class="sortrow">
+    <span class="slbl">Orden:</span>
+    <div class="sortseg" id="sortSeg">
+      <button class="active" data-s="group">Por grupo</button>
+      <button data-s="alpha">A–Z</button>
+    </div>
+  </div>
 </div>
 
 <main id="main"></main>
@@ -309,6 +338,20 @@
 <!-- SCAN -->
 <div class="ov" id="ovScan"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
+  <div class="aibar" id="aiBar"></div>
+  <div class="aisetup" id="aiSetup" style="display:none">
+    <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin:0 0 8px">Saca una llave gratis de la IA de Google (3 pasos) y el lector va a leer las fotos muchísimo mejor:</p>
+    <ol class="steps">
+      <li>Entra a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> con tu cuenta de Google.</li>
+      <li>Toca <b>"Create API key"</b> (Crear clave). Es gratis.</li>
+      <li>Copia la clave (empieza con <span class="mono">AIza…</span>) y pégala aquí abajo.</li>
+    </ol>
+    <div class="field"><label>Pega tu clave de Gemini</label>
+      <input id="aiKeyInput" type="text" placeholder="AIza..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+    <div class="err" id="aiErr"></div>
+    <button class="btn btn-blue" style="width:100%;margin-top:8px" id="aiSave">Guardar clave y activar IA</button>
+    <div class="tip">La clave queda solo en tu navegador, en este equipo. Nadie más la ve.</div>
+  </div>
   <div class="scan-opts">
     <label class="drop" for="scanCam"><div class="ic">📷</div><div class="t">Tomar foto</div><div class="s">Usa la cámara y apunta al código (ej. ARG 5)</div></label>
     <label class="drop" for="scanGal"><div class="ic">🖼️</div><div class="t">Elegir de la galería</div><div class="s">Sube varias fotos a la vez y las marca todas</div></label>
@@ -318,7 +361,7 @@
   <div class="prog" id="scanProg"><i id="scanProgBar"></i></div>
   <div class="scan-status" id="scanStatus"></div>
   <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
-  <div class="manual"><input id="manualCode" type="text" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off"/><button id="manualBtn">Agregar</button></div>
+  <div class="manual"><input id="manualCode" type="text" name="album-manual" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/><button id="manualBtn">Agregar</button></div>
   <div class="tip">Las láminas brillan y a veces el lector falla. Por eso siempre confirmas tú antes de registrar. 💪</div>
 </div></div>
 
@@ -373,10 +416,22 @@
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
+  <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
   <button class="set-btn" id="btnExport">⬇️ Exportar respaldo (JSON)</button>
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 2.6</div>
+</div></div>
+
+<!-- TRADE LISTS -->
+<div class="ov" id="ovTrade"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Listas para canjes</h2><button class="x" data-close>✕</button></div>
+  <div class="seg" id="tradeSeg"><button class="active" data-t="miss">Me faltan</button><button data-t="dup">Repetidas (cambio)</button></div>
+  <div class="trade-count" id="tradeCount"></div>
+  <textarea id="tradeText" class="trade-text" readonly></textarea>
+  <button class="btn btn-blue" style="width:100%;margin-top:10px" id="tradeCopy">📋 Copiar lista</button>
+  <div class="tip">Copia y mándala por WhatsApp a tus amigos para cambiar láminas. 🔁</div>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -438,7 +493,7 @@ function findCodes(text){
 
 /* ---------- rendering ---------- */
 const main=document.getElementById("main");
-let currentFilter="all", searchTerm="";
+let currentFilter="all", searchTerm="", sortMode="group";
 function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
 function buildCell(code,label){
   const n=getCount(code),st=cellState(code);
@@ -446,28 +501,40 @@ function buildCell(code,label){
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
   d.addEventListener("click",()=>openEditor(code)); return d;
 }
+function makeTeam(code,name,flag,term){
+  const matchTeam=!term||name.toLowerCase().includes(term)||code.toLowerCase().includes(term);
+  const team=document.createElement("div"); team.className="team";
+  let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
+  const pct=Math.round(have/20*100);
+  const th=document.createElement("div"); th.className="team-h";
+  th.innerHTML='<span class="flag">'+flag+'</span><div class="team-name"><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  team.appendChild(th);
+  const cells=document.createElement("div"); cells.className="cells"; let vis=0;
+  for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i)); const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
+  team.appendChild(cells); if(vis===0) team.classList.add("hide");
+  return team;
+}
 function render(){
   main.innerHTML=""; const term=searchTerm.trim().toLowerCase();
-  GROUPS.forEach(g=>{
+  if(sortMode==="alpha"){
+    const flat=[]; GROUPS.forEach(g=>g.teams.forEach(t=>flat.push(t)));
+    flat.sort((a,b)=>a[1].localeCompare(b[1],"es"));
     const gWrap=document.createElement("div"); gWrap.className="grp";
     const gh=document.createElement("div"); gh.className="grp-h";
-    gh.innerHTML='<span class="tag" style="background:'+g.color+'">Grupo '+g.id+'</span><span class="line"></span>';
-    gWrap.appendChild(gh); let groupHasVisible=false;
-    g.teams.forEach(t=>{
-      const code=t[0],name=t[1],flag=t[2];
-      const matchTeam=!term||name.toLowerCase().includes(term)||code.toLowerCase().includes(term);
-      const team=document.createElement("div"); team.className="team";
-      let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
-      const pct=Math.round(have/20*100);
-      const th=document.createElement("div"); th.className="team-h";
-      th.innerHTML='<span class="flag">'+flag+'</span><div class="team-name"><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
-      team.appendChild(th);
-      const cells=document.createElement("div"); cells.className="cells"; let vis=0;
-      for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i)); const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
-      team.appendChild(cells); if(vis===0) team.classList.add("hide"); else groupHasVisible=true; gWrap.appendChild(team);
+    gh.innerHTML='<span class="tag" style="background:linear-gradient(90deg,#2b6bff,#7c5cff)">Equipos A–Z</span><span class="line"></span>';
+    gWrap.appendChild(gh); let anyVis=false;
+    flat.forEach(t=>{ const team=makeTeam(t[0],t[1],t[2],term); if(!team.classList.contains("hide")) anyVis=true; gWrap.appendChild(team); });
+    if(!anyVis) gWrap.classList.add("hide"); main.appendChild(gWrap);
+  } else {
+    GROUPS.forEach(g=>{
+      const gWrap=document.createElement("div"); gWrap.className="grp";
+      const gh=document.createElement("div"); gh.className="grp-h";
+      gh.innerHTML='<span class="tag" style="background:'+g.color+'">Grupo '+g.id+'</span><span class="line"></span>';
+      gWrap.appendChild(gh); let groupHasVisible=false;
+      g.teams.forEach(t=>{ const team=makeTeam(t[0],t[1],t[2],term); if(!team.classList.contains("hide")) groupHasVisible=true; gWrap.appendChild(team); });
+      if(!groupHasVisible) gWrap.classList.add("hide"); main.appendChild(gWrap);
     });
-    if(!groupHasVisible) gWrap.classList.add("hide"); main.appendChild(gWrap);
-  });
+  }
   if(state.config.specials){
     const matchS=!term||"especiales fifa fw 00".includes(term);
     const gWrap=document.createElement("div"); gWrap.className="grp";
@@ -495,6 +562,18 @@ function render(){
       gWrap.appendChild(team);
     }
     main.appendChild(gWrap);
+  }
+  // Aviso si no quedó NADA visible (evita la pantalla en blanco al buscar/filtrar)
+  if(!main.querySelector(".grp:not(.hide)")){
+    const es=document.createElement("div"); es.className="empty";
+    let t,s;
+    if(term){ t="Nada coincide con tu búsqueda"; s="Borra el texto del buscador 🔎 de arriba para ver todo el álbum de nuevo."; }
+    else if(currentFilter==="dup"){ t="Sin repetidas todavía"; s="Cuando tengas láminas repetidas van a aparecer acá."; }
+    else if(currentFilter==="have"){ t="Aún no marcas láminas"; s="Anota un código arriba (ej: ARG5) para empezar a llenar tu álbum."; }
+    else if(currentFilter==="miss"){ t="¡No te falta ninguna! 🎉"; s="Completaste todo lo que se está mostrando."; }
+    else { t="No hay nada que mostrar"; s=""; }
+    es.innerHTML='<div class="empty-ico">🃏</div><div class="empty-t">'+t+'</div>'+(s?'<div class="empty-s">'+s+'</div>':"");
+    main.appendChild(es);
   }
   updateStats();
 }
@@ -590,6 +669,7 @@ qa.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doQu
 document.getElementById("filters").addEventListener("click",e=>{ const b=e.target.closest(".fbtn"); if(!b) return;
   document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active")); b.classList.add("active"); currentFilter=b.dataset.f; render(); });
 let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
+document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; render(); });
 
 /* ---------- OCR refinado: worker + preprocesado + corrección ---------- */
 let ocrWorker=null, ocrWorkerTried=false;
@@ -665,20 +745,108 @@ function fuzzyCodes(text){
   return [...out];
 }
 
+/* ---------- LECTOR CON IA (Gemini) ---------- */
+const AI_KEY_STORE="albumAiCfg_v1";
+const AI_MODELS=["gemini-2.0-flash","gemini-1.5-flash"];
+let aiCfg=(function(){ try{ return JSON.parse(localStorage.getItem(AI_KEY_STORE))||{}; }catch(e){ return {}; } })();
+function aiEnabled(){ return !!(aiCfg && aiCfg.key); }
+function saveAiCfg(){ try{ localStorage.setItem(AI_KEY_STORE, JSON.stringify(aiCfg)); }catch(e){} }
+function renderAiBar(){
+  const bar=document.getElementById("aiBar"), setup=document.getElementById("aiSetup");
+  if(aiEnabled()){
+    bar.innerHTML='<span class="ai-on">🤖 Lector con IA activado</span><button class="ai-link" id="aiRemove">quitar</button>';
+    setup.style.display="none";
+    const rm=document.getElementById("aiRemove"); if(rm) rm.onclick=()=>{ aiCfg={}; saveAiCfg(); renderAiBar(); toast("Lector con IA desactivado"); };
+  } else {
+    bar.innerHTML='<button class="ai-cta" id="aiToggle">🤖 Activar lector con IA — gratis y mucho mejor</button>';
+    const tg=document.getElementById("aiToggle"); if(tg) tg.onclick=()=>{ setup.style.display = setup.style.display==="none"?"block":"none"; };
+  }
+}
+function aiPrompt(){
+  const teamCodes=GROUPS.map(g=>g.teams.map(t=>t[0]).join(", ")).join(", ");
+  return "Estas son fotos de figuritas (láminas) del álbum Panini de la Copa del Mundo FIFA 2026. "
+    +"Cada lámina lleva un código impreso: 3 letras del equipo seguidas de un número del 1 al 20 (ejemplos: ARG5, BRA20, MEX1), "
+    +"o un código especial: 00, o FW1 hasta FW19. "
+    +"Los códigos de equipo válidos (3 letras) son exactamente estos: "+teamCodes+". "
+    +"Mira las imágenes con mucha atención y devuelve SOLO un arreglo JSON con los códigos que puedas leer con claridad, en MAYÚSCULAS y sin espacios. "
+    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FW3\"]. "
+    +"Si no logras leer ninguno, responde []. No agregues texto, comentarios ni explicaciones: solo el arreglo JSON.";
+}
+function fileToScaledBase64(file, maxDim, q){
+  return new Promise((resolve,reject)=>{
+    loadImg(file).then(img=>{
+      const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+      let w=iw,h=ih,m=Math.max(w,h);
+      if(m>maxDim){ const k=maxDim/m; w=Math.round(w*k); h=Math.round(h*k); }
+      const cvs=document.createElement("canvas"); cvs.width=Math.max(1,w); cvs.height=Math.max(1,h);
+      cvs.getContext("2d").drawImage(img,0,0,cvs.width,cvs.height);
+      try{ URL.revokeObjectURL(img.src); }catch(e){}
+      try{ resolve(cvs.toDataURL("image/jpeg", q||0.72).split(",")[1]); }catch(e){ reject(e); }
+    }).catch(reject);
+  });
+}
+async function aiGenerate(parts){
+  const body={ contents:[{parts:parts}], generationConfig:{temperature:0} };
+  let lastErr="Error desconocido";
+  for(const model of AI_MODELS){
+    const url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(aiCfg.key);
+    let res;
+    try{ res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }
+    catch(e){ lastErr="Sin conexión a internet"; continue; }
+    if(res.ok){ const data=await res.json(); const cand=(data.candidates||[])[0]; const p=cand&&cand.content&&cand.content.parts; return p?p.map(x=>x.text||"").join(""):""; }
+    let em="Error "+res.status; try{ const ej=await res.json(); if(ej&&ej.error&&ej.error.message) em=ej.error.message; }catch(_){}
+    lastErr=em;
+    if(res.status===404){ continue; }
+    if(res.status===400 && /API key not valid|API_KEY_INVALID/i.test(em)){ throw new Error("La clave no es válida. Toca 'quitar' y pega una nueva."); }
+    if(res.status===429){ throw new Error("La IA llegó a su límite gratis por ahora. Espera un poco e intenta de nuevo."); }
+    throw new Error(em);
+  }
+  throw new Error(lastErr);
+}
+function parseAiCodes(text){
+  let t=(text||"").trim().replace(/```json/gi,"").replace(/```/g,"").trim();
+  let arr=null;
+  try{ arr=JSON.parse(t); }catch(e){ const m=t.match(/\[[\s\S]*\]/); if(m){ try{ arr=JSON.parse(m[0]); }catch(_){ } } }
+  const out=[];
+  if(Array.isArray(arr)){ arr.forEach(x=>{ const c=normalize(String(x)); if(c) out.push(c); }); }
+  else { findCodes(t).forEach(c=>out.push(c)); }
+  return [...new Set(out)];
+}
+async function aiScan(files, onProgress){
+  const out=new Set(); const CHUNK=5; const chunks=[];
+  for(let i=0;i<files.length;i+=CHUNK) chunks.push(files.slice(i,i+CHUNK));
+  let done=0;
+  for(const chunk of chunks){
+    const parts=[{text:aiPrompt()}];
+    for(const f of chunk){ const b64=await fileToScaledBase64(f,1280,0.72); parts.push({inline_data:{mime_type:"image/jpeg",data:b64}}); }
+    const txt=await aiGenerate(parts);
+    parseAiCodes(txt).forEach(c=>out.add(c));
+    done+=chunk.length; if(onProgress) onProgress(done/files.length);
+  }
+  return [...out];
+}
+
 /* ---------- scan ---------- */
 const ovScan=document.getElementById("ovScan"),scanCam=document.getElementById("scanCam"),scanGal=document.getElementById("scanGal"),scanStatus=document.getElementById("scanStatus");
 const scanProg=document.getElementById("scanProg"),scanProgBar=document.getElementById("scanProgBar"),foundWrap=document.getElementById("foundWrap"),foundList=document.getElementById("foundList");
 document.getElementById("fab").onclick=()=>{ resetScan(); ovScan.classList.add("show"); };
-function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; scanCam.value=""; scanGal.value=""; }
+function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; scanCam.value=""; scanGal.value=""; const ai=document.getElementById("aiSetup"); if(ai) ai.style.display="none"; const ke=document.getElementById("aiErr"); if(ke) ke.textContent=""; renderAiBar(); }
 async function handleScanFiles(fileList){
   const files=[...fileList]; if(!files.length) return;
   foundWrap.style.display="none"; foundList.innerHTML="";
   scanProg.style.display="block"; scanProgBar.style.width="0";
-  if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector aún no carga (necesita internet la 1ª vez). Escribe el código abajo."; scanProg.style.display="none"; return; }
-  const all=new Set(); const thorough = files.length===1;
-  for(let i=0;i<files.length;i++){
-    scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Analizando la foto por zonas (busca todas las láminas)…";
-    try{ (await scanImage(files[i], thorough, frac=>{ scanProgBar.style.width=Math.round((i+frac)/files.length*100)+"%"; })).forEach(c=>all.add(c)); }catch(err){}
+  const all=new Set();
+  if(aiEnabled()){
+    scanStatus.textContent = files.length>1 ? ("🤖 Leyendo "+files.length+" fotos con IA…") : "🤖 Leyendo la foto con IA…";
+    try{ (await aiScan(files, frac=>{ scanProgBar.style.width=Math.round(frac*100)+"%"; })).forEach(c=>all.add(c)); }
+    catch(err){ scanProg.style.display="none"; scanStatus.textContent="La IA no pudo leer: "+((err&&err.message)?err.message:"error")+" — o escribe el código abajo."; return; }
+  } else {
+    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector básico aún no carga (necesita internet la 1ª vez). Activa el lector con IA arriba, o escribe el código abajo."; scanProg.style.display="none"; return; }
+    const thorough = files.length===1;
+    for(let i=0;i<files.length;i++){
+      scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Analizando la foto por zonas (busca todas las láminas)…";
+      try{ (await scanImage(files[i], thorough, frac=>{ scanProgBar.style.width=Math.round((i+frac)/files.length*100)+"%"; })).forEach(c=>all.add(c)); }catch(err){}
+    }
   }
   scanProgBar.style.width="100%"; scanProg.style.display="none";
   const codes=[...all];
@@ -701,6 +869,12 @@ async function handleScanFiles(fileList){
 }
 scanCam.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanCam.value=""; });
 scanGal.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanGal.value=""; });
+document.getElementById("aiSave").onclick=()=>{
+  const inp=document.getElementById("aiKeyInput"), err=document.getElementById("aiErr");
+  const v=(inp.value||"").trim();
+  if(v.length<20){ err.textContent="Pega la clave completa (empieza con AIza…)."; return; }
+  aiCfg={key:v}; saveAiCfg(); err.textContent=""; inp.value=""; renderAiBar(); toast("Lector con IA activado 🤖");
+};
 function makePill(code){
   const p=document.createElement("button"); p.className="pill";
   const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
@@ -725,6 +899,33 @@ importFile.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) retu
   r.readAsText(f); importFile.value=""; });
 document.getElementById("btnReset").onclick=()=>{ if(confirm("¿Seguro? Esto borra TODO tu registro. Te conviene exportar un respaldo antes.")){ state=normState({}); save(); render(); ovSet.classList.remove("show"); toast("Listo, empezaste de cero"); } };
 document.getElementById("btnCloud2").onclick=()=>{ ovSet.classList.remove("show"); openCloud(); };
+
+/* ---------- listas para canjes ---------- */
+let tradeMode="miss"; const ovTrade=document.getElementById("ovTrade");
+function buildTradeText(mode){
+  const lines=[];
+  if(mode==="miss"){
+    GROUPS.forEach(g=>g.teams.forEach(t=>{ const miss=[]; for(let i=1;i<=20;i++) if(getCount(t[0]+i)===0) miss.push(i); if(miss.length) lines.push(t[1]+" ("+t[0]+"): "+miss.join(", ")); }));
+    if(state.config.specials){ const miss=[]; SPECIAL_CODES.forEach(c=>{ if(getCount(c)===0) miss.push(c); }); if(miss.length) lines.push("Especiales: "+miss.join(", ")); }
+    return lines.length ? ("Me faltan estas láminas del álbum Mundial 2026:\n\n"+lines.join("\n")) : "¡No te falta ninguna lámina! 🎉";
+  } else {
+    GROUPS.forEach(g=>g.teams.forEach(t=>{ const dup=[]; for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); if(n>=2) dup.push(i+(n>2?(" (x"+(n-1)+")"):"")); } if(dup.length) lines.push(t[1]+" ("+t[0]+"): "+dup.join(", ")); }));
+    if(state.config.specials){ const dup=[]; SPECIAL_CODES.forEach(c=>{ const n=getCount(c); if(n>=2) dup.push(c+(n>2?(" (x"+(n-1)+")"):"")); }); if(dup.length) lines.push("Especiales: "+dup.join(", ")); }
+    return lines.length ? ("Tengo estas láminas REPETIDAS para cambio (Mundial 2026):\n\n"+lines.join("\n")) : "Todavía no tienes láminas repetidas para cambio.";
+  }
+}
+function renderTrade(){
+  document.getElementById("tradeText").value=buildTradeText(tradeMode);
+  let cnt=0,rep=0;
+  GROUPS.forEach(g=>g.teams.forEach(t=>{ for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); if(n===0)cnt++; if(n>=2)rep+=n-1; } }));
+  if(state.config.specials) SPECIAL_CODES.forEach(c=>{ const n=getCount(c); if(n===0)cnt++; if(n>=2)rep+=n-1; });
+  document.getElementById("tradeCount").textContent = tradeMode==="miss" ? (cnt+" láminas te faltan") : (rep+" láminas repetidas para cambio");
+}
+document.getElementById("tradeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); tradeMode=b.dataset.t; renderTrade(); });
+document.getElementById("tradeCopy").onclick=()=>{ const ta=document.getElementById("tradeText"); const v=ta.value;
+  if(navigator.clipboard){ navigator.clipboard.writeText(v).then(()=>toast("Lista copiada ✓"),()=>toast("No se pudo copiar")); }
+  else { ta.removeAttribute("readonly"); ta.select(); try{ document.execCommand("copy"); toast("Lista copiada ✓"); }catch(e){ toast("Selecciónala y copia manual"); } ta.setAttribute("readonly",""); } };
+document.getElementById("btnTrade").onclick=()=>{ ovSet.classList.remove("show"); tradeMode="miss"; const seg=document.getElementById("tradeSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0)); renderTrade(); ovTrade.classList.add("show"); };
 
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
@@ -834,6 +1035,13 @@ document.getElementById("joinGo").onclick=()=>{
 };
 
 /* ---------- go ---------- */
+/* Anti-autollenado de Chrome/Edge: los campos parten "readonly" para que el
+   navegador NO inyecte el correo/clave guardados; al tocarlos se desbloquean. */
+["quickAdd","search","manualCode","joinCode","aiKeyInput"].forEach(function(id){
+  var el=document.getElementById(id); if(!el) return;
+  var unlock=function(){ el.removeAttribute("readonly"); };
+  ["focus","pointerdown","mousedown","touchstart","keydown"].forEach(function(ev){ el.addEventListener(ev,unlock); });
+});
 render();
 initCloud();
 updateCloudUI();
