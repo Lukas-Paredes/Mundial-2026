@@ -217,6 +217,24 @@
   .set-btn{width:100%; height:48px; border-radius:14px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink2); font-weight:700; font-size:14px; cursor:pointer; margin-top:10px; transition:.15s;}
   .set-btn:hover{border-color:var(--c-blue);}
   .set-btn.danger{color:var(--red); border-color:rgba(200,32,42,.3);}
+  .set-btn.lx{color:var(--c-violet); border-color:rgba(106,27,154,.32); background:linear-gradient(90deg, rgba(106,27,154,.09), rgba(242,162,12,.08)); font-weight:800;}
+  .set-btn.lx:hover{border-color:var(--c-violet);}
+
+  /* Lujito: lo más importante */
+  .lx-sec{margin-bottom:18px;}
+  .lx-h{display:flex; align-items:center; gap:8px; font-family:var(--font-disp); font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:.01em; color:var(--ink); margin:0 2px 10px;}
+  .lx-dot{width:9px; height:9px; border-radius:50% 50% 50% 0; flex:0 0 auto;}
+  .lx-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:9px; margin-bottom:6px;}
+  .lx-stat{position:relative; background:var(--surface2); border:1.5px solid var(--line); border-radius:16px; padding:13px 10px 11px; text-align:center; overflow:hidden;}
+  .lx-stat:before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--a,#0067B9);}
+  .lx-n{font-family:var(--font-disp); font-weight:900; font-size:26px; line-height:1; color:var(--a,#0067B9);}
+  .lx-l{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--mut); font-weight:700; margin-top:5px;}
+  .lx-fact{display:flex; gap:11px; align-items:flex-start; padding:10px 2px; border-bottom:1px solid var(--line);}
+  .lx-fact:last-child{border-bottom:none;}
+  .lx-ic{font-size:19px; line-height:1.35; flex:0 0 auto;}
+  .lx-tx{font-size:13.5px; line-height:1.5; color:var(--ink2);}
+  .lx-tx b{color:var(--ink); font-weight:800;}
+  .lx-src{font-size:11px; color:var(--mut2); text-align:center; margin-top:4px; line-height:1.5;}
 
   .field{margin-top:13px;}
   .field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;}
@@ -546,6 +564,7 @@
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
+  <button class="set-btn lx" id="btnLujito">✨ Lo más importante · datos y curiosidades</button>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
   <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
   <button class="set-btn" id="btnExcel">📊 Exportar a Excel (.xlsx)</button>
@@ -555,7 +574,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.9</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.0</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -566,6 +585,44 @@
   <textarea id="tradeText" class="trade-text" readonly></textarea>
   <button class="btn btn-blue" style="width:100%;margin-top:10px" id="tradeCopy">📋 Copiar lista</button>
   <div class="tip">Copia y mándala por WhatsApp a tus amigos para cambiar láminas. 🔁</div>
+</div></div>
+
+<!-- LUJITO: lo más importante -->
+<div class="ov" id="ovLujito"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Lo más importante</h2><button class="x" data-close>✕</button></div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-green)"></span> Tu colección en números</h3>
+    <div id="lxPersonal"></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-blue)"></span> El Mundial 2026</h3>
+    <div class="lx-fact"><span class="lx-ic">🌎</span><div class="lx-tx">Primer Mundial con <b>48 equipos</b> (antes eran 32) y el primero con <b>3 países anfitriones</b>: EE.UU., México y Canadá.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🗓️</span><div class="lx-tx">Se juega del <b>11 de junio al 19 de julio</b>: <b>104 partidos</b> en 39 días, el Mundial más largo de la historia.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🏟️</span><div class="lx-tx">Arranca con <b>México vs Sudáfrica en el Estadio Azteca</b>, el <b>primer estadio del mundo en albergar 3 Mundiales</b> (1970, 1986 y 2026).</div></div>
+    <div class="lx-fact"><span class="lx-ic">🆕</span><div class="lx-tx">Cuatro selecciones <b>debutan en un Mundial</b>: Cabo Verde, Curazao, Jordania y Uzbekistán — y las tienes en tu álbum.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">La final es en el <b>MetLife Stadium</b> (Nueva York/Nueva Jersey). Están todos los excampeones… <b>menos Italia</b>.</div></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-pink)"></span> El álbum</h3>
+    <div class="lx-fact"><span class="lx-ic">📔</span><div class="lx-tx"><b>980 láminas</b> en <b>112 páginas</b>: el álbum de Mundial <b>más grande en la historia de Panini</b>.</div></div>
+    <div class="lx-fact"><span class="lx-ic">👕</span><div class="lx-tx"><b>48 equipos</b>, <b>20 láminas cada uno</b> (18 jugadores + foto del equipo + escudo).</div></div>
+    <div class="lx-fact"><span class="lx-ic">📦</span><div class="lx-tx">Los sobres traen <b>7 láminas</b> (antes 5): la primera vez con más de cinco desde 2014.</div></div>
+    <div class="lx-fact"><span class="lx-ic">👑</span><div class="lx-tx">Panini hace álbumes del Mundial desde <b>1970</b>: este es <b>el último</b> antes de que la licencia pase a otra marca. Fin de una era.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🥤</span><div class="lx-tx">Hay <b>12 láminas que no vienen en los sobres</b>: son exclusivas de botellas de <b>Coca-Cola</b> marcadas.</div></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-amber)"></span> Datos freak 🤯</h3>
+    <div class="lx-fact"><span class="lx-ic">🎲</span><div class="lx-tx">Sin cambiar con nadie, en promedio necesitarías <b>~7.000 láminas (~1.000 sobres)</b> para completarlo — por las repetidas.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🤝</span><div class="lx-tx">Pero el mínimo teórico es <b>140 sobres</b> (980 ÷ 7): toda la diferencia la hacen los <b>cambios</b>. Por eso el lema de Panini es <i>“Got, Got, Need”</i>.</div></div>
+    <div class="lx-fact"><span class="lx-ic">💸</span><div class="lx-tx">Completarlo <b>solo</b> puede costar <b>más de US$2.000</b>; <b>cambiando</b>, baja a ~<b>US$285</b>. Cambiar lo es todo.</div></div>
+    <div class="lx-fact"><span class="lx-ic">✨</span><div class="lx-tx">Las <b>Extra Stickers</b> (foil de leyendas) salen aprox. <b>1 cada 100 sobres</b>: las más difíciles de pillar.</div></div>
+  </div>
+
+  <div class="lx-src">Datos verificados con FIFA, Panini y prensa deportiva (junio 2026). Tus números se calculan en vivo desde tu propia colección.</div>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -1307,6 +1364,48 @@ document.getElementById("tradeCopy").onclick=()=>{ const ta=document.getElementB
   if(navigator.clipboard){ navigator.clipboard.writeText(v).then(()=>toast("Lista copiada ✓"),()=>toast("No se pudo copiar")); }
   else { ta.removeAttribute("readonly"); ta.select(); try{ document.execCommand("copy"); toast("Lista copiada ✓"); }catch(e){ toast("Selecciónala y copia manual"); } ta.setAttribute("readonly",""); } };
 document.getElementById("btnTrade").onclick=()=>{ ovSet.classList.remove("show"); tradeMode="miss"; const seg=document.getElementById("tradeSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0)); renderTrade(); ovTrade.classList.add("show"); };
+
+/* ---------- LUJITO: lo más importante (números en vivo) ---------- */
+function lxMostLeastTeam(){
+  let best=null, worst=null;
+  GROUPS.forEach(g=>g.teams.forEach(t=>{ const h=teamHave(t[0]);
+    if(best===null || h>best.h) best={name:t[1], h};
+    if(worst===null || h<worst.h) worst={name:t[1], h};
+  }));
+  return {best, worst};
+}
+function lxBestGroup(){
+  let best=null;
+  GROUPS.forEach(g=>{ let h=0; g.teams.forEach(t=>h+=teamHave(t[0])); const pct=Math.round(h/80*100);
+    if(best===null || pct>best.pct) best={id:g.id, pct};
+  });
+  return best;
+}
+function openLujito(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let completos=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ if(teamHave(t[0])===20) completos++; }));
+  let html='<div class="lx-grid">'
+    +'<div class="lx-stat" style="--a:var(--c-green)"><div class="lx-n">'+pct+'%</div><div class="lx-l">Completado</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-blue)"><div class="lx-n">'+faltan+'</div><div class="lx-l">Te faltan</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-amber)"><div class="lx-n">'+repe+'</div><div class="lx-l">Para cambio</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-pink)"><div class="lx-n">'+completos+'/48</div><div class="lx-l">Equipos listos</div></div>'
+    +'</div>';
+  if(tengo===0){
+    html+='<div class="lx-fact"><span class="lx-ic">👀</span><div class="lx-tx">Aún no marcas láminas. Anota algunas (ej. <b>ARG5</b>) y vuelve para ver tus números cobrar vida.</div></div>';
+  } else {
+    const ml=lxMostLeastTeam(), bg=lxBestGroup();
+    html+='<div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">Tu equipo más completo: <b>'+ml.best.name+'</b> ('+ml.best.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">🔍</span><div class="lx-tx">El que más te falta: <b>'+ml.worst.name+'</b> ('+ml.worst.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">📈</span><div class="lx-tx">Tu grupo más avanzado: <b>Grupo '+bg.id+'</b> ('+bg.pct+'%).</div></div>';
+    if(faltan>0){ const y=(7*faltan/total).toFixed(1); html+='<div class="lx-fact"><span class="lx-ic">✨</span><div class="lx-tx">Ahora mismo, de cada sobre de 7, ~<b>'+y+'</b> láminas serían nuevas para ti.</div></div>'; }
+    else { html+='<div class="lx-fact"><span class="lx-ic">🎉</span><div class="lx-tx"><b>¡Completaste el álbum!</b> Eres de los pocos que lo logran. Crack.</div></div>'; }
+  }
+  document.getElementById("lxPersonal").innerHTML=html;
+  document.getElementById("ovLujito").classList.add("show");
+}
+document.getElementById("btnLujito").onclick=()=>{ ovSet.classList.remove("show"); openLujito(); };
 
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
