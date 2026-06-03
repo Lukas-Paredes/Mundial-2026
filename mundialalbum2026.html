@@ -236,31 +236,6 @@
   .lx-tx b{color:var(--ink); font-weight:800;}
   .lx-src{font-size:11px; color:var(--mut2); text-align:center; margin-top:4px; line-height:1.5;}
 
-  /* Valores (beta): tabla + calculadora */
-  .vt-row{display:flex; align-items:center; gap:9px; padding:8px 2px; border-bottom:1px solid var(--line);}
-  .vt-row:last-child{border-bottom:none;}
-  .vt-ic{font-size:18px; flex:0 0 auto;}
-  .vt-nm{flex:1; font-size:13.5px; font-weight:600; color:var(--ink2);}
-  .vt-tier{font-family:var(--font-disp); font-weight:900; font-size:12px; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--surface2); color:var(--ink); border:1.5px solid var(--line2); flex:0 0 auto;}
-  .vt-val{width:56px; height:38px; text-align:center; border:2px solid var(--line2); border-radius:10px; background:var(--surface2); font-family:var(--font-mono); font-weight:700; font-size:15px; color:var(--ink); flex:0 0 auto;}
-  .vt-val:focus{outline:none; border-color:var(--c-blue);}
-  .vc-head{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; padding:0 2px 5px; align-items:end;}
-  .vc-head .hs{text-align:center; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut);}
-  .vc-row{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; align-items:center; padding:6px 2px; border-bottom:1px solid var(--line);}
-  .vc-lbl{font-size:13px; font-weight:600; color:var(--ink2); line-height:1.2;}
-  .vc-v{font-family:var(--font-mono); color:var(--mut2); font-weight:700; font-size:11px;}
-  .vc-side{display:flex; align-items:center; gap:5px; justify-content:center;}
-  .vc-b{width:29px; height:29px; border-radius:9px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink); font-size:17px; font-weight:700; cursor:pointer; line-height:1; padding:0;}
-  .vc-b:active{transform:scale(.9);}
-  .vc-n{font-family:var(--font-mono); font-weight:700; font-size:15px; min-width:16px; text-align:center;}
-  .vc-tot{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; padding:10px 2px 2px; align-items:center;}
-  .vc-tot .tl{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut);}
-  .vc-tot .ts{text-align:center; font-family:var(--font-disp); font-weight:900; font-size:20px; color:var(--ink);}
-  .val-verdict{text-align:center; font-family:var(--font-disp); font-weight:900; font-size:14.5px; padding:13px 12px; border-radius:14px; margin-top:8px; text-transform:uppercase; letter-spacing:.01em; line-height:1.25;}
-  .val-verdict.fair{background:rgba(0,103,185,.10); color:var(--c-blue);}
-  .val-verdict.good{background:rgba(0,128,43,.12); color:var(--ok-d);}
-  .val-verdict.bad{background:rgba(200,32,42,.10); color:var(--red);}
-  .val-verdict.zero{background:var(--surface2); color:var(--mut);}
   .alfa-tag{font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:linear-gradient(120deg,var(--c-amber),var(--dup-d)); padding:3px 9px; border-radius:999px; vertical-align:middle; margin-left:6px;}
   .exp-note{font-size:12.5px; line-height:1.55; color:var(--dup-d); background:rgba(242,162,12,.10); border:1.5px solid rgba(242,162,12,.32); border-radius:14px; padding:11px 13px; margin-top:13px;}
   .exp-note b{color:var(--dup-d);}
@@ -638,7 +613,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.3</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.4</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -654,7 +629,7 @@
 <!-- LUJITO: lo más importante -->
 <div class="ov" id="ovLujito"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Datos</h2><button class="x" data-close>✕</button></div>
-  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="datos">Datos</button><button data-h="valores">Valores</button></div>
+  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="datos">Datos</button></div>
 
   <div id="hubDatos" style="display:none">
   <div class="lx-sec">
@@ -692,18 +667,6 @@
   </div>
 
   <div id="hubProgreso"><div id="pgBody"></div></div>
-
-  <div id="hubValores" style="display:none">
-    <p class="lx-src" style="text-align:left; margin-top:2px">Beta ⚗️ — valor aproximado en <b>fichas</b> (1 ficha = 1 lámina común ≈ $157 acá). Edita los valores a tu pinta; sirve para tincar si un trueque es justo.</p>
-    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de valores</h3>
-    <div id="valTable"></div>
-    <h3 class="lx-h" style="margin-top:16px"><span class="lx-dot" style="background:var(--c-green)"></span> Calculadora de trueque</h3>
-    <div class="vc-head"><span></span><span class="hs">Tú das</span><span class="hs">Te dan</span></div>
-    <div id="valCalc"></div>
-    <div id="valTot"></div>
-    <div id="valVerdict" class="val-verdict zero">Suma láminas en cada lado para comparar</div>
-    <button class="set-btn" id="valReset" style="margin-top:12px">↺ Reiniciar calculadora</button>
-  </div>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -744,7 +707,7 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; r.config.tierVals=Object.assign({base:1,especial:3,morado:4,bronce:7,plata:11,oro:16}, r.config.tierVals||{}); return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -1485,33 +1448,6 @@ function fillPersonal(){
   }
   document.getElementById("lxPersonal").innerHTML=html;
 }
-/* --- Valores (beta) --- */
-const VAL_TYPES=[["base","Lámina común","⚽"],["especial","Especial FIFA","⭐"],["morado","Extra Morado","🟣"],["bronce","Extra Bronce","🥉"],["plata","Extra Plata","🥈"],["oro","Extra Oro","🥇"]];
-let valCalc={give:{},get:{}};
-function tierLetter(v){ return v>=15?"S":v>=10?"A":v>=5?"B":v>=2?"C":"—"; }
-function renderValores(){
-  const tv=state.config.tierVals;
-  let tbl="";
-  VAL_TYPES.forEach(([k,nm,ic])=>{ const v=tv[k]||0;
-    tbl+='<div class="vt-row"><span class="vt-ic">'+ic+'</span><span class="vt-nm">'+nm+'</span><span class="vt-tier">'+tierLetter(v)+'</span><input class="vt-val" type="number" min="0" inputmode="numeric" data-k="'+k+'" value="'+v+'"></div>';
-  });
-  document.getElementById("valTable").innerHTML=tbl;
-  let calc="", give=0, get=0;
-  VAL_TYPES.forEach(([k,nm,ic])=>{ const v=tv[k]||0; const g=valCalc.give[k]||0, r=valCalc.get[k]||0; give+=g*v; get+=r*v;
-    calc+='<div class="vc-row"><div class="vc-lbl">'+ic+' '+nm+' <span class="vc-v">·'+v+'</span></div>'
-      +'<div class="vc-side"><button class="vc-b" data-side="give" data-k="'+k+'" data-d="-1">−</button><span class="vc-n">'+g+'</span><button class="vc-b" data-side="give" data-k="'+k+'" data-d="1">+</button></div>'
-      +'<div class="vc-side"><button class="vc-b" data-side="get" data-k="'+k+'" data-d="-1">−</button><span class="vc-n">'+r+'</span><button class="vc-b" data-side="get" data-k="'+k+'" data-d="1">+</button></div></div>';
-  });
-  document.getElementById("valCalc").innerHTML=calc;
-  document.getElementById("valTot").innerHTML='<div class="vc-tot"><span class="tl">Total (fichas)</span><span class="ts" style="color:var(--c-pink)">'+give+'</span><span class="ts" style="color:var(--ok-d)">'+get+'</span></div>';
-  const vd=document.getElementById("valVerdict");
-  if(give===0 && get===0){ vd.className="val-verdict zero"; vd.textContent="Suma láminas en cada lado para comparar"; }
-  else { const diff=get-give; const base=Math.max(give,get,1); const pctDiff=Math.abs(diff)/base;
-    if(pctDiff<=0.12){ vd.className="val-verdict fair"; vd.textContent="⚖️ Trato justo ("+give+" vs "+get+")"; }
-    else if(diff>0){ vd.className="val-verdict good"; vd.textContent="🤑 Te conviene · recibes +"+diff+" fichas"; }
-    else { vd.className="val-verdict bad"; vd.textContent="😬 Estás dando de más · "+(-diff)+" fichas"; }
-  }
-}
 /* progreso: gráficos simples */
 function renderProgreso(){
   const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
@@ -1533,20 +1469,12 @@ function renderProgreso(){
   html+='<div class="lx-src" style="margin-top:10px">Cada barra muestra cuánto llevas de ese grupo (de 80 láminas).</div>';
   document.getElementById("pgBody").innerHTML=html;
 }
-(function(){
-  const hv=document.getElementById("hubValores");
-  hv.addEventListener("click",e=>{ const b=e.target.closest(".vc-b"); if(!b) return; const k=b.dataset.k, side=b.dataset.side, d=parseInt(b.dataset.d,10); valCalc[side][k]=Math.max(0,(valCalc[side][k]||0)+d); renderValores(); });
-  hv.addEventListener("change",e=>{ const inp=e.target.closest(".vt-val"); if(!inp) return; const k=inp.dataset.k; state.config.tierVals[k]=Math.max(0,parseInt(inp.value,10)||0); save(); renderValores(); });
-  document.getElementById("valReset").onclick=()=>{ valCalc={give:{},get:{}}; renderValores(); toast("Calculadora reiniciada"); };
-})();
 /* tabs */
 function hubShow(t){
   document.getElementById("hubProgreso").style.display = t==="progreso"?"block":"none";
   document.getElementById("hubDatos").style.display = t==="datos"?"block":"none";
-  document.getElementById("hubValores").style.display = t==="valores"?"block":"none";
   [...document.getElementById("hubSeg").children].forEach(x=>x.classList.toggle("active", x.dataset.h===t));
   if(t==="progreso") renderProgreso();
-  if(t==="valores") renderValores();
 }
 document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; hubShow(b.dataset.h); });
 function openHub(){
