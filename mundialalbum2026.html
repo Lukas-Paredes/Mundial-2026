@@ -144,6 +144,7 @@
   .cell .badge{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:10px; font-weight:800; min-width:19px; height:19px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid var(--surface); box-shadow:0 2px 6px rgba(224,50,42,.4);}
   .cell.hide, .team.hide, .grp.hide{display:none;}
   .cell.hit{outline:3px solid var(--c-pink); outline-offset:2px; z-index:2;}
+  .clubnav{margin:0 0 14px;}
 
   /* FAB */
   .fab{position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom)); height:60px; padding:0 24px 0 19px; border-radius:30px; border:none; z-index:40; background:linear-gradient(135deg,#f24a3d,var(--c-pink)); color:#fff; font-weight:800; font-size:16px; box-shadow:0 12px 28px rgba(224,50,42,.42); cursor:pointer; display:flex; align-items:center; gap:9px; transition:transform .14s, box-shadow .2s;}
@@ -164,6 +165,9 @@
   .ed-code .big{font-family:var(--font-mono); font-weight:700; font-size:40px; line-height:1; letter-spacing:.02em; color:var(--ink);}
   .ed-code .who{font-family:var(--font-disp); font-weight:800; color:var(--ink2); font-size:16px; margin-top:5px; text-transform:uppercase; letter-spacing:.02em;}
   .ed-code .ed-player{font-family:var(--font-disp); font-weight:900; font-size:23px; color:var(--ink); margin-top:8px; line-height:1.05; letter-spacing:-.01em;}
+  .ed-code .ed-pos{display:inline-block; margin-top:9px; font-size:11.5px; font-weight:800; padding:5px 13px; border-radius:999px; background:var(--surface2); color:var(--ink2); border:1.5px solid var(--line2); text-transform:uppercase; letter-spacing:.05em;}
+  .team .cd .cstand{color:var(--c-green); font-weight:800;}
+  .team .cd .cstand.gold{color:var(--c-amber);}
   .ed-code .st{display:inline-block; margin-top:11px; font-size:12px; padding:5px 13px; border-radius:999px; font-weight:700;}
   .st.s0{background:var(--surface2); color:var(--mut); border:1px solid var(--line2);}
   .st.s1{background:rgba(0,128,43,.13); color:var(--ok-d);}
@@ -517,7 +521,7 @@
 <!-- CELL EDITOR -->
 <div class="ov" id="ovEdit"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Lámina</h2><button class="x" data-close>✕</button></div>
-  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
+  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
   <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
   <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
 </div></div>
@@ -660,7 +664,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.3</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.6</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -837,7 +841,7 @@ function findCodes(text){
 
 /* ---------- rendering ---------- */
 const main=document.getElementById("main");
-let currentFilter="all", searchTerm="", sortMode="group";
+let currentFilter="all", searchTerm="", sortMode="group", clubCountry="all";
 function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
 function buildCell(code,label,opts){
   opts=opts||{};
@@ -891,8 +895,7 @@ const CLUB_COUNTRIES=[
  {key:"FRA", name:"Francia", flag:"🇫🇷"},
  {key:"POR", name:"Portugal", flag:"🇵🇹"},
  {key:"NED", name:"Países Bajos", flag:"🇳🇱"},
- {key:"BRA", name:"Brasil", flag:"🇧🇷"},
- {key:"ARG", name:"Argentina", flag:"🇦🇷"},
+ {key:"SUR", name:"Sudamérica", flag:"🌎"},
  {key:"SAU", name:"Arabia Saudita", flag:"🇸🇦"}
 ];
 const CLUBS=[
@@ -931,11 +934,16 @@ const CLUBS=[
  {name:"FC Porto", country:"POR", color:"#0046A8", codes:["POR2","CAN10"]},
  {name:"PSV", country:"NED", color:"#ED1C24", codes:["MAR15","CRO16","USA18","CUW3"]},
  {name:"Feyenoord", country:"NED", color:"#C8102E", codes:["ALG17","JAP20"]},
- {name:"Flamengo", country:"BRA", color:"#C52613", codes:["URU11","URU15","URU8","BRA7"]},
- {name:"Boca Juniors", country:"ARG", color:"#0A2472", codes:["ARG12"]},
+ {name:"Flamengo", country:"SUR", color:"#C52613", codes:["URU11","URU15","URU8","BRA7"]},
+ {name:"Boca Juniors", country:"SUR", color:"#0A2472", codes:["ARG12"]},
  {name:"Al-Hilal", country:"SAU", color:"#1B458F", codes:["FRA3","POR5","POR11","SEN8","MAR2","KSA16"]},
  {name:"Al-Nassr", country:"SAU", color:"#1A3A6B", codes:["POR15","POR17","FRA18","SEN15","BRA3"]}
 ];
+/* sigla + posición por jugador (posiciones aproximadas) */
+const CLUB_ABBR={"Real Madrid": "RMA", "FC Barcelona": "BAR", "Atlético de Madrid": "ATM", "Athletic Club": "ATH", "Real Sociedad": "RSO", "Villarreal": "VIL", "Manchester City": "MCI", "Arsenal": "ARS", "Liverpool": "LIV", "Chelsea": "CHE", "Tottenham": "TOT", "Aston Villa": "AVL", "Brighton": "BHA", "Manchester United": "MUN", "Crystal Palace": "CRY", "West Ham": "WHU", "Newcastle": "NEW", "Inter": "INT", "Juventus": "JUV", "Napoli": "NAP", "AC Milan": "MIL", "Roma": "ROM", "Atalanta": "ATA", "Bayern Múnich": "BAY", "RB Leipzig": "RBL", "Borussia Dortmund": "DOR", "Eintracht Frankfurt": "SGE", "PSG": "PSG", "Mónaco": "ASM", "Marsella": "OM", "Benfica": "SLB", "Sporting CP": "SCP", "FC Porto": "FCP", "PSV": "PSV", "Feyenoord": "FEY", "Flamengo": "FLA", "Boca Juniors": "BOC", "Al-Hilal": "HIL", "Al-Nassr": "NAS"};
+const POS={"FRA20": "Delantero", "BRA14": "Delantero", "BRA15": "Delantero", "ENG11": "Mediocampista", "FRA10": "Mediocampista", "FRA9": "Mediocampista", "BRA5": "Defensa", "URU10": "Mediocampista", "BEL2": "Portero", "GER6": "Defensa", "ESP7": "Defensa", "ESP5": "Defensa", "TUR14": "Mediocampista", "ENG6": "Defensa", "ARG15": "Delantero", "ESP15": "Delantero", "ESP11": "Mediocampista", "BRA19": "Delantero", "ESP18": "Delantero", "ESP16": "Mediocampista", "URU4": "Defensa", "NED14": "Mediocampista", "FRA5": "Defensa", "ARG19": "Delantero", "ARG20": "Delantero", "ESP3": "Defensa", "ARG3": "Defensa", "NOR16": "Delantero", "ESP17": "Delantero", "GHA15": "Delantero", "ESP20": "Delantero", "JAP12": "Delantero", "GHA10": "Mediocampista", "SEN11": "Mediocampista", "NOR15": "Delantero", "ENG16": "Mediocampista", "ESP10": "Mediocampista", "POR9": "Mediocampista", "POR4": "Defensa", "BEL16": "Delantero", "CRO4": "Defensa", "EGY20": "Delantero", "NED10": "Mediocampista", "ALG5": "Defensa", "ENG17": "Delantero", "ENG10": "Mediocampista", "NOR10": "Mediocampista", "BRA6": "Defensa", "BRA18": "Delantero", "FRA4": "Defensa", "NED5": "Defensa", "GER17": "Delantero", "SWE20": "Delantero", "ESP9": "Mediocampista", "EGY17": "Delantero", "NED3": "Defensa", "NED20": "Delantero", "ARG9": "Mediocampista", "NED11": "Mediocampista", "FRA6": "Defensa", "GER11": "Mediocampista", "FRA19": "Delantero", "SWE19": "Delantero", "NED8": "Defensa", "SCO6": "Defensa", "ENG12": "Mediocampista", "ARG8": "Mediocampista", "ESP8": "Defensa", "ECU9": "Mediocampista", "ENG7": "Defensa", "BRA16": "Delantero", "POR19": "Delantero", "BRA20": "Delantero", "ARG4": "Defensa", "URU12": "Mediocampista", "NED4": "Defensa", "SEN10": "Mediocampista", "SWE8": "Mediocampista", "SWE17": "Mediocampista", "NED15": "Mediocampista", "GHA14": "Delantero", "ARG2": "Portero", "ENG5": "Defensa", "FRA8": "Defensa", "BEL9": "Mediocampista", "BEL10": "Mediocampista", "ENG14": "Mediocampista", "ENG20": "Delantero", "NED2": "Portero", "NED9": "Defensa", "BEL7": "Defensa", "SWE11": "Mediocampista", "PAR10": "Mediocampista", "PAR15": "Delantero", "POR10": "Mediocampista", "POR6": "Defensa", "BRA10": "Mediocampista", "BRA17": "Delantero", "CIV15": "Delantero", "ENG4": "Defensa", "USA3": "Defensa", "JAP11": "Mediocampista", "SEN16": "Delantero", "BRA9": "Mediocampista", "CZE12": "Mediocampista", "MEX10": "Mediocampista", "COD3": "Defensa", "BRA11": "Mediocampista", "ENG15": "Delantero", "ENG8": "Defensa", "ARG18": "Delantero", "TUR11": "Mediocampista", "NED6": "Defensa", "CRO15": "Mediocampista", "TUR20": "Delantero", "USA10": "Mediocampista", "NED12": "Mediocampista", "CAN20": "Delantero", "BEL15": "Mediocampista", "SCO11": "Mediocampista", "BEL20": "Delantero", "SCO12": "Mediocampista", "USA16": "Delantero", "FRA2": "Portero", "POR20": "Delantero", "CIV6": "Defensa", "FRA11": "Mediocampista", "BRA8": "Defensa", "BEL17": "Delantero", "CRO14": "Mediocampista", "BIH4": "Defensa", "GER10": "Mediocampista", "GER15": "Mediocampista", "GER14": "Mediocampista", "GER16": "Delantero", "ENG18": "Delantero", "FRA7": "Defensa", "FRA14": "Delantero", "AUT12": "Defensa", "KOR4": "Defensa", "COL20": "Delantero", "GER3": "Defensa", "GER4": "Defensa", "AUT10": "Mediocampista", "AUT15": "Mediocampista", "AUT18": "Mediocampista", "NOR19": "Delantero", "SUI2": "Portero", "GER5": "Defensa", "GER7": "Defensa", "GER12": "Mediocampista", "GER19": "Delantero", "SWE9": "Mediocampista", "TUR17": "Mediocampista", "JAP14": "Delantero", "POR12": "Mediocampista", "POR7": "Defensa", "POR14": "Mediocampista", "FRA17": "Delantero", "FRA16": "Delantero", "FRA15": "Delantero", "MAR4": "Defensa", "ESP12": "Mediocampista", "POR18": "Delantero", "BRA4": "Defensa", "ECU6": "Defensa", "SUI10": "Mediocampista", "JAP16": "Delantero", "SEN14": "Mediocampista", "MAR12": "Delantero", "USA20": "Delantero", "ARG7": "Defensa", "ALG18": "Delantero", "ARG5": "Defensa", "TUR12": "Mediocampista", "TUR19": "Delantero", "NOR12": "Delantero", "COL12": "Mediocampista", "POR8": "Defensa", "CIV9": "Defensa", "POR16": "Delantero", "URU16": "Defensa", "BEL5": "Defensa", "POR2": "Portero", "CAN10": "Mediocampista", "MAR15": "Mediocampista", "CRO16": "Delantero", "USA18": "Delantero", "CUW3": "Defensa", "ALG17": "Delantero", "JAP20": "Delantero", "URU11": "Mediocampista", "URU15": "Mediocampista", "URU8": "Defensa", "BRA7": "Defensa", "ARG12": "Mediocampista", "FRA3": "Defensa", "POR5": "Defensa", "POR11": "Mediocampista", "SEN8": "Defensa", "MAR2": "Portero", "KSA16": "Delantero", "POR15": "Delantero", "POR17": "Delantero", "FRA18": "Delantero", "SEN15": "Delantero", "BRA3": "Portero"};
+const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool": "5°", "Chelsea": "10°", "Tottenham": "17°", "Aston Villa": "4° · 🏆 Europa League", "Brighton": "8°", "Manchester United": "3°", "Crystal Palace": "15° · 🏆 Conference", "West Ham": "⬇️ Descendió", "Newcastle": "12°", "Real Madrid": "2°", "FC Barcelona": "🏆 Campeón", "Atlético de Madrid": "4°", "Athletic Club": "12°", "Real Sociedad": "10° · 🏆 Copa del Rey", "Villarreal": "3°", "Inter": "🏆 Campeón", "Juventus": "Europa League", "Napoli": "Champions League", "AC Milan": "Europa League", "Roma": "Champions League", "Atalanta": "Conference League", "Bayern Múnich": "🏆 Campeón", "RB Leipzig": "Champions League", "Borussia Dortmund": "Champions League", "Eintracht Frankfurt": "Bundesliga", "PSG": "🏆 Campeón · 🏆 Champions", "Mónaco": "Conference League", "Marsella": "5°", "Benfica": "3°", "Sporting CP": "2°", "FC Porto": "🏆 Campeón", "PSV": "🏆 Campeón", "Feyenoord": "2°", "Al-Hilal": "2° (invicto)", "Al-Nassr": "🏆 Campeón", "Flamengo": "🏆 Campeón Libertadores", "Boca Juniors": "Liga Profesional"};
+function playerPos(code){ return POS[code]||''; }
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
   const nameHit = !dterm || deburr(club.name).includes(dterm);
@@ -946,7 +954,7 @@ function makeClub(club, term){
   let have=0; club.codes.forEach(c=>{ if(getCount(c)>0) have++; });
   const tot=club.codes.length; const pct=Math.round(have/tot*100);
   const th=document.createElement("div"); th.className="team-h";
-  th.innerHTML='<span class="flag" style="background:'+(club.color||"#0067B9")+';color:#fff;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:var(--font-disp)">'+club.name.charAt(0)+'</span><div class="team-name"><div class="weare">Club</div><div class="nm">'+club.name+'</div><div class="cd">'+tot+' jugadores · solo lectura</div></div><div class="tprog '+(have===tot?'full':'')+'"><div class="fr">'+have+'/'+tot+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  th.innerHTML='<span class="flag" style="background:'+(club.color||"#0067B9")+';color:#fff;border-radius:9px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;letter-spacing:-.03em;font-family:var(--font-disp)">'+(CLUB_ABBR[club.name]||club.name.charAt(0))+'</span><div class="team-name"><div class="weare">Club</div><div class="nm">'+club.name+'</div><div class="cd">'+(STANDING[club.name]?('<span class="cstand'+(STANDING[club.name].indexOf("🏆")>-1||STANDING[club.name].indexOf("⬇")>-1?' gold':'')+'">'+STANDING[club.name]+'</span> · '):'')+tot+' jug.</div></div><div class="tprog '+(have===tot?'full':'')+'"><div class="fr">'+have+'/'+tot+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
   card.appendChild(th);
   const cells=document.createElement("div"); cells.className="cells"; let vis=0;
   club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
@@ -960,10 +968,17 @@ function makeClub(club, term){
 function render(){
   main.innerHTML=""; main.classList.toggle("ov-compact", sortMode==="overview"); const term=searchTerm.trim().toLowerCase();
   if(sortMode==="clubs"){
+    const present=CLUB_COUNTRIES.filter(co=>CLUBS.some(c=>c.country===co.key));
+    if(clubCountry!=="all" && !present.some(co=>co.key===clubCountry)) clubCountry="all";
+    const bar=document.createElement("div"); bar.className="filters clubnav";
+    const mk=(key,label)=>{ const b=document.createElement("button"); b.type="button"; b.className="fbtn"+(clubCountry===key?" active":""); b.innerHTML=label; b.onclick=()=>{ clubCountry=key; render(); window.scrollTo({top:0,behavior:"smooth"}); }; return b; };
+    bar.appendChild(mk("all","🌐 Todos"));
+    present.forEach(co=>{ const cnt=CLUBS.filter(c=>c.country===co.key).length; bar.appendChild(mk(co.key, co.flag+" "+co.name+' <span class="b">'+cnt+'</span>')); });
+    main.appendChild(bar);
     let anyAll=false;
-    CLUB_COUNTRIES.forEach(co=>{
+    present.forEach(co=>{
+      if(clubCountry!=="all" && co.key!==clubCountry) return;
       const clubs=CLUBS.filter(c=>c.country===co.key).slice().sort((a,b)=>b.codes.length-a.codes.length || a.name.localeCompare(b.name,"es"));
-      if(!clubs.length) return;
       const gWrap=document.createElement("div"); gWrap.className="grp";
       const gh=document.createElement("div"); gh.className="grp-h";
       gh.innerHTML='<span class="tag" style="background:linear-gradient(90deg,#0067B9,#00802B)">'+co.flag+' '+co.name+'</span><span class="line"></span>';
@@ -1069,6 +1084,7 @@ function openEditor(code){
   else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
   document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
   const pn=playerName(code); const ep=document.getElementById("edPlayer"); ep.textContent=pn; ep.style.display=pn?"block":"none";
+  const ps=playerPos(code); const epz=document.getElementById("edPos"); epz.textContent=ps; epz.style.display=ps?"inline-block":"none";
   refreshEditor(); ovEdit.classList.add("show");
 }
 function displayCode(code){
