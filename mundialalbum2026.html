@@ -236,6 +236,32 @@
   .lx-tx b{color:var(--ink); font-weight:800;}
   .lx-src{font-size:11px; color:var(--mut2); text-align:center; margin-top:4px; line-height:1.5;}
 
+  /* Valores (beta): tabla + calculadora */
+  .vt-row{display:flex; align-items:center; gap:9px; padding:8px 2px; border-bottom:1px solid var(--line);}
+  .vt-row:last-child{border-bottom:none;}
+  .vt-ic{font-size:18px; flex:0 0 auto;}
+  .vt-nm{flex:1; font-size:13.5px; font-weight:600; color:var(--ink2);}
+  .vt-tier{font-family:var(--font-disp); font-weight:900; font-size:12px; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--surface2); color:var(--ink); border:1.5px solid var(--line2); flex:0 0 auto;}
+  .vt-val{width:56px; height:38px; text-align:center; border:2px solid var(--line2); border-radius:10px; background:var(--surface2); font-family:var(--font-mono); font-weight:700; font-size:15px; color:var(--ink); flex:0 0 auto;}
+  .vt-val:focus{outline:none; border-color:var(--c-blue);}
+  .vc-head{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; padding:0 2px 5px; align-items:end;}
+  .vc-head .hs{text-align:center; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut);}
+  .vc-row{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; align-items:center; padding:6px 2px; border-bottom:1px solid var(--line);}
+  .vc-lbl{font-size:13px; font-weight:600; color:var(--ink2); line-height:1.2;}
+  .vc-v{font-family:var(--font-mono); color:var(--mut2); font-weight:700; font-size:11px;}
+  .vc-side{display:flex; align-items:center; gap:5px; justify-content:center;}
+  .vc-b{width:29px; height:29px; border-radius:9px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink); font-size:17px; font-weight:700; cursor:pointer; line-height:1; padding:0;}
+  .vc-b:active{transform:scale(.9);}
+  .vc-n{font-family:var(--font-mono); font-weight:700; font-size:15px; min-width:16px; text-align:center;}
+  .vc-tot{display:grid; grid-template-columns:1fr 100px 100px; gap:6px; padding:10px 2px 2px; align-items:center;}
+  .vc-tot .tl{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut);}
+  .vc-tot .ts{text-align:center; font-family:var(--font-disp); font-weight:900; font-size:20px; color:var(--ink);}
+  .val-verdict{text-align:center; font-family:var(--font-disp); font-weight:900; font-size:14.5px; padding:13px 12px; border-radius:14px; margin-top:8px; text-transform:uppercase; letter-spacing:.01em; line-height:1.25;}
+  .val-verdict.fair{background:rgba(0,103,185,.10); color:var(--c-blue);}
+  .val-verdict.good{background:rgba(0,128,43,.12); color:var(--ok-d);}
+  .val-verdict.bad{background:rgba(200,32,42,.10); color:var(--red);}
+  .val-verdict.zero{background:var(--surface2); color:var(--mut);}
+
   .field{margin-top:13px;}
   .field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;}
   .field input, .field textarea{width:100%; background:var(--surface2); border:2px solid var(--line2); color:var(--ink); border-radius:14px; padding:12px 14px; font-size:15px; font-family:var(--font-ui);}
@@ -324,7 +350,7 @@
   main.ov-compact .tprog .bar{display:none;}
   main.ov-compact .tprog .fr{font-size:10px;}
   main.ov-compact .cells{grid-template-columns:repeat(20,1fr); gap:2px;}
-  main.ov-compact .cell{aspect-ratio:1/1; border-radius:3px; border-width:1px; font-size:0;}
+  main.ov-compact .cell{aspect-ratio:1/1; border-radius:3px; border-width:1px; font-size:0; pointer-events:none; cursor:default;}
   main.ov-compact .cell .badge{display:none;}
   main.ov-compact .cell.have, main.ov-compact .cell.dup{box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
   @media (min-width:880px){
@@ -402,6 +428,7 @@
       <h1 class="disp">Mi Álbum</h1>
     </div>
     <div class="hbtns">
+      <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
   </div>
@@ -564,7 +591,6 @@
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
-  <button class="set-btn lx" id="btnLujito">✨ Lo más importante · datos y curiosidades</button>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
   <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
   <button class="set-btn" id="btnExcel">📊 Exportar a Excel (.xlsx)</button>
@@ -574,7 +600,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.0</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.1</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -589,10 +615,12 @@
 
 <!-- LUJITO: lo más importante -->
 <div class="ov" id="ovLujito"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">Lo más importante</h2><button class="x" data-close>✕</button></div>
+  <div class="sheet-h"><h2 class="disp">Datos</h2><button class="x" data-close>✕</button></div>
+  <div class="seg" id="hubSeg"><button class="active" data-h="datos">Números & datos</button><button data-h="valores">Valores · beta</button></div>
 
+  <div id="hubDatos">
   <div class="lx-sec">
-    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-green)"></span> Tu colección en números</h3>
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-green)"></span> Tu álbum en números</h3>
     <div id="lxPersonal"></div>
   </div>
 
@@ -600,7 +628,7 @@
     <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-blue)"></span> El Mundial 2026</h3>
     <div class="lx-fact"><span class="lx-ic">🌎</span><div class="lx-tx">Primer Mundial con <b>48 equipos</b> (antes eran 32) y el primero con <b>3 países anfitriones</b>: EE.UU., México y Canadá.</div></div>
     <div class="lx-fact"><span class="lx-ic">🗓️</span><div class="lx-tx">Se juega del <b>11 de junio al 19 de julio</b>: <b>104 partidos</b> en 39 días, el Mundial más largo de la historia.</div></div>
-    <div class="lx-fact"><span class="lx-ic">🏟️</span><div class="lx-tx">Arranca con <b>México vs Sudáfrica en el Estadio Azteca</b>, el <b>primer estadio del mundo en albergar 3 Mundiales</b> (1970, 1986 y 2026).</div></div>
+    <div class="lx-fact"><span class="lx-ic">🏟️</span><div class="lx-tx">Arranca con <b>México vs Sudáfrica en el Azteca</b>, el <b>primer estadio del mundo en albergar 3 Mundiales</b> (1970, 1986 y 2026).</div></div>
     <div class="lx-fact"><span class="lx-ic">🆕</span><div class="lx-tx">Cuatro selecciones <b>debutan en un Mundial</b>: Cabo Verde, Curazao, Jordania y Uzbekistán — y las tienes en tu álbum.</div></div>
     <div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">La final es en el <b>MetLife Stadium</b> (Nueva York/Nueva Jersey). Están todos los excampeones… <b>menos Italia</b>.</div></div>
   </div>
@@ -616,13 +644,26 @@
 
   <div class="lx-sec">
     <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-amber)"></span> Datos freak 🤯</h3>
-    <div class="lx-fact"><span class="lx-ic">🎲</span><div class="lx-tx">Sin cambiar con nadie, en promedio necesitarías <b>~7.000 láminas (~1.000 sobres)</b> para completarlo — por las repetidas.</div></div>
-    <div class="lx-fact"><span class="lx-ic">🤝</span><div class="lx-tx">Pero el mínimo teórico es <b>140 sobres</b> (980 ÷ 7): toda la diferencia la hacen los <b>cambios</b>. Por eso el lema de Panini es <i>“Got, Got, Need”</i>.</div></div>
-    <div class="lx-fact"><span class="lx-ic">💸</span><div class="lx-tx">Completarlo <b>solo</b> puede costar <b>más de US$2.000</b>; <b>cambiando</b>, baja a ~<b>US$285</b>. Cambiar lo es todo.</div></div>
-    <div class="lx-fact"><span class="lx-ic">✨</span><div class="lx-tx">Las <b>Extra Stickers</b> (foil de leyendas) salen aprox. <b>1 cada 100 sobres</b>: las más difíciles de pillar.</div></div>
+    <div class="lx-fact"><span class="lx-ic">💸</span><div class="lx-tx">En Chile completarlo cuesta entre <b>~$160.000</b> (cambiando harto) y <b>~$440.000</b> (sin cambiar). Eso es <b>casi un sueldo mínimo</b> ($539.000).</div></div>
+    <div class="lx-fact"><span class="lx-ic">🤝</span><div class="lx-tx">Panini dice que con intercambio bastan <b>~140 sobres</b> (980 ÷ 7); sin cambiar se va a <b>~400 o más</b>. Por eso el lema es <i>“Got, Got, Need”</i>.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🥇</span><div class="lx-tx">Las <b>Extra Stickers</b> (foil de leyendas) salen ~<b>1 cada 100 sobres</b>; el <b>dorado de Messi</b>, ~<b>1 cada 2.000</b>. El santo grial.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🇨🇱</span><div class="lx-tx">Dato chileno: acá completarlo sale <b>más barato que en Argentina, México, Perú o Colombia</b>.</div></div>
   </div>
 
-  <div class="lx-src">Datos verificados con FIFA, Panini y prensa deportiva (junio 2026). Tus números se calculan en vivo desde tu propia colección.</div>
+  <div class="lx-src">Datos verificados con FIFA, Panini y prensa deportiva chilena (junio 2026). Tus números se calculan en vivo desde tu colección.</div>
+  </div>
+
+  <div id="hubValores" style="display:none">
+    <p class="lx-src" style="text-align:left; margin-top:2px">Beta ⚗️ — valor aproximado en <b>fichas</b> (1 ficha = 1 lámina común ≈ $157 acá). Edita los valores a tu pinta; sirve para tincar si un trueque es justo.</p>
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de valores</h3>
+    <div id="valTable"></div>
+    <h3 class="lx-h" style="margin-top:16px"><span class="lx-dot" style="background:var(--c-green)"></span> Calculadora de trueque</h3>
+    <div class="vc-head"><span></span><span class="hs">Tú das</span><span class="hs">Te dan</span></div>
+    <div id="valCalc"></div>
+    <div id="valTot"></div>
+    <div id="valVerdict" class="val-verdict zero">Suma láminas en cada lado para comparar</div>
+    <button class="set-btn" id="valReset" style="margin-top:12px">↺ Reiniciar calculadora</button>
+  </div>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -663,7 +704,7 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; r.config.tierVals=Object.assign({base:1,especial:3,morado:4,bronce:7,plata:11,oro:16}, r.config.tierVals||{}); return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -1365,7 +1406,7 @@ document.getElementById("tradeCopy").onclick=()=>{ const ta=document.getElementB
   else { ta.removeAttribute("readonly"); ta.select(); try{ document.execCommand("copy"); toast("Lista copiada ✓"); }catch(e){ toast("Selecciónala y copia manual"); } ta.setAttribute("readonly",""); } };
 document.getElementById("btnTrade").onclick=()=>{ ovSet.classList.remove("show"); tradeMode="miss"; const seg=document.getElementById("tradeSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0)); renderTrade(); ovTrade.classList.add("show"); };
 
-/* ---------- LUJITO: lo más importante (números en vivo) ---------- */
+/* ---------- HUB: Datos + Valores (beta) ---------- */
 function lxMostLeastTeam(){
   let best=null, worst=null;
   GROUPS.forEach(g=>g.teams.forEach(t=>{ const h=teamHave(t[0]);
@@ -1381,7 +1422,7 @@ function lxBestGroup(){
   });
   return best;
 }
-function openLujito(){
+function fillPersonal(){
   const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
   codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
   const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
@@ -1393,19 +1434,59 @@ function openLujito(){
     +'<div class="lx-stat" style="--a:var(--c-pink)"><div class="lx-n">'+completos+'/48</div><div class="lx-l">Equipos listos</div></div>'
     +'</div>';
   if(tengo===0){
-    html+='<div class="lx-fact"><span class="lx-ic">👀</span><div class="lx-tx">Aún no marcas láminas. Anota algunas (ej. <b>ARG5</b>) y vuelve para ver tus números cobrar vida.</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">👀</span><div class="lx-tx">Aún no marcas láminas. Anota algunas (ej. <b>ARG5</b>) y vuelve para ver tus números.</div></div>';
   } else {
     const ml=lxMostLeastTeam(), bg=lxBestGroup();
     html+='<div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">Tu equipo más completo: <b>'+ml.best.name+'</b> ('+ml.best.h+'/20).</div></div>';
-    html+='<div class="lx-fact"><span class="lx-ic">🔍</span><div class="lx-tx">El que más te falta: <b>'+ml.worst.name+'</b> ('+ml.worst.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">🎯</span><div class="lx-tx">El que más te falta: <b>'+ml.worst.name+'</b> ('+ml.worst.h+'/20).</div></div>';
     html+='<div class="lx-fact"><span class="lx-ic">📈</span><div class="lx-tx">Tu grupo más avanzado: <b>Grupo '+bg.id+'</b> ('+bg.pct+'%).</div></div>';
-    if(faltan>0){ const y=(7*faltan/total).toFixed(1); html+='<div class="lx-fact"><span class="lx-ic">✨</span><div class="lx-tx">Ahora mismo, de cada sobre de 7, ~<b>'+y+'</b> láminas serían nuevas para ti.</div></div>'; }
+    if(faltan>0){ const y=(7*faltan/total).toFixed(1); html+='<div class="lx-fact"><span class="lx-ic">📦</span><div class="lx-tx">Por ahora, de cada sobre de 7 te caerían ~<b>'+y+'</b> láminas nuevas.</div></div>'; }
     else { html+='<div class="lx-fact"><span class="lx-ic">🎉</span><div class="lx-tx"><b>¡Completaste el álbum!</b> Eres de los pocos que lo logran. Crack.</div></div>'; }
   }
   document.getElementById("lxPersonal").innerHTML=html;
+}
+/* --- Valores (beta) --- */
+const VAL_TYPES=[["base","Lámina común","⚽"],["especial","Especial FIFA","⭐"],["morado","Extra Morado","🟣"],["bronce","Extra Bronce","🥉"],["plata","Extra Plata","🥈"],["oro","Extra Oro","🥇"]];
+let valCalc={give:{},get:{}};
+function tierLetter(v){ return v>=15?"S":v>=10?"A":v>=5?"B":v>=2?"C":"—"; }
+function renderValores(){
+  const tv=state.config.tierVals;
+  let tbl="";
+  VAL_TYPES.forEach(([k,nm,ic])=>{ const v=tv[k]||0;
+    tbl+='<div class="vt-row"><span class="vt-ic">'+ic+'</span><span class="vt-nm">'+nm+'</span><span class="vt-tier">'+tierLetter(v)+'</span><input class="vt-val" type="number" min="0" inputmode="numeric" data-k="'+k+'" value="'+v+'"></div>';
+  });
+  document.getElementById("valTable").innerHTML=tbl;
+  let calc="", give=0, get=0;
+  VAL_TYPES.forEach(([k,nm,ic])=>{ const v=tv[k]||0; const g=valCalc.give[k]||0, r=valCalc.get[k]||0; give+=g*v; get+=r*v;
+    calc+='<div class="vc-row"><div class="vc-lbl">'+ic+' '+nm+' <span class="vc-v">·'+v+'</span></div>'
+      +'<div class="vc-side"><button class="vc-b" data-side="give" data-k="'+k+'" data-d="-1">−</button><span class="vc-n">'+g+'</span><button class="vc-b" data-side="give" data-k="'+k+'" data-d="1">+</button></div>'
+      +'<div class="vc-side"><button class="vc-b" data-side="get" data-k="'+k+'" data-d="-1">−</button><span class="vc-n">'+r+'</span><button class="vc-b" data-side="get" data-k="'+k+'" data-d="1">+</button></div></div>';
+  });
+  document.getElementById("valCalc").innerHTML=calc;
+  document.getElementById("valTot").innerHTML='<div class="vc-tot"><span class="tl">Total (fichas)</span><span class="ts" style="color:var(--c-pink)">'+give+'</span><span class="ts" style="color:var(--ok-d)">'+get+'</span></div>';
+  const vd=document.getElementById("valVerdict");
+  if(give===0 && get===0){ vd.className="val-verdict zero"; vd.textContent="Suma láminas en cada lado para comparar"; }
+  else { const diff=get-give; const base=Math.max(give,get,1); const pctDiff=Math.abs(diff)/base;
+    if(pctDiff<=0.12){ vd.className="val-verdict fair"; vd.textContent="⚖️ Trato justo ("+give+" vs "+get+")"; }
+    else if(diff>0){ vd.className="val-verdict good"; vd.textContent="🤑 Te conviene · recibes +"+diff+" fichas"; }
+    else { vd.className="val-verdict bad"; vd.textContent="😬 Estás dando de más · "+(-diff)+" fichas"; }
+  }
+}
+(function(){
+  const hv=document.getElementById("hubValores");
+  hv.addEventListener("click",e=>{ const b=e.target.closest(".vc-b"); if(!b) return; const k=b.dataset.k, side=b.dataset.side, d=parseInt(b.dataset.d,10); valCalc[side][k]=Math.max(0,(valCalc[side][k]||0)+d); renderValores(); });
+  hv.addEventListener("change",e=>{ const inp=e.target.closest(".vt-val"); if(!inp) return; const k=inp.dataset.k; state.config.tierVals[k]=Math.max(0,parseInt(inp.value,10)||0); save(); renderValores(); });
+  document.getElementById("valReset").onclick=()=>{ valCalc={give:{},get:{}}; renderValores(); toast("Calculadora reiniciada"); };
+})();
+/* tabs */
+document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); const t=b.dataset.h; document.getElementById("hubDatos").style.display=t==="datos"?"block":"none"; document.getElementById("hubValores").style.display=t==="valores"?"block":"none"; if(t==="valores") renderValores(); });
+function openHub(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0));
+  document.getElementById("hubDatos").style.display="block"; document.getElementById("hubValores").style.display="none";
   document.getElementById("ovLujito").classList.add("show");
 }
-document.getElementById("btnLujito").onclick=()=>{ ovSet.classList.remove("show"); openLujito(); };
+document.getElementById("btnHub").onclick=openHub;
 
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
