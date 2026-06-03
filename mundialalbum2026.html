@@ -524,7 +524,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.3</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.4</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1287,7 +1287,7 @@ function subscribeAlbum(){
 function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
 function pushCloud(seed){
   if(!cloud.ready||!cloud.user||!cloud.db) return; const id=currentAlbumId(); if(!id) return;
-  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, updatedAt:Date.now() },{merge:true}).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
 }
 
 function openCloud(){ updateCloudUI(); ovCloud.classList.add("show"); }
