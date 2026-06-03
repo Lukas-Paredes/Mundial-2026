@@ -482,6 +482,8 @@
       <input id="joinCode" type="text" placeholder="Pega el código que te pasaron"/></div>
     <button class="btn btn-blue" style="width:100%;margin-top:10px" id="joinGo">Usar este álbum</button>
     <div class="tip" id="syncTip">Sincronizado ✓ — los cambios se guardan solos.</div>
+    <button class="set-btn" id="changePw" style="margin-top:8px">🔑 Cambiar mi contraseña</button>
+    <div class="err" id="cpwMsg"></div>
     <button class="set-btn danger" id="signOut" style="margin-top:8px">Cerrar sesión</button>
   </div>
 </div></div>
@@ -526,7 +528,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.6</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.7</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1106,7 +1108,7 @@ function buildAlbumWorkbook(){
   const head=["Grupo","Código","Equipo"]; for(let i=1;i<=20;i++) head.push(i); head.push("Tengo","Repetidas");
   const matrix=[head];
   GROUPS.forEach(g=>g.teams.forEach((t,ti)=>{
-    const row=[ti===0?("Grupo "+g.id):"", t[0], t[1]]; let th=0,tr=0;
+    const row=[ti===0?("Grupo "+g.id):"", t[0], t[2]+" "+t[1]]; let th=0,tr=0;
     for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n>0?n:""); if(n>=1)th++; if(n>=2)tr+=n-1; }
     row.push(th,tr); matrix.push(row);
   }));
@@ -1138,7 +1140,7 @@ function buildAlbumWorkbook(){
   // Detalle
   const det=[["Código","Equipo","Grupo","Número","Tengo","Cantidad","Repetidas"]];
   GROUPS.forEach(g=>g.teams.forEach(t=>{
-    for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
+    for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[2]+" "+t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
   }));
   if(state.config.specials) SPECIAL_CODES.forEach(c=>{ const n=getCount(c); det.push([c,"Especiales FIFA","ESP",c,n>=1?"Sí":"No",n,n>=2?n-1:0]); });
   if(state.config.extras) for(let p=1;p<=EXTRA_COUNT;p++){ const pn=state.config.extraNames["p"+p]||("Jugador "+p); EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0],n=getCount(c); det.push([c,"Extra: "+pn,"EXTRA",a[1],n>=1?"Sí":"No",n,n>=2?n-1:0]); }); }
@@ -1418,6 +1420,7 @@ function sendPasswordReset(email, errEl, withToast){
 }
 document.getElementById("agForgot").onclick=()=>sendPasswordReset(document.getElementById("agEmail").value, document.getElementById("agErr"), false);
 document.getElementById("authForgot").onclick=()=>sendPasswordReset(document.getElementById("authEmail").value, document.getElementById("authErr"), true);
+document.getElementById("changePw").onclick=()=>{ if(cloud.user) sendPasswordReset(cloud.user.email, document.getElementById("cpwMsg"), true); };
 document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
 document.getElementById("joinGo").onclick=()=>{
   const v=document.getElementById("joinCode").value.trim();
