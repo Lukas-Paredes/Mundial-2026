@@ -500,6 +500,7 @@
       <button class="active" data-s="group">Por grupo</button>
       <button data-s="alpha">A–Z</button>
       <button data-s="overview" title="Todo el álbum de un vistazo" aria-label="Vista general del álbum">Vista</button>
+      <button data-s="clubs" title="Álbum por club (se llena solo)" aria-label="Álbum por club">Clubes</button>
     </div>
   </div>
 </div>
@@ -659,7 +660,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.0</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.1</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -838,11 +839,13 @@ function findCodes(text){
 const main=document.getElementById("main");
 let currentFilter="all", searchTerm="", sortMode="group";
 function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
-function buildCell(code,label){
+function buildCell(code,label,opts){
+  opts=opts||{};
   const n=getCount(code),st=cellState(code);
   const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.textContent=label;
   const _pn=playerName(code); if(_pn) d.title=_pn;
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
+  if(opts.viewer){ d.addEventListener("click",()=>openEditor(code)); return d; }
   let lp=false, lpTimer=null;
   d.addEventListener("touchstart",()=>{ lp=false; lpTimer=setTimeout(()=>{ lp=true; openEditor(code); },450); },{passive:true});
   d.addEventListener("touchend",()=>clearTimeout(lpTimer));
@@ -879,8 +882,59 @@ function makeTeam(code,name,flag,term){
   team.appendChild(cells); if(vis===0) team.classList.add("hide");
   return team;
 }
+/* Álbum por club: jugadores del álbum agrupados por club (plantillas 2025-26). Solo lectura. */
+const CLUBS=[
+ {name:"Real Madrid", color:"#1D3461", codes:["FRA20","BRA14","BRA15","ENG11","FRA10","FRA9","BRA5","URU10","BEL2","GER6","ESP7","ESP5","TUR14","ENG6","ARG15"]},
+ {name:"FC Barcelona", color:"#A50044", codes:["ESP15","ESP11","BRA19","ESP18","ESP16","URU4","NED14","FRA5"]},
+ {name:"Manchester City", color:"#6CABDD", codes:["NOR15","ENG16","ESP10","POR9","POR4","BEL16","CRO4","EGY20","NED10","ALG5"]},
+ {name:"Arsenal", color:"#EF0107", codes:["ENG17","ENG10","NOR10","BRA6","BRA18","FRA4","NED5","GER17","SWE20","ESP9"]},
+ {name:"Liverpool", color:"#C8102E", codes:["EGY17","NED3","NED20","ARG9","NED11","FRA6","GER11","FRA19","SWE19","NED8","SCO6"]},
+ {name:"Bayern Múnich", color:"#DC052D", codes:["GER10","GER15","GER14","GER16","ENG18","FRA7","FRA14","AUT12","KOR4","COL20","GER3"]},
+ {name:"PSG", color:"#004170", codes:["POR12","POR7","POR14","FRA17","FRA16","FRA15","MAR4","ESP12","POR18","BRA4","ECU6"]},
+ {name:"Chelsea", color:"#034694", codes:["ENG12","ARG8","ESP8","ECU9","ENG7","BRA16","POR19","BRA20"]},
+ {name:"Tottenham", color:"#132257", codes:["ARG4","URU12","NED4","SEN10","SWE8","SWE17","NED15","GHA14"]},
+ {name:"Manchester United", color:"#DA291C", codes:["POR10","POR6","BRA10","BRA17","CIV15"]},
+ {name:"Atlético de Madrid", color:"#CB3524", codes:["ARG19","ARG20","ESP3","ARG3","NOR16"]},
+ {name:"Napoli", color:"#12A0D7", codes:["BEL15","SCO11","BEL20","SCO12"]}
+];
+function makeClub(club, term){
+  const dterm = term ? deburr(term) : "";
+  const nameHit = !dterm || deburr(club.name).includes(dterm);
+  let playerHit=false;
+  if(dterm && !nameHit){ for(const c of club.codes){ const pn=PLAYER[c]; if(pn && deburr(pn).includes(dterm)){ playerHit=true; break; } } }
+  const matchClub = !term || nameHit || playerHit;
+  const card=document.createElement("div"); card.className="team"; card.style.setProperty("--accent", club.color||"#0067B9");
+  let have=0; club.codes.forEach(c=>{ if(getCount(c)>0) have++; });
+  const tot=club.codes.length; const pct=Math.round(have/tot*100);
+  const th=document.createElement("div"); th.className="team-h";
+  th.innerHTML='<span class="flag" style="background:'+(club.color||"#0067B9")+';color:#fff;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:var(--font-disp)">'+club.name.charAt(0)+'</span><div class="team-name"><div class="weare">Club</div><div class="nm">'+club.name+'</div><div class="cd">'+tot+' jugadores · solo lectura</div></div><div class="tprog '+(have===tot?'full':'')+'"><div class="fr">'+have+'/'+tot+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  card.appendChild(th);
+  const cells=document.createElement("div"); cells.className="cells"; let vis=0;
+  club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
+    const cell=buildCell(c, num, {viewer:true});
+    const isHit = dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm);
+    if(isHit) cell.classList.add("hit");
+    const show=matchClub&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
+  card.appendChild(cells); if(vis===0) card.classList.add("hide");
+  return card;
+}
 function render(){
   main.innerHTML=""; main.classList.toggle("ov-compact", sortMode==="overview"); const term=searchTerm.trim().toLowerCase();
+  if(sortMode==="clubs"){
+    const gWrap=document.createElement("div"); gWrap.className="grp";
+    gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#0067B9,#6A1B9A)">Por club</span><span class="line"></span></div>';
+    let any=false;
+    CLUBS.forEach(club=>{ const card=makeClub(club, term); if(!card.classList.contains("hide")) any=true; gWrap.appendChild(card); });
+    if(!any) gWrap.classList.add("hide"); main.appendChild(gWrap);
+    if(!main.querySelector(".grp:not(.hide)")){
+      const es=document.createElement("div"); es.className="empty";
+      const t=term?"Ningún club coincide":"Sin clubes que mostrar";
+      const s=term?"Borra el texto del buscador 🔎 para ver todos los clubes.":(currentFilter==="miss"?"¡No te falta ninguna de estos clubes! 🎉":currentFilter==="dup"?"No tienes repetidas de estos clubes.":"");
+      es.innerHTML='<div class="empty-ico">🏟️</div><div class="empty-t">'+t+'</div>'+(s?'<div class="empty-s">'+s+'</div>':"");
+      main.appendChild(es);
+    }
+    updateStats(); return;
+  }
   if(sortMode==="alpha"){
     const flat=[]; GROUPS.forEach(g=>g.teams.forEach(t=>flat.push(t)));
     flat.sort((a,b)=>a[1].localeCompare(b[1],"es"));
