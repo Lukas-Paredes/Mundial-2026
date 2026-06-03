@@ -660,7 +660,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.1</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.3</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -883,19 +883,58 @@ function makeTeam(code,name,flag,term){
   return team;
 }
 /* Álbum por club: jugadores del álbum agrupados por club (plantillas 2025-26). Solo lectura. */
+const CLUB_COUNTRIES=[
+ {key:"ENG", name:"Inglaterra", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+ {key:"ESP", name:"España", flag:"🇪🇸"},
+ {key:"ITA", name:"Italia", flag:"🇮🇹"},
+ {key:"GER", name:"Alemania", flag:"🇩🇪"},
+ {key:"FRA", name:"Francia", flag:"🇫🇷"},
+ {key:"POR", name:"Portugal", flag:"🇵🇹"},
+ {key:"NED", name:"Países Bajos", flag:"🇳🇱"},
+ {key:"BRA", name:"Brasil", flag:"🇧🇷"},
+ {key:"ARG", name:"Argentina", flag:"🇦🇷"},
+ {key:"SAU", name:"Arabia Saudita", flag:"🇸🇦"}
+];
 const CLUBS=[
- {name:"Real Madrid", color:"#1D3461", codes:["FRA20","BRA14","BRA15","ENG11","FRA10","FRA9","BRA5","URU10","BEL2","GER6","ESP7","ESP5","TUR14","ENG6","ARG15"]},
- {name:"FC Barcelona", color:"#A50044", codes:["ESP15","ESP11","BRA19","ESP18","ESP16","URU4","NED14","FRA5"]},
- {name:"Manchester City", color:"#6CABDD", codes:["NOR15","ENG16","ESP10","POR9","POR4","BEL16","CRO4","EGY20","NED10","ALG5"]},
- {name:"Arsenal", color:"#EF0107", codes:["ENG17","ENG10","NOR10","BRA6","BRA18","FRA4","NED5","GER17","SWE20","ESP9"]},
- {name:"Liverpool", color:"#C8102E", codes:["EGY17","NED3","NED20","ARG9","NED11","FRA6","GER11","FRA19","SWE19","NED8","SCO6"]},
- {name:"Bayern Múnich", color:"#DC052D", codes:["GER10","GER15","GER14","GER16","ENG18","FRA7","FRA14","AUT12","KOR4","COL20","GER3"]},
- {name:"PSG", color:"#004170", codes:["POR12","POR7","POR14","FRA17","FRA16","FRA15","MAR4","ESP12","POR18","BRA4","ECU6"]},
- {name:"Chelsea", color:"#034694", codes:["ENG12","ARG8","ESP8","ECU9","ENG7","BRA16","POR19","BRA20"]},
- {name:"Tottenham", color:"#132257", codes:["ARG4","URU12","NED4","SEN10","SWE8","SWE17","NED15","GHA14"]},
- {name:"Manchester United", color:"#DA291C", codes:["POR10","POR6","BRA10","BRA17","CIV15"]},
- {name:"Atlético de Madrid", color:"#CB3524", codes:["ARG19","ARG20","ESP3","ARG3","NOR16"]},
- {name:"Napoli", color:"#12A0D7", codes:["BEL15","SCO11","BEL20","SCO12"]}
+ {name:"Real Madrid", country:"ESP", color:"#1D3461", codes:["FRA20","BRA14","BRA15","ENG11","FRA10","FRA9","BRA5","URU10","BEL2","GER6","ESP7","ESP5","TUR14","ENG6","ARG15"]},
+ {name:"FC Barcelona", country:"ESP", color:"#A50044", codes:["ESP15","ESP11","BRA19","ESP18","ESP16","URU4","NED14","FRA5"]},
+ {name:"Atlético de Madrid", country:"ESP", color:"#CB3524", codes:["ARG19","ARG20","ESP3","ARG3","NOR16"]},
+ {name:"Athletic Club", country:"ESP", color:"#EE2523", codes:["ESP17","GHA15"]},
+ {name:"Real Sociedad", country:"ESP", color:"#0067B1", codes:["ESP20","JAP12"]},
+ {name:"Villarreal", country:"ESP", color:"#005187", codes:["GHA10","SEN11"]},
+ {name:"Manchester City", country:"ENG", color:"#6CABDD", codes:["NOR15","ENG16","ESP10","POR9","POR4","BEL16","CRO4","EGY20","NED10","ALG5"]},
+ {name:"Arsenal", country:"ENG", color:"#EF0107", codes:["ENG17","ENG10","NOR10","BRA6","BRA18","FRA4","NED5","GER17","SWE20","ESP9"]},
+ {name:"Liverpool", country:"ENG", color:"#C8102E", codes:["EGY17","NED3","NED20","ARG9","NED11","FRA6","GER11","FRA19","SWE19","NED8","SCO6"]},
+ {name:"Chelsea", country:"ENG", color:"#034694", codes:["ENG12","ARG8","ESP8","ECU9","ENG7","BRA16","POR19","BRA20"]},
+ {name:"Tottenham", country:"ENG", color:"#132257", codes:["ARG4","URU12","NED4","SEN10","SWE8","SWE17","NED15","GHA14"]},
+ {name:"Aston Villa", country:"ENG", color:"#670E36", codes:["ARG2","ENG5","FRA8","BEL9","BEL10","ENG14","ENG20"]},
+ {name:"Brighton", country:"ENG", color:"#0057B8", codes:["NED2","NED9","BEL7","SWE11","PAR10","PAR15"]},
+ {name:"Manchester United", country:"ENG", color:"#DA291C", codes:["POR10","POR6","BRA10","BRA17","CIV15"]},
+ {name:"Crystal Palace", country:"ENG", color:"#1B458F", codes:["ENG4","USA3","JAP11","SEN16"]},
+ {name:"West Ham", country:"ENG", color:"#7A263A", codes:["BRA9","CZE12","MEX10","COD3"]},
+ {name:"Newcastle", country:"ENG", color:"#101010", codes:["BRA11","ENG15","ENG8"]},
+ {name:"Inter", country:"ITA", color:"#0068A8", codes:["ARG18","TUR11","NED6","CRO15"]},
+ {name:"Juventus", country:"ITA", color:"#000000", codes:["TUR20","USA10","NED12","CAN20"]},
+ {name:"Napoli", country:"ITA", color:"#12A0D7", codes:["BEL15","SCO11","BEL20","SCO12"]},
+ {name:"AC Milan", country:"ITA", color:"#FB090B", codes:["USA16","FRA2","POR20"]},
+ {name:"Roma", country:"ITA", color:"#8E1F2F", codes:["CIV6","FRA11","BRA8"]},
+ {name:"Atalanta", country:"ITA", color:"#1D71B8", codes:["BEL17","CRO14","BIH4"]},
+ {name:"Bayern Múnich", country:"GER", color:"#DC052D", codes:["GER10","GER15","GER14","GER16","ENG18","FRA7","FRA14","AUT12","KOR4","COL20","GER3"]},
+ {name:"RB Leipzig", country:"GER", color:"#DD0741", codes:["GER4","AUT10","AUT15","AUT18","NOR19"]},
+ {name:"Borussia Dortmund", country:"GER", color:"#111111", codes:["SUI2","GER5","GER7","GER12","GER19"]},
+ {name:"Eintracht Frankfurt", country:"GER", color:"#E1000F", codes:["SWE9","TUR17","JAP14"]},
+ {name:"PSG", country:"FRA", color:"#004170", codes:["POR12","POR7","POR14","FRA17","FRA16","FRA15","MAR4","ESP12","POR18","BRA4","ECU6"]},
+ {name:"Mónaco", country:"FRA", color:"#CE1126", codes:["SUI10","JAP16","SEN14","MAR12","USA20"]},
+ {name:"Marsella", country:"FRA", color:"#0092D0", codes:["ARG7","ALG18"]},
+ {name:"Benfica", country:"POR", color:"#E20E0E", codes:["ARG5","TUR12","TUR19","NOR12","COL12"]},
+ {name:"Sporting CP", country:"POR", color:"#1A7A4C", codes:["POR8","CIV9","POR16","URU16","BEL5"]},
+ {name:"FC Porto", country:"POR", color:"#0046A8", codes:["POR2","CAN10"]},
+ {name:"PSV", country:"NED", color:"#ED1C24", codes:["MAR15","CRO16","USA18","CUW3"]},
+ {name:"Feyenoord", country:"NED", color:"#C8102E", codes:["ALG17","JAP20"]},
+ {name:"Flamengo", country:"BRA", color:"#C52613", codes:["URU11","URU15","URU8","BRA7"]},
+ {name:"Boca Juniors", country:"ARG", color:"#0A2472", codes:["ARG12"]},
+ {name:"Al-Hilal", country:"SAU", color:"#1B458F", codes:["FRA3","POR5","POR11","SEN8","MAR2","KSA16"]},
+ {name:"Al-Nassr", country:"SAU", color:"#1A3A6B", codes:["POR15","POR17","FRA18","SEN15","BRA3"]}
 ];
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
@@ -921,12 +960,20 @@ function makeClub(club, term){
 function render(){
   main.innerHTML=""; main.classList.toggle("ov-compact", sortMode==="overview"); const term=searchTerm.trim().toLowerCase();
   if(sortMode==="clubs"){
-    const gWrap=document.createElement("div"); gWrap.className="grp";
-    gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#0067B9,#6A1B9A)">Por club</span><span class="line"></span></div>';
-    let any=false;
-    CLUBS.forEach(club=>{ const card=makeClub(club, term); if(!card.classList.contains("hide")) any=true; gWrap.appendChild(card); });
-    if(!any) gWrap.classList.add("hide"); main.appendChild(gWrap);
-    if(!main.querySelector(".grp:not(.hide)")){
+    let anyAll=false;
+    CLUB_COUNTRIES.forEach(co=>{
+      const clubs=CLUBS.filter(c=>c.country===co.key).slice().sort((a,b)=>b.codes.length-a.codes.length || a.name.localeCompare(b.name,"es"));
+      if(!clubs.length) return;
+      const gWrap=document.createElement("div"); gWrap.className="grp";
+      const gh=document.createElement("div"); gh.className="grp-h";
+      gh.innerHTML='<span class="tag" style="background:linear-gradient(90deg,#0067B9,#00802B)">'+co.flag+' '+co.name+'</span><span class="line"></span>';
+      gWrap.appendChild(gh);
+      let any=false;
+      clubs.forEach(club=>{ const card=makeClub(club, term); if(!card.classList.contains("hide")) any=true; gWrap.appendChild(card); });
+      if(!any) gWrap.classList.add("hide"); else anyAll=true;
+      main.appendChild(gWrap);
+    });
+    if(!anyAll){
       const es=document.createElement("div"); es.className="empty";
       const t=term?"Ningún club coincide":"Sin clubes que mostrar";
       const s=term?"Borra el texto del buscador 🔎 para ver todos los clubes.":(currentFilter==="miss"?"¡No te falta ninguna de estos clubes! 🎉":currentFilter==="dup"?"No tienes repetidas de estos clubes.":"");
