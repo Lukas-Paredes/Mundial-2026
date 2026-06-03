@@ -261,6 +261,22 @@
   .val-verdict.good{background:rgba(0,128,43,.12); color:var(--ok-d);}
   .val-verdict.bad{background:rgba(200,32,42,.10); color:var(--red);}
   .val-verdict.zero{background:var(--surface2); color:var(--mut);}
+  .alfa-tag{font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:linear-gradient(120deg,var(--c-amber),var(--dup-d)); padding:3px 9px; border-radius:999px; vertical-align:middle; margin-left:6px;}
+  .exp-note{font-size:12.5px; line-height:1.55; color:var(--dup-d); background:rgba(242,162,12,.10); border:1.5px solid rgba(242,162,12,.32); border-radius:14px; padding:11px 13px; margin-top:13px;}
+  .exp-note b{color:var(--dup-d);}
+
+  /* Progreso: gráficos simples */
+  .pg-overall{text-align:center; margin-bottom:6px;}
+  .pg-bignum{font-family:var(--font-disp); font-weight:900; font-size:44px; line-height:1; color:var(--ok-d);}
+  .pg-sub{font-size:12.5px; color:var(--mut); margin:7px 0 12px;}
+  .pg-track{height:12px; background:var(--surface2); border:1px solid var(--line); border-radius:7px; overflow:hidden;}
+  .pg-track i{display:block; height:100%; border-radius:7px; background:linear-gradient(90deg,#19a94a,var(--ok-d)); transition:width .35s cubic-bezier(.2,.7,.2,1);}
+  .pg-track.pg-big{height:18px; border-radius:9px;}
+  .pg-track.pg-big i{border-radius:9px;}
+  .pg-row{display:grid; grid-template-columns:94px 1fr 42px; gap:9px; align-items:center; padding:6px 2px;}
+  .pg-lbl{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--ink2);}
+  .pg-dot{width:10px; height:10px; border-radius:3px; flex:0 0 auto;}
+  .pg-pct{font-family:var(--font-mono); font-weight:700; font-size:12.5px; color:var(--mut); text-align:right;}
 
   .field{margin-top:13px;}
   .field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;}
@@ -269,6 +285,8 @@
   .field input:focus, .field textarea:focus{outline:none; border-color:var(--c-blue);}
   .steps{background:var(--surface2); border:1px solid var(--line); border-radius:15px; padding:14px 15px 14px 31px; margin:6px 0 4px; font-size:13px; color:var(--ink2); line-height:1.55;}
   .steps li{margin-bottom:6px;}
+  .steps ul{margin:6px 0 2px; padding-left:18px; list-style:disc;}
+  .steps ul li{margin-bottom:3px;}
   .steps a{color:var(--c-blue); font-weight:700;}
   .codebox{display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px dashed var(--line2); border-radius:14px; padding:11px 13px; margin-top:6px;}
   .codebox .v{flex:1; font-family:var(--font-mono); font-size:13px; color:var(--ink); overflow:hidden; text-overflow:ellipsis;}
@@ -484,7 +502,7 @@
 
 <!-- SCAN -->
 <div class="ov" id="ovScan"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
+  <div class="sheet-h"><h2 class="disp">Escanear <span class="alfa-tag">alfa</span></h2><button class="x" data-close>✕</button></div>
   <div class="aibar" id="aiBar"></div>
   <div class="aisetup" id="aiSetup" style="display:none">
     <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin:0 0 8px">Saca una llave gratis de la IA de Google (3 pasos) y el lector va a leer las fotos muchísimo mejor:</p>
@@ -509,7 +527,7 @@
   <div class="scan-status" id="scanStatus"></div>
   <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
   <div class="manual"><input id="manualCode" type="text" name="album-manual" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/><button id="manualBtn">Agregar</button></div>
-  <div class="tip">Las láminas brillan y a veces el lector falla. Por eso siempre confirmas tú antes de registrar. 💪</div>
+  <div class="exp-note">🧪 <b>Función experimental (alfa).</b> El lector todavía está en pruebas: puede fallar o equivocarse de número. Siempre revisa y confirma tú antes de registrar — y si no la pilla, escribe el código a mano. 💪</div>
 </div></div>
 
 <!-- CLOUD -->
@@ -566,17 +584,37 @@
   <div id="driveStatus" class="trade-count" style="margin:0 2px 8px"></div>
   <div id="driveLinkWrap" class="who-tag" style="display:none"><span class="av">📄</span><a id="driveLink" class="em" href="#" target="_blank" rel="noopener">Abrir mi álbum en Google Sheets ↗</a></div>
   <div id="driveSetup">
-    <p class="tip" style="text-align:left;margin-top:2px">Tu álbum se guarda solo como una Google Sheet (puedes tenerla abierta en otra pestaña). Configuración de una sola vez — puedes reusar tu mismo proyecto de Firebase:</p>
+    <p class="tip" style="text-align:left;margin-top:2px"><b>¿Qué hace esto?</b> Guarda una copia de tu álbum como una planilla (Google Sheet) en <b>tu</b> Google Drive. Es <b>opcional</b> y un poco técnico: tu álbum <b>ya queda guardado solo en tu cuenta</b>, esto es solo un respaldo extra. Es de una sola vez (~10 min). Sigue cada paso tal cual 👇</p>
     <ol class="steps">
-      <li>Entra a <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">console.cloud.google.com</a> (tu proyecto) y activa la <b>Google Drive API</b>.</li>
-      <li>En <b>Pantalla de consentimiento de OAuth</b> (Externo) agrégate como <b>usuario de prueba</b> con tu correo.</li>
-      <li>En <b>Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web</b>. En <b>Orígenes de JavaScript autorizados</b> agrega esto:</li>
+      <li><b>Abre Google Cloud</b> con tu cuenta de Google (la misma del álbum): <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a>. Arriba a la izquierda toca <b>“Selecciona un proyecto”</b>; si no tienes ninguno, <b>“Proyecto nuevo”</b>, ponle cualquier nombre (ej. <i>Album</i>), créalo y selecciónalo.</li>
+      <li><b>Activa el permiso de Drive:</b> entra a <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">este enlace</a> (con tu proyecto elegido arriba) y toca el botón azul <b>“Habilitar”</b>. Si ya dice “Administrar”, listo.</li>
+      <li>En el menú ☰ (arriba a la izquierda) entra a <b>“Google Auth Platform”</b>. Toca <b>“Comenzar”</b> y rellena:
+        <ul>
+          <li><b>Nombre de la app:</b> cualquiera (ej. <i>Mi Álbum</i>).</li>
+          <li><b>Correo de asistencia:</b> tu correo.</li>
+          <li>En <b>Público</b> elige <b>“Externo”</b>, acepta las condiciones y toca <b>“Crear”</b>.</li>
+        </ul>
+      </li>
+      <li><b>Agrégate como “usuario de prueba”:</b> en <b>Google Auth Platform → pestaña “Público”</b> → sección <b>“Usuarios de prueba” → “Agregar usuarios”</b>, escribe <b>tu correo</b> y guarda. <b>Esto es clave</b> — sin esto Google te bloquea.</li>
+      <li><b>Crea la llave</b> en <b>Google Auth Platform → pestaña “Clientes” → “Crear cliente”</b>:
+        <ul>
+          <li><b>Tipo de aplicación:</b> <b>“Aplicación web”</b>.</li>
+          <li><b>Nombre:</b> cualquiera (ej. <i>web</i>).</li>
+          <li>En <b>“Orígenes de JavaScript autorizados” → “Agregar URI”</b> pega <b>exactamente</b> esto (usa el botón Copiar, sin “/” al final):</li>
+        </ul>
+        <div class="codebox" style="margin-top:8px"><span class="v">https://lukas-paredes.github.io</span><button type="button" id="driveCopyOrigin">Copiar</button></div>
+      </li>
+      <li>Toca <b>“Crear”</b>. Te aparece un <b>ID de cliente</b> que termina en <span class="mono">.apps.googleusercontent.com</span>: <b>cópialo</b>.</li>
+      <li><b>Pégalo aquí abajo</b> y toca “Conectar”. La 1ª vez Google muestra <b>“Google no verificó esta app”</b> (es normal, es tuya): toca <b>“Configuración avanzada” → “Ir a (tu app)”</b> y luego <b>“Permitir”</b>.</li>
     </ol>
-    <div class="codebox"><span class="v">https://lukas-paredes.github.io</span><button type="button" id="driveCopyOrigin">Copiar</button></div>
     <div class="field"><label>Pega tu ID de cliente (termina en .apps.googleusercontent.com)</label><input id="driveClientId" placeholder="123...apps.googleusercontent.com" autocomplete="off"></div>
     <button class="btn btn-blue" id="driveConnect" style="width:100%;margin-top:12px">Conectar y guardar en Drive</button>
     <div class="err" id="driveErr"></div>
-    <p class="tip">La primera vez Google muestra un aviso de «app no verificada» (es normal en apps personales tuyas): toca <b>Configuración avanzada → Ir a la app</b>.</p>
+    <p class="tip" style="text-align:left">🛟 <b>Si algo falla:</b><br>
+    • <b>“Acceso bloqueado / no eres usuario de prueba”</b> → te faltó el Paso 4.<br>
+    • <b>“origin_mismatch / origen no permitido”</b> → revisa el Paso 5: el origen pegado debe ser idéntico y sin “/” al final.<br>
+    • <b>No abre la ventana de Google</b> → desactiva el bloqueador de pop-ups para esta página.<br>
+    • La conexión dura ~1 hora por seguridad de Google. Si después ves “cambios pendientes”, vuelve a abrir esto y toca “Guardar ahora”.</p>
   </div>
   <div id="driveConnected" style="display:none">
     <div class="set-row"><div><div class="lab">Guardar automáticamente</div><div class="des">Sube los cambios a Drive solos</div></div><label class="switch"><input type="checkbox" id="driveAuto"><span class="tr"></span></label></div>
@@ -600,7 +638,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.1</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.3</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -616,9 +654,9 @@
 <!-- LUJITO: lo más importante -->
 <div class="ov" id="ovLujito"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Datos</h2><button class="x" data-close>✕</button></div>
-  <div class="seg" id="hubSeg"><button class="active" data-h="datos">Números & datos</button><button data-h="valores">Valores · beta</button></div>
+  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="datos">Datos</button><button data-h="valores">Valores</button></div>
 
-  <div id="hubDatos">
+  <div id="hubDatos" style="display:none">
   <div class="lx-sec">
     <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-green)"></span> Tu álbum en números</h3>
     <div id="lxPersonal"></div>
@@ -652,6 +690,8 @@
 
   <div class="lx-src">Datos verificados con FIFA, Panini y prensa deportiva chilena (junio 2026). Tus números se calculan en vivo desde tu colección.</div>
   </div>
+
+  <div id="hubProgreso"><div id="pgBody"></div></div>
 
   <div id="hubValores" style="display:none">
     <p class="lx-src" style="text-align:left; margin-top:2px">Beta ⚗️ — valor aproximado en <b>fichas</b> (1 ficha = 1 lámina común ≈ $157 acá). Edita los valores a tu pinta; sirve para tincar si un trueque es justo.</p>
@@ -1472,6 +1512,27 @@ function renderValores(){
     else { vd.className="val-verdict bad"; vd.textContent="😬 Estás dando de más · "+(-diff)+" fichas"; }
   }
 }
+/* progreso: gráficos simples */
+function renderProgreso(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let html='<div class="pg-overall"><div class="pg-bignum">'+pct+'%</div>'
+    +'<div class="pg-sub"><b style="color:var(--ok-d)">'+tengo+'</b> tengo · <b>'+faltan+'</b> faltan · <b style="color:var(--dup-d)">'+repe+'</b> repetidas</div>'
+    +'<div class="pg-track pg-big"><i style="width:'+pct+'%"></i></div></div>';
+  html+='<h3 class="lx-h" style="margin-top:16px"><span class="lx-dot" style="background:var(--c-blue)"></span> Avance por grupo</h3>';
+  GROUPS.forEach(g=>{ let h=0; g.teams.forEach(t=>h+=teamHave(t[0])); const gp=Math.round(h/80*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:'+g.color+'"></i>Grupo '+g.id+'</span>'
+      +'<div class="pg-track"><i style="width:'+gp+'%; background:'+g.color+'"></i></div>'
+      +'<span class="pg-pct">'+gp+'%</span></div>';
+  });
+  if(state.config.specials){ let h=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0)h++; }); const sp=Math.round(h/SPECIAL_CODES.length*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:var(--c-amber)"></i>Especiales</span>'
+      +'<div class="pg-track"><i style="width:'+sp+'%; background:var(--c-amber)"></i></div><span class="pg-pct">'+sp+'%</span></div>';
+  }
+  html+='<div class="lx-src" style="margin-top:10px">Cada barra muestra cuánto llevas de ese grupo (de 80 láminas).</div>';
+  document.getElementById("pgBody").innerHTML=html;
+}
 (function(){
   const hv=document.getElementById("hubValores");
   hv.addEventListener("click",e=>{ const b=e.target.closest(".vc-b"); if(!b) return; const k=b.dataset.k, side=b.dataset.side, d=parseInt(b.dataset.d,10); valCalc[side][k]=Math.max(0,(valCalc[side][k]||0)+d); renderValores(); });
@@ -1479,11 +1540,18 @@ function renderValores(){
   document.getElementById("valReset").onclick=()=>{ valCalc={give:{},get:{}}; renderValores(); toast("Calculadora reiniciada"); };
 })();
 /* tabs */
-document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); const t=b.dataset.h; document.getElementById("hubDatos").style.display=t==="datos"?"block":"none"; document.getElementById("hubValores").style.display=t==="valores"?"block":"none"; if(t==="valores") renderValores(); });
+function hubShow(t){
+  document.getElementById("hubProgreso").style.display = t==="progreso"?"block":"none";
+  document.getElementById("hubDatos").style.display = t==="datos"?"block":"none";
+  document.getElementById("hubValores").style.display = t==="valores"?"block":"none";
+  [...document.getElementById("hubSeg").children].forEach(x=>x.classList.toggle("active", x.dataset.h===t));
+  if(t==="progreso") renderProgreso();
+  if(t==="valores") renderValores();
+}
+document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; hubShow(b.dataset.h); });
 function openHub(){
   fillPersonal();
-  const seg=document.getElementById("hubSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0));
-  document.getElementById("hubDatos").style.display="block"; document.getElementById("hubValores").style.display="none";
+  hubShow("progreso");
   document.getElementById("ovLujito").classList.add("show");
 }
 document.getElementById("btnHub").onclick=openHub;
