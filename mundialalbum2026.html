@@ -330,6 +330,7 @@
     <div class="field"><label>Contraseña</label><input id="agPass" type="password" autocomplete="current-password" placeholder="••••••"></div>
     <button class="btn btn-blue" id="agGo" style="width:100%;margin-top:14px">Entrar</button>
     <div class="err" id="agErr"></div>
+    <div style="text-align:center;margin-top:12px"><button id="agForgot" style="background:none;border:none;color:var(--c-blue);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit">¿Olvidaste tu contraseña?</button></div>
     <p class="tip">Tu colección queda guardada en tu cuenta y sincronizada en todos tus dispositivos. Necesitas conexión a internet.</p>
   </div>
 </div>
@@ -468,6 +469,7 @@
     <div class="field"><label>Contraseña</label><input id="authPass" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres"/></div>
     <div class="err" id="authErr"></div>
     <button class="btn btn-blue" style="width:100%;margin-top:12px" id="authGo">Entrar</button>
+    <div style="text-align:center;margin-top:10px"><button id="authForgot" style="background:none;border:none;color:var(--c-blue);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit">¿Olvidaste tu contraseña?</button></div>
     <button class="set-btn" id="cfgEdit" style="margin-top:14px">Cambiar configuración de Firebase</button>
   </div>
 
@@ -524,7 +526,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.4</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.6</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1056,7 +1058,7 @@ document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.str
 function ensureXLSX(cb){
   if(typeof XLSX!=="undefined"){ cb(); return; }
   const s=document.createElement("script");
-  s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+  s.src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js";
   s.onload=cb; s.onerror=()=>toast("No se pudo cargar Excel (¿sin conexión?) ✗");
   document.head.appendChild(s);
 }
@@ -1074,30 +1076,66 @@ function buildAlbumWorkbook(){
   const now=new Date();
   const wb=XLSX.utils.book_new();
 
+  const FONT="Arial";
+  const thin=c=>{ const s={style:"thin",color:{rgb:c}}; return {top:s,bottom:s,left:s,right:s}; };
+  const setS=(ws,r,c,s)=>{ const ref=XLSX.utils.encode_cell({r:r,c:c}); if(!ws[ref]) ws[ref]={t:"s",v:""}; ws[ref].s=s; };
+  const hdr={ font:{name:FONT,bold:true,sz:11,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"1A1A22"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("3A3A45") };
+
   // Resumen
   const wsR=XLSX.utils.aoa_to_sheet([
-    ["MI ÁLBUM — Mundial 2026"],
+    ["MI ÁLBUM — Mundial 2026",""],
     ["Exportado", now.toLocaleString()],
-    [],
+    ["",""],
     ["Tengo", tengo],["Faltan", faltan],["Repetidas", repe],["Total", total],
     ["Completado", pct+"%"],["Equipos completos", full+" / 48"]
   ]);
-  wsR["!cols"]=[{wch:20},{wch:26}];
+  wsR["!cols"]=[{wch:22},{wch:26}];
+  wsR["!merges"]=[{s:{r:0,c:0},e:{r:0,c:1}}];
+  wsR["!rows"]=[{hpt:30}];
+  setS(wsR,0,0,{ font:{name:FONT,bold:true,sz:16,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"0067B9"}}, alignment:{horizontal:"center",vertical:"center"} });
+  setS(wsR,0,1,{ fill:{patternType:"solid",fgColor:{rgb:"0067B9"}} });
+  setS(wsR,1,0,{ font:{name:FONT,bold:true,color:{rgb:"6B6B78"}} });
+  const sc=["1B7A35","1A1A22","B97700","1A1A22","0067B9","1A1A22"];
+  for(let i=0;i<6;i++){ const r=3+i;
+    setS(wsR,r,0,{ font:{name:FONT,bold:true,sz:11,color:{rgb:"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb:"F3F2EF"}} });
+    setS(wsR,r,1,{ font:{name:FONT,bold:true,sz:12,color:{rgb:sc[i]}} });
+  }
   XLSX.utils.book_append_sheet(wb, wsR, "Resumen");
 
-  // Por equipo (matriz equipos × 1..20)
+  // Por equipo (matriz estilo álbum: grupo fusionado + colores)
   const head=["Grupo","Código","Equipo"]; for(let i=1;i<=20;i++) head.push(i); head.push("Tengo","Repetidas");
   const matrix=[head];
-  GROUPS.forEach(g=>g.teams.forEach(t=>{
-    const row=[g.id,t[0],t[1]]; let th=0,tr=0;
-    for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n); if(n>=1)th++; if(n>=2)tr+=n-1; }
+  GROUPS.forEach(g=>g.teams.forEach((t,ti)=>{
+    const row=[ti===0?("Grupo "+g.id):"", t[0], t[1]]; let th=0,tr=0;
+    for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n>0?n:""); if(n>=1)th++; if(n>=2)tr+=n-1; }
     row.push(th,tr); matrix.push(row);
   }));
   const wsM=XLSX.utils.aoa_to_sheet(matrix);
-  wsM["!cols"]=[{wch:6},{wch:8},{wch:20}].concat(Array(20).fill({wch:4})).concat([{wch:7},{wch:10}]);
+  wsM["!cols"]=[{wch:8},{wch:7},{wch:20}].concat(Array(20).fill({wch:4.5})).concat([{wch:7},{wch:11}]);
+  for(let c=0;c<head.length;c++) setS(wsM,0,c,hdr);
+  const merges=[];
+  GROUPS.forEach((g,gi)=>{
+    const r0=1+gi*4;
+    merges.push({s:{r:r0,c:0},e:{r:r0+3,c:0}});
+    setS(wsM,r0,0,{ font:{name:FONT,bold:true,sz:11,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:g.color.replace("#","")}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") });
+    for(let ti=0;ti<4;ti++){
+      const r=r0+ti, code=g.teams[ti][0], th=teamHave(code);
+      setS(wsM,r,1,{ font:{name:FONT,sz:9,color:{rgb:"9A9AA6"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+      setS(wsM,r,2,{ font:{name:FONT,bold:true,sz:10,color:{rgb:"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb:"FAFAF8"}}, alignment:{horizontal:"left",vertical:"center"}, border:thin("ECEAE6") });
+      for(let i=1;i<=20;i++){ const n=getCount(code+i), c=2+i; let s;
+        if(n>=2) s={ font:{name:FONT,bold:true,sz:10,color:{rgb:"4A3500"}}, fill:{patternType:"solid",fgColor:{rgb:"F2A20C"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") };
+        else if(n>=1) s={ font:{name:FONT,bold:true,sz:10,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"2E9E4A"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") };
+        else s={ fill:{patternType:"solid",fgColor:{rgb:"F5F5F4"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("E6E4E0") };
+        setS(wsM,r,c,s);
+      }
+      setS(wsM,r,23,{ font:{name:FONT,bold:true,sz:10,color:{rgb: th===20?"1B7A35":"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb: th===20?"D9F2DF":"F3F2EF"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+      setS(wsM,r,24,{ font:{name:FONT,sz:10,color:{rgb:"B97700"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+    }
+  });
+  wsM["!merges"]=merges;
   XLSX.utils.book_append_sheet(wb, wsM, "Por equipo");
 
-  // Detalle (una fila por lámina)
+  // Detalle
   const det=[["Código","Equipo","Grupo","Número","Tengo","Cantidad","Repetidas"]];
   GROUPS.forEach(g=>g.teams.forEach(t=>{
     for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
@@ -1106,14 +1144,16 @@ function buildAlbumWorkbook(){
   if(state.config.extras) for(let p=1;p<=EXTRA_COUNT;p++){ const pn=state.config.extraNames["p"+p]||("Jugador "+p); EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0],n=getCount(c); det.push([c,"Extra: "+pn,"EXTRA",a[1],n>=1?"Sí":"No",n,n>=2?n-1:0]); }); }
   const wsD=XLSX.utils.aoa_to_sheet(det);
   wsD["!cols"]=[{wch:8},{wch:22},{wch:7},{wch:8},{wch:7},{wch:9},{wch:10}];
+  for(let c=0;c<7;c++) setS(wsD,0,c,hdr);
   XLSX.utils.book_append_sheet(wb, wsD, "Detalle");
 
-  // Repetidas (para cambio)
+  // Repetidas
   const rep=[["Código","Equipo","Repetidas"]];
   codes.forEach(c=>{ const n=getCount(c); if(n>=2) rep.push([c, codeLabel(c), n-1]); });
   if(rep.length===1) rep.push(["—","(sin repetidas aún)",""]);
   const wsRep=XLSX.utils.aoa_to_sheet(rep);
   wsRep["!cols"]=[{wch:8},{wch:26},{wch:10}];
+  for(let c=0;c<3;c++) setS(wsRep,0,c,hdr);
   XLSX.utils.book_append_sheet(wb, wsRep, "Repetidas");
 
   return wb;
@@ -1324,7 +1364,7 @@ document.getElementById("segLogin").onclick=()=>{ authMode="login"; document.get
 document.getElementById("segSignup").onclick=()=>{ authMode="signup"; document.getElementById("segSignup").classList.add("active"); document.getElementById("segLogin").classList.remove("active"); document.getElementById("authGo").textContent="Crear cuenta"; document.getElementById("authErr").textContent=""; };
 document.getElementById("authGo").onclick=async()=>{
   if(!cloud.ready && !initCloud()){ document.getElementById("authErr").textContent="Configura Firebase primero."; return; }
-  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr");
+  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr"); err.style.color="";
   if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
   err.textContent="Conectando…";
   try{
@@ -1344,7 +1384,7 @@ function agSet(m){ agMode=m; document.getElementById("agLogin").classList.toggle
 document.getElementById("agLogin").onclick=()=>agSet("login");
 document.getElementById("agSignup").onclick=()=>agSet("signup");
 document.getElementById("agGo").onclick=async()=>{
-  const err=document.getElementById("agErr");
+  const err=document.getElementById("agErr"); err.style.color="";
   if(!cloud.ready && !initCloud()){ err.textContent="Necesitas conexión a internet para entrar."; return; }
   const email=document.getElementById("agEmail").value.trim(), pass=document.getElementById("agPass").value;
   if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
@@ -1359,6 +1399,25 @@ document.getElementById("agGo").onclick=async()=>{
   }
 };
 document.getElementById("agPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("agGo").click(); });
+
+/* ----- Recuperar / crear nueva contraseña ----- */
+function sendPasswordReset(email, errEl, withToast){
+  if(!cloud.ready && !initCloud()){ errEl.style.color=""; errEl.textContent="Necesitas conexión a internet."; return; }
+  email=(email||"").trim();
+  if(!email || !/.+@.+\..+/.test(email)){ errEl.style.color=""; errEl.textContent="Escribe tu correo arriba y vuelve a tocar."; return; }
+  errEl.style.color=""; errEl.textContent="Enviando correo…";
+  cloud.auth.sendPasswordResetEmail(email).then(()=>{
+    errEl.style.color="var(--ok-d)";
+    errEl.textContent="✓ Te mandamos un correo para crear una contraseña nueva. Revisa tu bandeja (y la carpeta de spam).";
+    if(withToast) toast("Correo de recuperación enviado 📧");
+  }).catch(e=>{
+    errEl.style.color="";
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No hay ninguna cuenta con ese correo.","auth/missing-email":"Escribe tu correo primero.","auth/network-request-failed":"Sin conexión.","auth/too-many-requests":"Demasiados intentos, espera un poco e intenta de nuevo."};
+    errEl.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  });
+}
+document.getElementById("agForgot").onclick=()=>sendPasswordReset(document.getElementById("agEmail").value, document.getElementById("agErr"), false);
+document.getElementById("authForgot").onclick=()=>sendPasswordReset(document.getElementById("authEmail").value, document.getElementById("authErr"), true);
 document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
 document.getElementById("joinGo").onclick=()=>{
   const v=document.getElementById("joinCode").value.trim();
