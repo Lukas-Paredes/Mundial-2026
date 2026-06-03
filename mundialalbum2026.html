@@ -6,6 +6,11 @@
 <title>Mi Álbum Mundial 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Álbum">
+<meta name="theme-color" content="#0067B9">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -114,7 +119,7 @@
   .grp-h .line{flex:1; height:3px; background:var(--line2); border-radius:3px;}
 
   .team{position:relative; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:15px 15px 16px; margin-bottom:13px; box-shadow:var(--shadow); overflow:hidden;}
-  .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9);}
+  .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
   .team-h{display:flex; align-items:center; gap:12px; margin-bottom:13px; padding-left:4px;}
   .flag{font-size:27px; line-height:1; width:34px; text-align:center;}
   .team-name{flex:1; min-width:0;}
@@ -257,6 +262,43 @@
   .cft{position:absolute; top:-14px; border-radius:2px; will-change:transform,opacity; animation:fall 1900ms cubic-bezier(.25,.6,.4,1) forwards;}
   @keyframes fall{0%{transform:translateY(-12px) rotate(0); opacity:1;} 100%{transform:translateY(104vh) rotate(720deg); opacity:.85;}}
 
+  /* ---- escritorio: usar el ancho, vista tipo álbum abierto ---- */
+  @media (min-width:880px){
+    header .hpad{max-width:1080px; margin:0 auto;}
+    .toolbar{padding-left:max(12px,calc((100% - 1080px)/2)); padding-right:max(12px,calc((100% - 1080px)/2)); background:var(--bg);}
+    main{max-width:1080px;}
+    .geoband{height:74px;}
+    .htitle h1{font-size:44px;}
+    .grp{display:grid; grid-template-columns:1fr 1fr; column-gap:18px; align-items:start;}
+    .grp-h{grid-column:1 / -1;}
+    .team{padding:18px 18px 19px;}
+    .cells{gap:9px;}
+    .cell{font-size:15px; border-radius:15px;}
+    .team-name .nm{font-size:21px;}
+    .flag{font-size:30px; width:36px;}
+  }
+
+  /* rieles geométricos en los costados (pantallas anchas) */
+  .rail{position:fixed; top:0; bottom:0; z-index:0; width:max(0px, calc((100% - 1080px)/2)); display:none; overflow:hidden; pointer-events:none;}
+  #railL{left:0;} #railR{right:0;}
+  .rail .railpat{position:absolute; inset:0; display:flex; flex-direction:column;}
+  .rail .railpat i{flex:1; width:100%; display:block;}
+  .rail:after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(251,250,248,.34), rgba(251,250,248,.56));}
+  @media (min-width:1200px){
+    .rail{display:block;}
+    header{position:relative; z-index:2;}
+    main{position:relative; z-index:2;}
+  }
+  /* ----- Pantalla de login obligatoria ----- */
+  #authGate{position:fixed; inset:0; z-index:300; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto;}
+  body.authed #authGate{display:none;}
+  .ag-card{width:100%; max-width:380px; background:var(--surface); border:1.5px solid var(--line); border-radius:24px; padding:28px 22px 22px; box-shadow:var(--shadow);}
+  .ag-brand{text-align:center; margin-bottom:18px;}
+  .ag-brand .kick{font-family:var(--font-disp); font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--c-blue); display:flex; align-items:center; justify-content:center; gap:7px;}
+  .ag-brand .kick .dot{width:8px;height:8px;border-radius:50% 50% 50% 0;background:var(--c-pink);}
+  .ag-brand h1{font-family:var(--font-disp); font-weight:900; font-size:38px; line-height:.9; margin:5px 0 0; text-transform:uppercase; letter-spacing:-.02em;}
+  .ag-brand .ag-sub{color:var(--mut); font-size:13px; margin:9px 0 0;}
+
   @media (prefers-reduced-motion: no-preference){
     .reveal-on .grp{animation:revealUp .55s both cubic-bezier(.2,.7,.2,1);}
     .reveal-on .grp:nth-child(1){animation-delay:.02s;}
@@ -276,6 +318,23 @@
 </head>
 <body>
 
+<div id="authGate">
+  <div class="ag-card">
+    <div class="ag-brand">
+      <div class="kick"><span class="dot"></span> We Are 26</div>
+      <h1 class="disp">Mi Álbum</h1>
+      <div class="ag-sub">Mundial 2026 · entra para ver tu colección</div>
+    </div>
+    <div class="seg"><button id="agLogin" class="active">Entrar</button><button id="agSignup">Crear cuenta</button></div>
+    <div class="field"><label>Correo</label><input id="agEmail" type="email" autocomplete="username" placeholder="tucorreo@gmail.com"></div>
+    <div class="field"><label>Contraseña</label><input id="agPass" type="password" autocomplete="current-password" placeholder="••••••"></div>
+    <button class="btn btn-blue" id="agGo" style="width:100%;margin-top:14px">Entrar</button>
+    <div class="err" id="agErr"></div>
+    <p class="tip">Tu colección queda guardada en tu cuenta y sincronizada en todos tus dispositivos. Necesitas conexión a internet.</p>
+  </div>
+</div>
+<div class="rail" id="railL" aria-hidden="true"><div class="railpat"></div></div>
+<div class="rail" id="railR" aria-hidden="true"><div class="railpat"></div></div>
 <header>
   <div class="geoband" id="geoband" aria-hidden="true"></div>
   <div class="hpad">
@@ -426,17 +485,46 @@
 </div></div>
 
 <!-- SETTINGS -->
+<div class="ov" id="ovDrive"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">Google Drive</h2><button class="x" data-close>✕</button></div>
+  <div id="driveStatus" class="trade-count" style="margin:0 2px 8px"></div>
+  <div id="driveLinkWrap" class="who-tag" style="display:none"><span class="av">📄</span><a id="driveLink" class="em" href="#" target="_blank" rel="noopener">Abrir mi álbum en Google Sheets ↗</a></div>
+  <div id="driveSetup">
+    <p class="tip" style="text-align:left;margin-top:2px">Tu álbum se guarda solo como una Google Sheet (puedes tenerla abierta en otra pestaña). Configuración de una sola vez — puedes reusar tu mismo proyecto de Firebase:</p>
+    <ol class="steps">
+      <li>Entra a <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">console.cloud.google.com</a> (tu proyecto) y activa la <b>Google Drive API</b>.</li>
+      <li>En <b>Pantalla de consentimiento de OAuth</b> (Externo) agrégate como <b>usuario de prueba</b> con tu correo.</li>
+      <li>En <b>Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web</b>. En <b>Orígenes de JavaScript autorizados</b> agrega esto:</li>
+    </ol>
+    <div class="codebox"><span class="v">https://lukas-paredes.github.io</span><button type="button" id="driveCopyOrigin">Copiar</button></div>
+    <div class="field"><label>Pega tu ID de cliente (termina en .apps.googleusercontent.com)</label><input id="driveClientId" placeholder="123...apps.googleusercontent.com" autocomplete="off"></div>
+    <button class="btn btn-blue" id="driveConnect" style="width:100%;margin-top:12px">Conectar y guardar en Drive</button>
+    <div class="err" id="driveErr"></div>
+    <p class="tip">La primera vez Google muestra un aviso de «app no verificada» (es normal en apps personales tuyas): toca <b>Configuración avanzada → Ir a la app</b>.</p>
+  </div>
+  <div id="driveConnected" style="display:none">
+    <div class="set-row"><div><div class="lab">Guardar automáticamente</div><div class="des">Sube los cambios a Drive solos</div></div><label class="switch"><input type="checkbox" id="driveAuto"><span class="tr"></span></label></div>
+    <button class="btn btn-blue" id="driveSaveNow" style="width:100%;margin-top:12px">Guardar ahora</button>
+    <button class="set-btn" id="driveChange" style="margin-top:10px">Cambiar ID de cliente</button>
+    <button class="set-btn danger" id="driveDisconnect" style="margin-top:8px">Desconectar Drive</button>
+    <p class="tip">Por seguridad de Google, la conexión dura ~1 hora. Si ves «cambios pendientes», abre esto y toca «Guardar ahora».</p>
+  </div>
+</div></div>
+
 <div class="ov" id="ovSet"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
   <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
+  <button class="set-btn" id="btnExcel">📊 Exportar a Excel (.xlsx)</button>
+  <button class="set-btn" id="btnExcelImport">📥 Importar desde Excel (.xlsx)</button>
+  <button class="set-btn" id="btnDrive">☁️ Guardar en Google Drive (automático)</button>
   <button class="set-btn" id="btnExport">⬇️ Exportar respaldo (JSON)</button>
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 2.8</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.3</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -486,7 +574,7 @@ const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
 function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{}}, r.config||{}); r.counts=r.counts||{}; return r; }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
 function setCount(c,v){
@@ -556,7 +644,20 @@ function buildCell(code,label){
   const n=getCount(code),st=cellState(code);
   const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.textContent=label;
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
-  d.addEventListener("click",()=>openEditor(code)); return d;
+  let lp=false, lpTimer=null;
+  d.addEventListener("touchstart",()=>{ lp=false; lpTimer=setTimeout(()=>{ lp=true; openEditor(code); },450); },{passive:true});
+  d.addEventListener("touchend",()=>clearTimeout(lpTimer));
+  d.addEventListener("touchmove",()=>clearTimeout(lpTimer));
+  d.addEventListener("contextmenu",e=>{ e.preventDefault(); openEditor(code); });
+  d.addEventListener("click",()=>{
+    if(lp){ lp=false; return; }                 // fue mantener-apretado: ya abrió el editor
+    const cur=getCount(code);
+    if(cur>=2){ openEditor(code); return; }      // repetidas: abre el editor para no borrarlas sin querer
+    setCount(code, cur===0?1:0);                 // toca para marcar / desmarcar
+    refreshCellInDom(code); updateStats();
+    if(currentFilter!=="all") render();
+  });
+  return d;
 }
 function makeTeam(code,name,flag,term){
   const matchTeam=!term||name.toLowerCase().includes(term)||code.toLowerCase().includes(term);
@@ -950,6 +1051,156 @@ document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.
 tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
 tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
 document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="album-mundial-2026-respaldo.json"; a.click(); URL.revokeObjectURL(a.href); toast("Respaldo descargado ⬇️"); };
+
+/* ----- Exportar a Excel (.xlsx) ----- */
+function ensureXLSX(cb){
+  if(typeof XLSX!=="undefined"){ cb(); return; }
+  const s=document.createElement("script");
+  s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+  s.onload=cb; s.onerror=()=>toast("No se pudo cargar Excel (¿sin conexión?) ✗");
+  document.head.appendChild(s);
+}
+function codeLabel(c){
+  if(CODE_TEAM[c]){ const t=CODE_TEAM[c]; return t.name+" "+c.slice(t.code.length); }
+  if(c==="00"||/^FW\d+$/.test(c)) return "Especial "+c;
+  const m=c.match(/^X(\d+)([OPBM])$/); if(m){ const pn=state.config.extraNames["p"+m[1]]||("Jugador "+m[1]); const col={O:"Oro",P:"Plata",B:"Bronce",M:"Morado"}[m[2]]; return "Extra: "+pn+" ("+col+")"; }
+  return c;
+}
+function buildAlbumWorkbook(){
+  const codes=allActiveCodes(); let tengo=0,repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const total=codes.length, faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let full=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ if(teamHave(t[0])===20) full++; }));
+  const now=new Date();
+  const wb=XLSX.utils.book_new();
+
+  // Resumen
+  const wsR=XLSX.utils.aoa_to_sheet([
+    ["MI ÁLBUM — Mundial 2026"],
+    ["Exportado", now.toLocaleString()],
+    [],
+    ["Tengo", tengo],["Faltan", faltan],["Repetidas", repe],["Total", total],
+    ["Completado", pct+"%"],["Equipos completos", full+" / 48"]
+  ]);
+  wsR["!cols"]=[{wch:20},{wch:26}];
+  XLSX.utils.book_append_sheet(wb, wsR, "Resumen");
+
+  // Por equipo (matriz equipos × 1..20)
+  const head=["Grupo","Código","Equipo"]; for(let i=1;i<=20;i++) head.push(i); head.push("Tengo","Repetidas");
+  const matrix=[head];
+  GROUPS.forEach(g=>g.teams.forEach(t=>{
+    const row=[g.id,t[0],t[1]]; let th=0,tr=0;
+    for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n); if(n>=1)th++; if(n>=2)tr+=n-1; }
+    row.push(th,tr); matrix.push(row);
+  }));
+  const wsM=XLSX.utils.aoa_to_sheet(matrix);
+  wsM["!cols"]=[{wch:6},{wch:8},{wch:20}].concat(Array(20).fill({wch:4})).concat([{wch:7},{wch:10}]);
+  XLSX.utils.book_append_sheet(wb, wsM, "Por equipo");
+
+  // Detalle (una fila por lámina)
+  const det=[["Código","Equipo","Grupo","Número","Tengo","Cantidad","Repetidas"]];
+  GROUPS.forEach(g=>g.teams.forEach(t=>{
+    for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
+  }));
+  if(state.config.specials) SPECIAL_CODES.forEach(c=>{ const n=getCount(c); det.push([c,"Especiales FIFA","ESP",c,n>=1?"Sí":"No",n,n>=2?n-1:0]); });
+  if(state.config.extras) for(let p=1;p<=EXTRA_COUNT;p++){ const pn=state.config.extraNames["p"+p]||("Jugador "+p); EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0],n=getCount(c); det.push([c,"Extra: "+pn,"EXTRA",a[1],n>=1?"Sí":"No",n,n>=2?n-1:0]); }); }
+  const wsD=XLSX.utils.aoa_to_sheet(det);
+  wsD["!cols"]=[{wch:8},{wch:22},{wch:7},{wch:8},{wch:7},{wch:9},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, wsD, "Detalle");
+
+  // Repetidas (para cambio)
+  const rep=[["Código","Equipo","Repetidas"]];
+  codes.forEach(c=>{ const n=getCount(c); if(n>=2) rep.push([c, codeLabel(c), n-1]); });
+  if(rep.length===1) rep.push(["—","(sin repetidas aún)",""]);
+  const wsRep=XLSX.utils.aoa_to_sheet(rep);
+  wsRep["!cols"]=[{wch:8},{wch:26},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, wsRep, "Repetidas");
+
+  return wb;
+}
+function exportExcel(){
+  if(typeof XLSX==="undefined"){ toast("Cargando Excel… intenta otra vez ✗"); return; }
+  const wb=buildAlbumWorkbook();
+  XLSX.writeFile(wb, "MiAlbumMundial2026_"+new Date().toISOString().slice(0,10)+".xlsx");
+  toast("Excel descargado 📊");
+}
+function albumExcelBlob(){ const wb=buildAlbumWorkbook(); const arr=XLSX.write(wb,{bookType:"xlsx",type:"array"}); return new Blob([arr],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); }
+
+/* ===== Sincronización automática con Google Drive (Google Sheet) ===== */
+const DRIVE_KEY="albumDriveCfg_v1";
+function driveCfg(){ try{ return Object.assign({clientId:"",fileId:"",auto:false}, JSON.parse(localStorage.getItem(DRIVE_KEY))||{}); }catch(e){ return {clientId:"",fileId:"",auto:false}; } }
+function saveDriveCfg(c){ try{ localStorage.setItem(DRIVE_KEY, JSON.stringify(c)); }catch(e){} }
+let gisReady=false, gisClient=null, driveTok=null, driveTokExp=0, drivePushing=false, driveTimer=null, driveCb=null;
+const ovDrive=document.getElementById("ovDrive");
+function driveStatusMsg(m){ const el=document.getElementById("driveStatus"); if(el) el.textContent=m; }
+function showDriveLink(){ const c=driveCfg(), w=document.getElementById("driveLinkWrap"), a=document.getElementById("driveLink"); if(c.fileId){ w.style.display="flex"; a.href="https://docs.google.com/spreadsheets/d/"+c.fileId+"/edit"; } else { w.style.display="none"; } }
+function openDrive(){ const c=driveCfg(), setup=document.getElementById("driveSetup"), conn=document.getElementById("driveConnected"); if(c.clientId){ setup.style.display="none"; conn.style.display="block"; document.getElementById("driveAuto").checked=!!c.auto; driveStatusMsg(c.fileId?"Conectado ✓":"Conectado. Aún no guardas nada."); } else { setup.style.display="block"; conn.style.display="none"; driveStatusMsg(""); } document.getElementById("driveClientId").value=c.clientId||""; showDriveLink(); ovDrive.classList.add("show"); }
+function ensureGIS(cb){ if(gisReady && window.google && google.accounts && google.accounts.oauth2){ cb(); return; } const s=document.createElement("script"); s.src="https://accounts.google.com/gsi/client"; s.async=true; s.onload=()=>{ gisReady=true; cb(); }; s.onerror=()=>driveStatusMsg("No se pudo cargar Google ✗"); document.head.appendChild(s); }
+function driveAuth(cb){ const c=driveCfg(); if(!c.clientId){ openDrive(); return; } if(driveTok && Date.now()<driveTokExp-60000){ cb(driveTok); return; } ensureGIS(()=>{ try{ if(!gisClient || gisClient.__cid!==c.clientId){ gisClient=google.accounts.oauth2.initTokenClient({ client_id:c.clientId, scope:"https://www.googleapis.com/auth/drive.file", callback:(resp)=>{ if(resp&&resp.access_token){ driveTok=resp.access_token; driveTokExp=Date.now()+((resp.expires_in||3600)*1000); const f=driveCb; driveCb=null; if(f) f(driveTok); } else { driveStatusMsg("No se autorizó Drive ✗"); } }, error_callback:()=>{ driveStatusMsg("No se pudo conectar (revisa el ID y el origen) ✗"); } }); gisClient.__cid=c.clientId; } driveCb=cb; gisClient.requestAccessToken(); }catch(e){ driveStatusMsg("Error al conectar ✗"); } }); }
+async function drivePush(token){ if(drivePushing) return; drivePushing=true; try{ if(typeof XLSX==="undefined"){ await new Promise(r=>ensureXLSX(r)); } driveStatusMsg("Guardando en Drive…"); const blob=albumExcelBlob(); let c=driveCfg(); const xls="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; let resp,data;
+  if(c.fileId){ resp=await fetch("https://www.googleapis.com/upload/drive/v3/files/"+c.fileId+"?uploadType=media&fields=id",{method:"PATCH",headers:{Authorization:"Bearer "+token,"Content-Type":xls},body:blob}); if(resp.ok){ data=await resp.json(); } else { c.fileId=""; saveDriveCfg(c); } }
+  if(!c.fileId){ const meta={name:"Mi Álbum Mundial 2026",mimeType:"application/vnd.google-apps.spreadsheet"}; const form=new FormData(); form.append("metadata", new Blob([JSON.stringify(meta)],{type:"application/json"})); form.append("file", blob); resp=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{Authorization:"Bearer "+token},body:form}); if(!resp.ok) throw new Error("create"); data=await resp.json(); c.fileId=data.id; saveDriveCfg(c); }
+  driveStatusMsg("Actualizado en Drive ✓ "+new Date().toLocaleTimeString()); showDriveLink(); toast("Guardado en Drive ✓");
+ }catch(e){ driveStatusMsg("No se pudo guardar en Drive ✗ (revisa permisos / ID)"); } finally{ drivePushing=false; } }
+function scheduleDriveSync(){ const c=driveCfg(); if(!c.clientId || !c.auto) return; clearTimeout(driveTimer); driveTimer=setTimeout(()=>{ if(driveTok && Date.now()<driveTokExp-60000) drivePush(driveTok); else driveStatusMsg("Cambios pendientes — abre Drive y toca «Guardar ahora»"); }, 4000); }
+document.getElementById("btnDrive").onclick=()=>{ ovSet.classList.remove("show"); openDrive(); };
+document.getElementById("driveCopyOrigin").onclick=()=>{ try{ navigator.clipboard.writeText("https://lukas-paredes.github.io"); toast("Copiado ✓"); }catch(e){ toast("Copia: https://lukas-paredes.github.io"); } };
+document.getElementById("driveConnect").onclick=()=>{ const id=document.getElementById("driveClientId").value.trim(); const err=document.getElementById("driveErr"); err.textContent=""; if(!id){ err.textContent="Pega tu ID de cliente."; return; } const c=driveCfg(); c.clientId=id; c.auto=true; saveDriveCfg(c); driveAuth(t=>{ drivePush(t); openDrive(); }); };
+document.getElementById("driveSaveNow").onclick=()=>{ driveAuth(t=>drivePush(t)); };
+document.getElementById("driveAuto").onchange=(e)=>{ const c=driveCfg(); c.auto=e.target.checked; saveDriveCfg(c); if(c.auto && driveTok && Date.now()<driveTokExp-60000) drivePush(driveTok); toast(c.auto?"Guardado automático activado":"Guardado automático apagado"); };
+document.getElementById("driveChange").onclick=()=>{ document.getElementById("driveSetup").style.display="block"; document.getElementById("driveConnected").style.display="none"; };
+document.getElementById("driveDisconnect").onclick=()=>{ if(!confirm("¿Desconectar Drive? (no borra el archivo en tu Drive)")) return; saveDriveCfg({clientId:"",fileId:"",auto:false}); driveTok=null; driveTokExp=0; openDrive(); toast("Drive desconectado"); };
+document.getElementById("btnExcel").onclick=()=>{ toast("Generando Excel…"); ensureXLSX(exportExcel); };
+
+/* ----- Importar desde Excel (ida y vuelta) ----- */
+function parseWorkbookToCounts(wb){
+  const norm=s=>String(s==null?"":s).trim();
+  const out={};
+  const setc=(code,val)=>{ const v=Math.max(0, parseInt(val,10)||0); if(v>0) out[code]=v; };
+  const extraValid=new Set(); for(let p=1;p<=EXTRA_COUNT;p++) EXTRA_COLORS.forEach(a=>extraValid.add("X"+p+a[0]));
+  const matrix=wb.Sheets["Por equipo"], detalle=wb.Sheets["Detalle"];
+  if(!matrix && !detalle) return null;
+  if(matrix){
+    const rows=XLSX.utils.sheet_to_json(matrix,{header:1});
+    for(let i=1;i<rows.length;i++){ const row=rows[i]; if(!row) continue; const code=norm(row[1]).toUpperCase(); if(!code) continue;
+      for(let k=1;k<=20;k++){ const cc=code+k; if(VALID_TEAM.has(cc)) setc(cc, row[2+k]); } }
+  }
+  if(detalle){
+    const rows=XLSX.utils.sheet_to_json(detalle,{header:1}); const hdr=(rows[0]||[]).map(h=>norm(h).toLowerCase());
+    let qi=hdr.indexOf("cantidad"); if(qi<0) qi=5;
+    let ci=hdr.indexOf("código"); if(ci<0) ci=hdr.indexOf("codigo"); if(ci<0) ci=0;
+    for(let i=1;i<rows.length;i++){ const row=rows[i]; if(!row) continue; const code=norm(row[ci]).toUpperCase(); if(!code) continue;
+      if(VALID_SPECIAL.has(code) || extraValid.has(code)) setc(code, row[qi]);
+      else if(!matrix && VALID_TEAM.has(code)) setc(code, row[qi]); }
+  }
+  // preservar categorías que el Excel no traía, para no borrarlas sin querer
+  const teamsCov=!!matrix||!!detalle, specialsCov=!!detalle, extrasCov=!!detalle;
+  Object.keys(state.counts).forEach(code=>{
+    if(VALID_TEAM.has(code) && !teamsCov) out[code]=state.counts[code];
+    else if(VALID_SPECIAL.has(code) && !specialsCov) out[code]=state.counts[code];
+    else if(extraValid.has(code) && !extrasCov) out[code]=state.counts[code];
+  });
+  return out;
+}
+function readExcelFile(f){
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      const wb=XLSX.read(new Uint8Array(r.result),{type:"array"});
+      const counts=parseWorkbookToCounts(wb);
+      if(counts===null){ toast("No encontré las hojas 'Por equipo' o 'Detalle' ✗"); return; }
+      const n=Object.keys(counts).length;
+      if(!confirm("Esto reemplaza tu registro con lo que está en el Excel ("+n+" láminas con datos). ¿Seguro? Te conviene exportar un respaldo antes.")){ toast("Importación cancelada"); return; }
+      state.counts=counts; save(); render(); ovSet.classList.remove("show"); toast("Importado desde Excel ✓ ("+n+" láminas)");
+    }catch(e){ toast("No se pudo leer el Excel ✗"); } };
+  r.onerror=()=>toast("No se pudo leer el archivo ✗");
+  r.readAsArrayBuffer(f);
+}
+document.getElementById("btnExcelImport").onclick=()=>{
+  const inp=document.createElement("input"); inp.type="file";
+  inp.accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; toast("Leyendo Excel…"); ensureXLSX(()=>readExcelFile(f)); };
+  inp.click();
+};
 const importFile=document.getElementById("importFile");
 document.getElementById("btnImport").onclick=()=>importFile.click();
 importFile.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader();
@@ -997,7 +1248,8 @@ const cloud={ ready:false, auth:null, db:null, user:null, albumId:null, unsub:nu
 const ovCloud=document.getElementById("ovCloud");
 document.getElementById("cloudPill").onclick=openCloud;
 
-function getSavedCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; } }
+const BAKED_FB_CFG={apiKey:"AIzaSyAyTSwAj_N9Dg_aoGXu1EId0IRMdoqNrBw",authDomain:"figuritas-mundial-2026-3f58b.firebaseapp.com",projectId:"figuritas-mundial-2026-3f58b",storageBucket:"figuritas-mundial-2026-3f58b.firebasestorage.app",messagingSenderId:"923867824881",appId:"1:923867824881:web:b45ee5c6a9ce15f4619f50",measurementId:"G-Q3VJL10VE1"};
+function getSavedCfg(){ try{ const s=JSON.parse(localStorage.getItem(CFG_KEY)); if(s&&s.apiKey) return s; }catch(e){} return BAKED_FB_CFG; }
 function parseFirebaseConfig(text){
   const keys=["apiKey","authDomain","projectId","storageBucket","messagingSenderId","appId"]; const cfg={};
   keys.forEach(k=>{ const m=text.match(new RegExp(k+"\\s*:\\s*[\"']([^\"']+)[\"']")); if(m) cfg[k]=m[1]; });
@@ -1014,8 +1266,9 @@ function initCloud(){
 function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
 
 function onAuthChange(u){
+  if(u){ document.body.classList.add("authed"); subscribeAlbum(); }
+  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } }
   updateCloudUI();
-  if(u){ subscribeAlbum(); } else { if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } }
 }
 function subscribeAlbum(){
   if(!cloud.user||!cloud.db) return; if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; }
@@ -1084,6 +1337,28 @@ document.getElementById("authGo").onclick=async()=>{
   }
 };
 document.getElementById("signOut").onclick=()=>{ if(cloud.auth) cloud.auth.signOut(); toast("Sesión cerrada"); };
+
+/* ----- Puerta de login obligatoria ----- */
+let agMode="login";
+function agSet(m){ agMode=m; document.getElementById("agLogin").classList.toggle("active",m==="login"); document.getElementById("agSignup").classList.toggle("active",m==="signup"); document.getElementById("agGo").textContent=m==="login"?"Entrar":"Crear cuenta"; document.getElementById("agErr").textContent=""; }
+document.getElementById("agLogin").onclick=()=>agSet("login");
+document.getElementById("agSignup").onclick=()=>agSet("signup");
+document.getElementById("agGo").onclick=async()=>{
+  const err=document.getElementById("agErr");
+  if(!cloud.ready && !initCloud()){ err.textContent="Necesitas conexión a internet para entrar."; return; }
+  const email=document.getElementById("agEmail").value.trim(), pass=document.getElementById("agPass").value;
+  if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
+  err.textContent="Conectando…";
+  try{
+    if(agMode==="signup") await cloud.auth.createUserWithEmailAndPassword(email,pass);
+    else await cloud.auth.signInWithEmailAndPassword(email,pass);
+    document.getElementById("agPass").value="";
+  }catch(e){
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No existe esa cuenta. Crea una.","auth/wrong-password":"Contraseña incorrecta.","auth/invalid-credential":"Correo o contraseña incorrectos.","auth/email-already-in-use":"Ese correo ya tiene cuenta. Entra.","auth/weak-password":"Contraseña muy débil (6+).","auth/network-request-failed":"Sin conexión.","auth/operation-not-allowed":"Falta activar Correo/contraseña en Firebase → Authentication."};
+    err.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  }
+};
+document.getElementById("agPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("agGo").click(); });
 document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
 document.getElementById("joinGo").onclick=()=>{
   const v=document.getElementById("joinCode").value.trim();
@@ -1115,7 +1390,19 @@ function buildGeoBand(){
     band.appendChild(d);
   }
 }
+function buildRails(){
+  const cols=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
+  const corners=["100% 0 0 0","0 100% 0 0","0 0 100% 0","0 0 0 100%","100% 100% 0 0","0 0 100% 100%","0 0 0 0","0 0 0 0","999px 999px 999px 999px"];
+  ["railL","railR"].forEach(id=>{
+    const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(!pat) return;
+    pat.innerHTML=""; let prev=-1;
+    for(let i=0;i<16;i++){ const d=document.createElement("i");
+      let c; do{ c=Math.floor(Math.random()*cols.length); }while(c===prev); prev=c;
+      d.style.background=cols[c]; d.style.borderRadius=corners[Math.floor(Math.random()*corners.length)]; pat.appendChild(d); }
+  });
+}
 buildGeoBand();
+buildRails();
 render();
 initCloud();
 updateCloudUI();
