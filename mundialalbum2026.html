@@ -122,6 +122,8 @@
   .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
   .team-h{display:flex; align-items:center; gap:12px; margin-bottom:13px; padding-left:4px;}
   .flag{font-size:27px; line-height:1; width:34px; text-align:center;}
+  .flagimg{width:32px; height:auto; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.18); display:block; flex:0 0 auto;}
+  .flaginline{width:24px; height:auto; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,.08); vertical-align:middle; display:inline-block; margin-right:3px;}
   .team-name{flex:1; min-width:0;}
   .team-name .weare{font-family:var(--font-disp); font-weight:800; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent,#0067B9); line-height:1; margin-bottom:2px;}
   .team-name .nm{font-family:var(--font-disp); font-weight:900; font-size:19px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); letter-spacing:-.02em; text-transform:uppercase; line-height:1;}
@@ -528,7 +530,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.7</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.8</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -572,6 +574,8 @@ GROUPS.forEach(g=>g.teams.forEach(t=>{ const code=t[0],name=t[1],flag=t[2];
 const VALID_TEAM = new Set(ALL_TEAM_CODES);
 const VALID_SPECIAL = new Set(SPECIAL_CODES);
 const TEAM_COLOR = {}; GROUPS.forEach(g=>g.teams.forEach(t=>{ TEAM_COLOR[t[0]]=g.color; }));
+const FLAG_ISO={MEX:"mx",RSA:"za",KOR:"kr",CZE:"cz",CAN:"ca",BIH:"ba",QAT:"qa",SUI:"ch",BRA:"br",MAR:"ma",HAI:"ht",SCO:"gb-sct",USA:"us",PAR:"py",AUS:"au",TUR:"tr",GER:"de",CUW:"cw",CIV:"ci",ECU:"ec",NED:"nl",JAP:"jp",SWE:"se",TUN:"tn",BEL:"be",EGY:"eg",IRN:"ir",NZL:"nz",ESP:"es",CPV:"cv",KSA:"sa",URU:"uy",FRA:"fr",SEN:"sn",IRQ:"iq",NOR:"no",ARG:"ar",ALG:"dz",AUT:"at",JOR:"jo",POR:"pt",COD:"cd",UZB:"uz",COL:"co",ENG:"gb-eng",CRO:"hr",GHA:"gh",PAN:"pa"};
+function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '<span class="flag">'+(emoji||"")+'</span>'; return '<img class="'+(cls||"flagimg")+'" src="https://flagcdn.com/w40/'+iso+'.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">'; }
 
 /* ---------- state ---------- */
 const KEY="albumMundial2026_v2";
@@ -670,7 +674,7 @@ function makeTeam(code,name,flag,term){
   let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
   const pct=Math.round(have/20*100);
   const th=document.createElement("div"); th.className="team-h";
-  th.innerHTML='<span class="flag">'+flag+'</span><div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  th.innerHTML=flagHTML(code, flag)+'<div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
   team.appendChild(th);
   const cells=document.createElement("div"); cells.className="cells"; let vis=0;
   for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i)); const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
@@ -761,9 +765,9 @@ function updateStats(){
 let editCode=null; const ovEdit=document.getElementById("ovEdit");
 function openEditor(code){
   editCode=code; const meta=CODE_TEAM[code]; let who="Especial FIFA";
-  if(meta) who=meta.flag+" "+meta.name+" · Grupo "+meta.group;
+  if(meta) who=flagHTML(meta.code, meta.flag, "flaginline")+meta.name+" · Grupo "+meta.group;
   else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
-  document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").textContent=who;
+  document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
   refreshEditor(); ovEdit.classList.add("show");
 }
 function displayCode(code){
