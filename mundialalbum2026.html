@@ -657,7 +657,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.8</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.9</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1531,13 +1531,16 @@ function renderProgreso(){
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function leaderStats(){ const codes=allActiveCodes(); const total=codes.length; let tengo=0; codes.forEach(c=>{ if(getCount(c)>0)tengo++; }); return { tengo, total, pct: total?Math.round(tengo/total*100):0 }; }
 function pushLeaderboard(){
-  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return;
+  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return Promise.resolve(false);
   const nick=(state.config.nick||"").trim().slice(0,20);
-  const ref=cloud.db.collection("leaderboard").doc(cloud.user.uid);
-  if(!nick){ ref.delete().catch(()=>{}); return; }
+  if(!nick) return Promise.resolve(false); // sin nick: NO escribe ni borra (así no se borra solo)
   const city=(state.config.city||"").trim().slice(0,24);
   const s=leaderStats();
-  ref.set({ nick:nick, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).catch(()=>{});
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).set({ nick:nick, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).then(()=>true);
+}
+function leaveLeaderboard(){
+  if(!cloud.ready||!cloud.user||!cloud.db) return Promise.resolve();
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).delete().catch(()=>{});
 }
 function renderRanking(){
   const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
@@ -1545,8 +1548,7 @@ function renderRanking(){
   const list=document.getElementById("rkList");
   if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) pa entrar al ranking 🙌</div>'; return; }
   list.innerHTML='<div class="rk-empty">Cargando…</div>';
-  pushLeaderboard();
-  cloud.db.collection("leaderboard").get().then(snap=>{
+  Promise.resolve(pushLeaderboard()).catch(()=>null).then(()=> cloud.db.collection("leaderboard").get() ).then(snap=>{
     const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
     rows.sort((a,b)=> (b.pct-a.pct) || (b.tengo-a.tengo));
     if(!rows.length){ list.innerHTML='<div class="rk-empty">Nadie se ha puesto nick todavía.<br>¡Sé el primero! 🥇</div>'; return; }
@@ -1560,7 +1562,7 @@ function renderRanking(){
         +'<div class="rk-meta">'+place+r.tengo+'/'+r.total+' láminas</div></div>'
         +'<div class="rk-pct">'+r.pct+'%</div><div class="rk-go">›</div></div>';
     }).join("");
-  }).catch(e=>{ list.innerHTML='<div class="rk-empty">No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span></div>'; });
+  }).catch(e=>{ const denied=e&&e.code==="permission-denied"; list.innerHTML='<div class="rk-empty">'+(denied?'Falta pegar las reglas de Firebase pal ranking 🔒<br><span class="rk-meta">Revisa la sección «leaderboard» de las reglas.</span>':'No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span>')+'</div>'; });
 }
 function viewPersonAlbum(uid){
   document.getElementById("ovLujito").classList.remove("show");
@@ -1616,7 +1618,7 @@ function initCloud(){
 function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
 
 function onAuthChange(u){
-  if(u){ document.body.classList.add("authed"); subscribeAlbum(); }
+  if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
   else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
   updateCloudUI();
 }
@@ -1636,6 +1638,7 @@ function subscribeAlbum(){
     cloud.applyingRemote=true;
     state.counts = (data.counts && typeof data.counts==="object") ? data.counts : {};
     if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
+    if(!cloud.viewOnly){ if(typeof data.nick==="string") state.config.nick=data.nick; if(typeof data.city==="string") state.config.city=data.city; }
     try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
     render(); cloud.applyingRemote=false;
   }, err=>{ toast("Nube: "+(err.code||"error de lectura")); });
@@ -1643,7 +1646,7 @@ function subscribeAlbum(){
 function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote||cloud.viewOnly) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
 function pushCloud(seed){
   if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return; const id=currentAlbumId(); if(!id) return;
-  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
   pushLeaderboard();
 }
 function goToAlbum(code){
@@ -1754,9 +1757,11 @@ document.getElementById("rkSave").onclick=()=>{
   const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
   state.config.nick=v; state.config.city=c;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
-  pushLeaderboard();
-  toast(v?"Nick guardado ✓":"Saliste del ranking");
-  renderRanking();
+  scheduleCloudWrite(); // guarda nick/ciudad también en tu álbum (te sigue entre aparatos)
+  if(!v){ leaveLeaderboard().then(renderRanking); toast("Saliste del ranking"); return; }
+  toast("Guardando…");
+  pushLeaderboard().then(()=>{ toast("Nick guardado ✓"); renderRanking(); })
+    .catch(e=>{ toast(e&&e.code==="permission-denied" ? "Falta pegar las reglas de Firebase 🔒" : "No se pudo guardar el nick ✗"); renderRanking(); });
 };
 document.getElementById("rkRefresh").onclick=renderRanking;
 document.getElementById("rkList").addEventListener("click",e=>{
