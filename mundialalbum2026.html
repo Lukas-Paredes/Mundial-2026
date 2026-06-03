@@ -251,18 +251,21 @@
   /* Ranking */
   .rk-nick{background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:14px;}
   .rk-nick label{display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); margin-bottom:6px;}
-  .rk-nickrow{display:flex; gap:8px;}
-  .rk-nickrow input{flex:1; min-width:0; height:42px; border:2px solid var(--line2); border-radius:11px; background:var(--surface); padding:0 12px; font-size:15px; font-weight:600; color:var(--ink);}
-  .rk-nickrow input:focus{outline:none; border-color:var(--c-blue);}
-  .rk-nickrow button{flex:0 0 auto; border:none; border-radius:11px; background:var(--c-blue); color:#fff; font-weight:700; font-size:14px; padding:0 16px; cursor:pointer;}
-  .rk-hint{font-size:11px; color:var(--mut2); margin-top:7px; line-height:1.45;}
+  .rk-in{width:100%; height:42px; border:2px solid var(--line2); border-radius:11px; background:var(--surface); padding:0 12px; font-size:15px; font-weight:600; color:var(--ink);}
+  .rk-in:focus{outline:none; border-color:var(--c-blue);}
+  .rk-savebtn{width:100%; margin-top:9px; border:none; border-radius:11px; background:var(--c-blue); color:#fff; font-weight:700; font-size:14.5px; height:44px; cursor:pointer;}
+  .rk-savebtn:active{transform:scale(.98);}
+  .rk-hint{font-size:11px; color:var(--mut2); margin-top:9px; line-height:1.45;}
   .rk-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
   .rk-ref{flex:0 0 auto; width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink2); font-size:17px; cursor:pointer; line-height:1;}
   .rk-ref:active{transform:scale(.92);}
-  .rk-row{display:flex; align-items:center; gap:11px; padding:11px 10px; border-radius:13px; background:var(--surface); border:1px solid var(--line); margin-bottom:8px;}
+  .rk-tap{font-size:11.5px; color:var(--mut); font-weight:600; margin:8px 2px 11px;}
+  .rk-row{display:flex; align-items:center; gap:11px; padding:11px 10px; border-radius:13px; background:var(--surface); border:1px solid var(--line); margin-bottom:8px; cursor:pointer; transition:transform .1s, border-color .15s;}
+  .rk-row:hover{border-color:var(--c-blue);}
+  .rk-row:active{transform:scale(.985);}
   .rk-row.me{border-color:var(--c-green); background:rgba(0,128,43,.06); box-shadow:0 0 0 1px var(--c-green) inset;}
   .rk-pos{flex:0 0 auto; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:9px; font-family:var(--font-disp); font-weight:900; font-size:14px; background:var(--surface2); color:var(--mut);}
-  .rk-row.top1 .rk-pos{background:linear-gradient(135deg,#FFD75E,#E0A800); color:#5a4500;}
+  .rk-row.top1 .rk-pos{background:linear-gradient(135deg,#FFD75E,#E0A800); color:#5a4500; font-size:18px; box-shadow:0 2px 9px rgba(224,168,0,.55);}
   .rk-row.top2 .rk-pos{background:linear-gradient(135deg,#E2E6EC,#AEB6C2); color:#3a4250;}
   .rk-row.top3 .rk-pos{background:linear-gradient(135deg,#E7A867,#C57B2E); color:#4a2c0a;}
   .rk-mid{flex:1; min-width:0;}
@@ -270,6 +273,7 @@
   .rk-bar{height:6px; border-radius:99px; background:var(--surface2); margin-top:5px; overflow:hidden;}
   .rk-bar i{display:block; height:100%; border-radius:99px; background:var(--c-green);}
   .rk-pct{flex:0 0 auto; font-family:var(--font-disp); font-weight:900; font-size:17px; color:var(--ok-d);}
+  .rk-go{flex:0 0 auto; color:var(--mut2); font-size:18px; margin-left:-4px;}
   .rk-meta{font-size:11px; color:var(--mut2); font-weight:600;}
   .rk-empty{text-align:center; color:var(--mut); font-size:13px; padding:24px 10px; line-height:1.5;}
   .exp-note{font-size:12.5px; line-height:1.55; color:var(--dup-d); background:rgba(242,162,12,.10); border:1.5px solid rgba(242,162,12,.32); border-radius:14px; padding:11px 13px; margin-top:13px;}
@@ -653,7 +657,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.6</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 4.8</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -710,11 +714,14 @@
 
   <div id="hubRanking" style="display:none">
     <div class="rk-nick">
-      <label>Tu nick en el ranking</label>
-      <div class="rk-nickrow"><input id="rkNick" type="text" maxlength="20" placeholder="Ej: ElCachañero" autocomplete="off"><button id="rkSave">Guardar</button></div>
-      <div class="rk-hint">Ponte un nick pa aparecer en la tabla. Los demás solo ven tu <b>nick</b> y tu <b>%</b> — nunca tus láminas ni tu correo. Deja el nick vacío y guardas pa salirte.</div>
+      <label>Tu nick y de dónde eres</label>
+      <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off">
+      <input id="rkCity" class="rk-in" type="text" maxlength="24" placeholder="Ciudad (ej: Calbuco)" autocomplete="off" style="margin-top:8px">
+      <button id="rkSave" class="rk-savebtn">Guardar</button>
+      <div class="rk-hint">Ponte nick pa aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — nunca tu correo. Deja el nick vacío y guardas pa salirte.</div>
     </div>
     <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
+    <div class="rk-tap">👀 Toca a un wn pa ver su álbum y pispear qué cartas tiene</div>
     <div id="rkList"><div class="rk-empty">Cargando…</div></div>
   </div>
 </div></div>
@@ -757,7 +764,7 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},nick:""}, r.config||{}); r.counts=r.counts||{}; return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},nick:"",city:""}, r.config||{}); r.counts=r.counts||{}; return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -1528,28 +1535,39 @@ function pushLeaderboard(){
   const nick=(state.config.nick||"").trim().slice(0,20);
   const ref=cloud.db.collection("leaderboard").doc(cloud.user.uid);
   if(!nick){ ref.delete().catch(()=>{}); return; }
+  const city=(state.config.city||"").trim().slice(0,24);
   const s=leaderStats();
-  ref.set({ nick:nick, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).catch(()=>{});
+  ref.set({ nick:nick, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).catch(()=>{});
 }
 function renderRanking(){
   const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
+  const cityIn=document.getElementById("rkCity"); if(cityIn) cityIn.value=state.config.city||"";
   const list=document.getElementById("rkList");
   if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) pa entrar al ranking 🙌</div>'; return; }
   list.innerHTML='<div class="rk-empty">Cargando…</div>';
   pushLeaderboard();
   cloud.db.collection("leaderboard").get().then(snap=>{
-    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
+    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
     rows.sort((a,b)=> (b.pct-a.pct) || (b.tengo-a.tengo));
     if(!rows.length){ list.innerHTML='<div class="rk-empty">Nadie se ha puesto nick todavía.<br>¡Sé el primero! 🥇</div>'; return; }
     const me=cloud.user.uid;
     list.innerHTML=rows.map((r,i)=>{ const pos=i+1; const top=pos<=3?(" top"+pos):""; const mine=r.uid===me?" me":"";
-      return '<div class="rk-row'+top+mine+'"><div class="rk-pos">'+pos+'</div>'
+      const place=r.city?("📍 "+esc(r.city)+" · "):"";
+      const posLabel = pos===1 ? '👑' : pos;
+      return '<div class="rk-row'+top+mine+'" data-uid="'+esc(r.uid)+'"><div class="rk-pos">'+posLabel+'</div>'
         +'<div class="rk-mid"><div class="rk-nm">'+esc(r.nick)+(mine?' <span class="rk-meta">(tú)</span>':'')+'</div>'
         +'<div class="rk-bar"><i style="width:'+r.pct+'%"></i></div>'
-        +'<div class="rk-meta">'+r.tengo+'/'+r.total+' láminas</div></div>'
-        +'<div class="rk-pct">'+r.pct+'%</div></div>';
+        +'<div class="rk-meta">'+place+r.tengo+'/'+r.total+' láminas</div></div>'
+        +'<div class="rk-pct">'+r.pct+'%</div><div class="rk-go">›</div></div>';
     }).join("");
   }).catch(e=>{ list.innerHTML='<div class="rk-empty">No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span></div>'; });
+}
+function viewPersonAlbum(uid){
+  document.getElementById("ovLujito").classList.remove("show");
+  sortMode="overview";
+  const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="overview")); }
+  goToAlbum(uid);
+  try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); }
 }
 /* tabs */
 function hubShow(t){
@@ -1733,13 +1751,20 @@ document.getElementById("joinGo").onclick=()=>{
 document.getElementById("viewBack").onclick=()=>{ goToAlbum(""); updateCloudUI(); toast("Volviste a tu álbum ✓"); };
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
-  state.config.nick=v;
+  const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
+  state.config.nick=v; state.config.city=c;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
   pushLeaderboard();
   toast(v?"Nick guardado ✓":"Saliste del ranking");
   renderRanking();
 };
 document.getElementById("rkRefresh").onclick=renderRanking;
+document.getElementById("rkList").addEventListener("click",e=>{
+  const row=e.target.closest(".rk-row"); if(!row) return;
+  const uid=row.dataset.uid; if(!uid||!cloud.user) return;
+  if(uid===cloud.user.uid){ document.getElementById("ovLujito").classList.remove("show"); return; }
+  viewPersonAlbum(uid);
+});
 
 /* ---------- go ---------- */
 /* Anti-autollenado de Chrome/Edge: los campos parten "readonly" para que el
