@@ -135,6 +135,12 @@
   .grp-h{display:flex; align-items:center; gap:11px; margin:24px 2px 12px;}
   .grp-h .tag{font-family:var(--font-disp); font-weight:800; font-size:13px; letter-spacing:.04em; color:#fff; text-transform:uppercase; padding:7px 15px; border-radius:999px 999px 999px 4px; box-shadow:var(--shadow-sm);}
   .grp-h .line{flex:1; height:3px; background:var(--line2); border-radius:3px;}
+  .grp-h .grp-pg{display:inline-flex; align-items:center; gap:5px; flex:0 0 auto; font-size:12px; font-weight:700; background:var(--surface); border:1.5px solid var(--line2); border-radius:999px; padding:5px 11px; box-shadow:var(--shadow-sm);}
+  .grp-h .grp-pg .pgic{font-size:11px; opacity:.85;}
+  .grp-h .grp-pg .gp-val{font-family:var(--font-mono); min-width:16px; outline:none; color:var(--ink2);}
+  .grp-h .grp-pg .gp-val:empty:before{content:attr(data-ph); color:var(--mut2); font-family:var(--font-ui); font-weight:600;}
+  .grp-h .grp-pg .gp-val:focus{color:var(--ink);}
+  .team-name .cd-pg{color:var(--c-blue); font-weight:700;}
 
   .team{position:relative; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:15px 15px 16px; margin-bottom:13px; box-shadow:var(--shadow); overflow:hidden;}
   .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
@@ -303,6 +309,11 @@
   .set-btn.danger{color:var(--red); border-color:rgba(200,32,42,.3);}
   .set-btn.lx{color:var(--c-violet); border-color:rgba(106,27,154,.32); background:linear-gradient(90deg, rgba(106,27,154,.09), rgba(242,162,12,.08)); font-weight:800;}
   .set-btn.lx:hover{border-color:var(--c-violet);}
+  .pgcalc{border:1.5px solid var(--line2); background:var(--surface2); border-radius:14px; padding:13px 14px; margin-top:12px;}
+  .pgcalc-row{display:flex; gap:8px;}
+  .pgcalc-row input{flex:1; min-width:0; height:46px; border:2px solid var(--line2); background:var(--surface); border-radius:12px; padding:0 13px; font-size:16px; font-family:var(--font-mono); color:var(--ink);}
+  .pgcalc-row input:focus{outline:none; border-color:var(--c-blue);}
+  .pgcalc-row .btn{flex:0 0 auto; height:46px; padding:0 18px; border-radius:12px;}
 
   /* Lujito: lo más importante */
   .lx-sec{margin-bottom:18px;}
@@ -825,6 +836,16 @@
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FWC1–FWC19)</div><div class="des">Sección de 20 láminas especiales (foil)</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Felicitar al sacar un crack 🎉</div><div class="des">Ventana con felicitación y un dato cuando marcas un crack</div></div><label class="switch"><input type="checkbox" id="tgCelebrate" checked><span class="tr"></span></label></div>
+  <div class="pgcalc">
+    <div class="lab" style="margin-bottom:5px">📄 Índice de páginas por grupo</div>
+    <div class="des" style="margin-bottom:9px">Pon en qué página de tu álbum empieza el <b>Grupo A (México)</b> y calculo los 12 grupos solos (8 páginas por grupo).</div>
+    <div class="pgcalc-row">
+      <input id="pgStart" type="number" inputmode="numeric" min="1" max="112" placeholder="pág. de México" autocomplete="off">
+      <button class="btn btn-blue" id="pgCalc">Calcular</button>
+    </div>
+    <button class="set-btn" id="pgClear" style="margin-top:9px">Borrar páginas calculadas</button>
+    <div class="tip" style="text-align:left;margin-top:6px">Si tu álbum trae la doble de Coca-Cola u otras láminas entremedio, ajusta a mano los grupos corridos (toca el número al lado del grupo).</div>
+  </div>
   <button class="set-btn" id="btnCloud2">Nube y compartir</button>
   <button class="set-btn" id="btnTrade">Listas para canjes (faltan / repetidas)</button>
   <button class="set-btn" id="btnExcel">Exportar a Excel (.xlsx)</button>
@@ -841,7 +862,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.0</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.4</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -967,7 +988,19 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
+const GROUP_PAGES={A:"8–15",B:"16–23",C:"24–31",D:"32–39",E:"40–47",F:"48–55",G:"58–65",H:"66–73",I:"74–81",J:"82–89",K:"90–97",L:"98–105"};
+const SPECIAL_PAGES={"00":"1","FWC9":"106","FWC10":"106","FWC11":"106","FWC12":"107","FWC13":"107","FWC14":"107","FWC15":"108","FWC16":"108","FWC17":"108","FWC18":"109","FWC19":"109"};
+function teamPageRange(code){
+  if(typeof GROUP_PAGES==="undefined") return "";
+  let g=null, idx=-1;
+  for(const gr of GROUPS){ const i=gr.teams.findIndex(t=>t[0]===code); if(i>=0){ g=gr; idx=i; break; } }
+  if(!g) return "";
+  const gp=(state.config.groupPages&&state.config.groupPages[g.id])||GROUP_PAGES[g.id]||"";
+  const m=gp.match(/\d+/); if(!m) return "";
+  const start=parseInt(m[0],10)+idx*2;
+  return start+"–"+(start+1);
+}
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -1171,8 +1204,9 @@ function makeTeam(code,name,flag,term){
   const team=document.createElement("div"); team.className="team"; team.style.setProperty("--accent",accent);
   let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
   const pct=Math.round(have/20*100);
+  const _tpg=teamPageRange(code);
   const th=document.createElement("div"); th.className="team-h";
-  th.innerHTML=flagHTML(code, flag)+'<div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  th.innerHTML=flagHTML(code, flag)+'<div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20'+(_tpg?' · <span class="cd-pg">📄 '+_tpg+'</span>':'')+'</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
   team.appendChild(th);
   const cells=document.createElement("div"); cells.className="cells"; let vis=0;
   for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i));
@@ -1358,7 +1392,12 @@ function render(){
     GROUPS.forEach(g=>{
       const gWrap=document.createElement("div"); gWrap.className="grp";
       const gh=document.createElement("div"); gh.className="grp-h";
-      gh.innerHTML='<span class="tag" style="background:'+g.color+'">Grupo '+g.id+'</span><span class="line"></span>';
+      const _gp=(state.config.groupPages&&state.config.groupPages[g.id])||(typeof GROUP_PAGES!=="undefined"&&GROUP_PAGES[g.id])||"";
+      gh.innerHTML='<span class="tag" style="background:'+g.color+'">Grupo '+g.id+'</span><span class="line"></span><span class="grp-pg"><span class="pgic">📄</span><span class="gp-val" contenteditable="true" spellcheck="false" data-ph="pág.">'+escHTML(_gp)+'</span></span>';
+      const _gpEl=gh.querySelector(".gp-val");
+      _gpEl.addEventListener("click",e=>e.stopPropagation());
+      _gpEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); _gpEl.blur(); } });
+      _gpEl.addEventListener("blur",()=>{ const v=(_gpEl.textContent||"").replace(/[^0-9–-]/g,"").slice(0,9); _gpEl.textContent=v; if(!state.config.groupPages) state.config.groupPages={}; if(v) state.config.groupPages[g.id]=v; else delete state.config.groupPages[g.id]; save(); });
       gWrap.appendChild(gh); let groupHasVisible=false;
       g.teams.forEach(t=>{ const team=makeTeam(t[0],t[1],t[2],term); if(!team.classList.contains("hide")) groupHasVisible=true; gWrap.appendChild(team); });
       if(!groupHasVisible) gWrap.classList.add("hide"); main.appendChild(gWrap);
@@ -1379,7 +1418,7 @@ function render(){
       vis++;
       const s=cellState(c), n=getCount(c);
       const numLabel=c==="00"?"00":c.replace("FWC","");
-      const pg=(state.config.specialPages&&state.config.specialPages[c])||"";
+      const pg=(state.config.specialPages&&state.config.specialPages[c])||(typeof SPECIAL_PAGES!=="undefined"&&SPECIAL_PAGES[c])||"";
       const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
       row.innerHTML='<span class="snum">'+numLabel+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
         +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span><span class="scode">'+c+'</span></span>'
@@ -1774,10 +1813,23 @@ manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault
 
 /* ---------- settings ---------- */
 const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
-document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; if(typeof showAdminUI==="function") showAdminUI(); ovSet.classList.add("show"); };
+document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; if(typeof showAdminUI==="function") showAdminUI(); const _ps=document.getElementById("pgStart"); if(_ps) _ps.value=state.config.teamsStartPage||""; ovSet.classList.add("show"); };
 tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
 tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
 (function(){ const tc=document.getElementById("tgCelebrate"); if(tc) tc.onchange=()=>{ state.config.celebrate=tc.checked; save(); }; })();
+(function(){
+  const calcBtn=document.getElementById("pgCalc"), startInp=document.getElementById("pgStart"), clearBtn=document.getElementById("pgClear");
+  if(startInp) startInp.value=state.config.teamsStartPage||"";
+  if(calcBtn) calcBtn.onclick=()=>{
+    const S=parseInt(startInp.value,10);
+    if(!S||S<1){ toast("Pon la página donde empieza México"); return; }
+    state.config.teamsStartPage=S;
+    if(!state.config.groupPages) state.config.groupPages={};
+    GROUPS.forEach((g,i)=>{ const off=(i>=6?2:0); const a=S+i*8+off, b=a+7; state.config.groupPages[g.id]=a+"–"+b; });
+    save(); render(); toast("Páginas calculadas ✓ (ajusta si hace falta)");
+  };
+  if(clearBtn) clearBtn.onclick=()=>{ state.config.groupPages={}; state.config.teamsStartPage=0; if(startInp) startInp.value=""; save(); render(); toast("Páginas borradas"); };
+})();
 (function(){ const sb=document.getElementById("starClose"), ov=document.getElementById("ovStar"); if(sb) sb.onclick=closeStar; if(ov) ov.addEventListener("click",e=>{ if(e.target===ov) closeStar(); }); })();
 document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="album-mundial-2026-respaldo.json"; a.click(); URL.revokeObjectURL(a.href); toast("Respaldo descargado ⬇️"); };
 
@@ -2278,6 +2330,7 @@ function subscribeAlbum(){
     state.counts = (data.counts && typeof data.counts==="object") ? data.counts : {};
     if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
     if(data.specialPages && typeof data.specialPages==="object") state.config.specialPages=data.specialPages;
+    if(data.groupPages && typeof data.groupPages==="object") state.config.groupPages=data.groupPages;
     if(!cloud.viewOnly){ if(typeof data.nick==="string") state.config.nick=data.nick; if(typeof data.city==="string") state.config.city=data.city; }
     try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
     render(); cloud.applyingRemote=false;
@@ -2286,7 +2339,7 @@ function subscribeAlbum(){
 function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote||cloud.viewOnly) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
 function pushCloud(seed){
   if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return; const id=currentAlbumId(); if(!id) return;
-  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, specialPages:state.config.specialPages||{}, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, specialPages:state.config.specialPages||{}, groupPages:state.config.groupPages||{}, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
   pushLeaderboard();
 }
 function goToAlbum(code){
