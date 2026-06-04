@@ -169,6 +169,7 @@
   .team .cd .cstand{color:var(--c-green); font-weight:800;}
   .team .cd .cstand.gold{color:var(--c-amber);}
   .ed-code .ed-stat-ro{display:none; margin-top:8px; font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--c-green);}
+  .ed-code .ed-value{display:none; margin-top:6px; font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--dup-d);}
   .team .rchev{flex:0 0 auto; color:var(--mut2); font-size:13px; transition:transform .2s;}
   .team.open .rchev{transform:rotate(180deg);}
   .roster{margin-top:12px; border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
@@ -181,6 +182,7 @@
   .rrow .rname{font-weight:700; font-size:14px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .rrow .rpos{flex:0 0 auto; font-size:10px; font-weight:800; letter-spacing:.04em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 6px;}
   .rrow .rstat{flex:0 0 auto; max-width:46%; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--c-green); text-align:right; line-height:1.25;}
+  .rrow .rchev2{flex:0 0 auto; color:var(--mut2); font-size:19px; font-weight:700; line-height:1;}
   .rrow.hit{outline:2px solid var(--c-pink); outline-offset:1px;}
   .ed-code .st{display:inline-block; margin-top:11px; font-size:12px; padding:5px 13px; border-radius:999px; font-weight:700;}
   .st.s0{background:var(--surface2); color:var(--mut); border:1px solid var(--line2);}
@@ -544,7 +546,7 @@
 <!-- CELL EDITOR -->
 <div class="ov" id="ovEdit"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Lámina</h2><button class="x" data-close>✕</button></div>
-  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="ed-stat-ro" id="edStatRo"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
+  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="ed-stat-ro" id="edStatRo"></div><div class="ed-value" id="edValue"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
   <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
   <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
 </div></div>
@@ -688,7 +690,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.9</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.0</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1037,6 +1039,8 @@ const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool
 function playerPos(code){ return POS[code]||''; }
 const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
 function playerStat(code){ return PLAYER_STATS[code]||''; }
+const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 200 M€","NOR15":"≈ 200 M€","BRA14":"≈ 180 M€","ENG11":"≈ 180 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","ENG12":"≈ 130 M€","ESP10":"≈ 120 M€","ENG16":"≈ 110 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","POR10":"≈ 55 M€","ARG17":"≈ 20 M€","POR15":"≈ 12 M€"};
+function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
   const nameHit = !dterm || deburr(club.name).includes(dterm);
@@ -1060,10 +1064,9 @@ function makeClub(club, term){
   club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
     const s=cellState(c);
     const row=document.createElement("div"); row.className="rrow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
-    const nm=playerName(c)||c, pos=playerPos(c)||"", sv=playerStat(c);
-    const pa=({"Portero":"POR","Defensa":"DEF","Mediocampista":"MED","Delantero":"DEL"})[pos]||"";
+    const nm=playerName(c)||c;
     if(dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm)) row.classList.add("hit");
-    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span>'+(pa?'<span class="rpos" title="'+escHTML(pos)+'">'+pa+'</span>':'')+'</span>'+(sv?'<span class="rstat">'+escHTML(sv)+'</span>':'');
+    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span></span><span class="rchev2">›</span>';
     row.addEventListener("click",()=>openEditor(c));
     roster.appendChild(row);
   });
@@ -1195,6 +1198,7 @@ function openEditor(code){
   const pn=playerName(code); const ep=document.getElementById("edPlayer"); ep.textContent=pn; ep.style.display=pn?"block":"none";
   const ps=playerPos(code); const epz=document.getElementById("edPos"); epz.textContent=ps; epz.style.display=ps?"inline-block":"none";
   const sv=playerStat(code); const esr=document.getElementById("edStatRo"); esr.textContent=sv; esr.style.display=sv?"block":"none";
+  const mv=playerValue(code); const evz=document.getElementById("edValue"); evz.textContent=mv; evz.style.display=mv?"block":"none";
   refreshEditor(); ovEdit.classList.add("show");
 }
 function displayCode(code){
