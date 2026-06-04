@@ -187,6 +187,27 @@
   .srow .sright{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
   .srow .spos{font-size:10px; font-weight:800; letter-spacing:.03em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; white-space:nowrap;}
   .srow .sval{font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--dup-d); white-space:nowrap;}
+  .cracks-sum{font-size:14.5px; color:var(--ink2); font-weight:700; margin:0 2px 14px;}
+  .cracks-sum b{color:var(--c-pink); font-family:var(--font-disp); font-size:17px;}
+  .tier-sec{margin-bottom:18px;}
+  .tier-h{display:flex; align-items:center; gap:9px; padding:9px 13px; border-radius:13px; background:var(--surface2); border:1px solid var(--line); border-left:5px solid var(--tc); margin-bottom:11px;}
+  .tier-ic{font-size:20px; line-height:1;}
+  .tier-nm{font-family:var(--font-disp); font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:-.01em; color:var(--ink);}
+  .tier-sub{font-size:11px; color:var(--mut); font-weight:700;}
+  .tier-ct{margin-left:auto; font-family:var(--font-mono); font-weight:700; font-size:13.5px; color:var(--tc);}
+  .crack-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:9px;}
+  .crack-card{position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px 11px; border-radius:16px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; text-align:center; transition:transform .1s;}
+  .crack-card:active{transform:scale(.97);}
+  .crack-card.got{border-color:var(--tc); box-shadow:0 5px 16px rgba(0,0,0,.07);}
+  .crack-card.got:before{content:""; position:absolute; inset:0; border-radius:15px; background:var(--tc); opacity:.07; pointer-events:none;}
+  .crack-card.locked{opacity:.55; filter:grayscale(.7);}
+  .crack-card .crack-flag{height:24px; display:flex; align-items:center; justify-content:center;}
+  .crack-card .crack-flag img.crackflag{width:34px; height:23px; border-radius:4px; object-fit:cover; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .crack-card .crack-flag .flag{font-size:23px;}
+  .crack-card .crack-nm{font-weight:800; font-size:12.5px; line-height:1.12; color:var(--ink);}
+  .crack-card .crack-state{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.03em;}
+  .crack-card.got .crack-state{color:var(--ok-d);}
+  .crack-card.locked .crack-state{color:var(--mut2);}
   .rrow{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
   .rrow:active{transform:scale(.99);}
   .rrow .rnum{flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
@@ -505,6 +526,7 @@
       <h1 class="disp">Mi Álbum</h1>
     </div>
     <div class="hbtns">
+      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">💎</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
@@ -556,6 +578,14 @@
   </svg>
   Escanear
 </button>
+
+<!-- CRACKS (galería con tiers) -->
+<div class="ov" id="ovCracks"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">💎 Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="cracks-sum" id="cracksSum"></div>
+  <div id="cracksBody"></div>
+  <div class="tip">Toca un crack pa' marcarlo o ver su info. Los que te faltan salen 🔒.</div>
+</div></div>
 
 <!-- SQUAD (nómina en ventana) -->
 <div class="ov" id="ovSquad"><div class="sheet">
@@ -712,7 +742,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.3</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.4</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1102,6 +1132,48 @@ const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 g
 function playerStat(code){ return PLAYER_STATS[code]||''; }
 const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 200 M€","NOR15":"≈ 200 M€","BRA14":"≈ 180 M€","ENG11":"≈ 180 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","ENG12":"≈ 130 M€","ESP10":"≈ 120 M€","ENG16":"≈ 110 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","POR10":"≈ 55 M€","ARG17":"≈ 20 M€","POR15":"≈ 12 M€","URU10":"≈ 130 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","NOR10":"≈ 100 M€","BRA15":"≈ 100 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 70 M€","MAR4":"≈ 65 M€","EGY17":"≈ 50 M€","POR9":"≈ 50 M€","GER10":"≈ 50 M€","KOR18":"≈ 40 M€","BEL15":"≈ 35 M€","NED3":"≈ 35 M€","ARG2":"≈ 28 M€","BEL2":"≈ 25 M€","CRO9":"≈ 10 M€","COL14":"≈ 6 M€"};
 function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
+
+/* ---------- tiers de cracks ---------- */
+const TIERS=[
+  {key:"diamante", name:"Diamante", icon:"💎", color:"#39BEE6", sub:"Los GOAT"},
+  {key:"oro", name:"Oro", icon:"🥇", color:"#F2A20C", sub:"Élite mundial"},
+  {key:"plata", name:"Plata", icon:"🥈", color:"#8E9AA8", sub:"Figuras top"},
+  {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Cracks"}
+];
+const CRACK_TIER={
+  "ARG17":"diamante","POR15":"diamante",
+  "FRA20":"oro","NOR15":"oro","BRA14":"oro","ESP15":"oro","ENG11":"oro","CRO9":"oro","BEL15":"oro","ESP10":"oro",
+  "EGY17":"plata","KOR18":"plata","ENG18":"plata","NED3":"plata","ESP11":"plata","ENG16":"plata","ENG17":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG18":"plata","ARG19":"plata","NOR10":"plata","POR9":"plata","ARG2":"plata","BEL2":"plata","ENG10":"plata","COL14":"plata","POR10":"plata",
+  "BRA15":"bronce","MAR4":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce"
+};
+function buildCrackCard(code, tier){
+  const got=getCount(code)>0, meta=CODE_TEAM[code];
+  const card=document.createElement("div"); card.className="crack-card"+(got?" got":" locked"); card.style.setProperty("--tc",tier.color); card.dataset.code=code;
+  const nm=playerName(code)||code;
+  card.innerHTML='<div class="crack-flag">'+(meta?flagHTML(meta.code,meta.flag,"crackflag"):'<span class="flag">⭐</span>')+'</div>'
+    +'<div class="crack-nm">'+escHTML(nm)+'</div>'
+    +'<div class="crack-state">'+(got?'✓ conseguido':'🔒 te falta')+'</div>';
+  card.addEventListener("click",()=>openEditor(code));
+  return card;
+}
+function openCracks(){
+  const all=Object.keys(STAR_FACTS);
+  const got=all.filter(c=>getCount(c)>0).length;
+  document.getElementById("cracksSum").innerHTML='Llevas <b>'+got+'</b> de <b>'+all.length+'</b> cracks 🔥';
+  const body=document.getElementById("cracksBody"); body.innerHTML="";
+  TIERS.forEach(t=>{
+    const codes=all.filter(c=>CRACK_TIER[c]===t.key);
+    if(!codes.length) return;
+    codes.sort((a,b)=>{ const ga=getCount(a)>0?0:1, gb=getCount(b)>0?0:1; if(ga!==gb) return ga-gb; return (playerName(a)||a).localeCompare(playerName(b)||b,"es"); });
+    const gt=codes.filter(c=>getCount(c)>0).length;
+    const sec=document.createElement("div"); sec.className="tier-sec";
+    sec.innerHTML='<div class="tier-h" style="--tc:'+t.color+'"><span class="tier-ic">'+t.icon+'</span><span class="tier-nm">'+t.name+'</span><span class="tier-sub">'+t.sub+'</span><span class="tier-ct">'+gt+'/'+codes.length+'</span></div>';
+    const grid=document.createElement("div"); grid.className="crack-grid";
+    codes.forEach(c=>grid.appendChild(buildCrackCard(c,t)));
+    sec.appendChild(grid); body.appendChild(sec);
+  });
+  document.getElementById("ovCracks").classList.add("show");
+}
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
   const nameHit = !dterm || deburr(club.name).includes(dterm);
@@ -1917,6 +1989,7 @@ function openHub(){
   document.getElementById("ovLujito").classList.add("show");
 }
 document.getElementById("btnHub").onclick=openHub;
+document.getElementById("btnCracks").onclick=openCracks;
 
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
