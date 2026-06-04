@@ -187,6 +187,12 @@
   .srow .sright{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
   .srow .spos{font-size:10px; font-weight:800; letter-spacing:.03em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; white-space:nowrap;}
   .srow .sval{font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--dup-d); white-space:nowrap;}
+  .srow .scode{font-family:var(--font-mono); font-size:10.5px; color:var(--mut2); font-weight:700; letter-spacing:.02em;}
+  .spec-list .sright{display:flex; flex-direction:row; align-items:center; gap:5px;}
+  .srow .pgic{font-size:13px; opacity:.65;}
+  .srow .specpage{min-width:30px; text-align:center; font-family:var(--font-mono); font-weight:800; font-size:13px; color:var(--c-blue); border:1px dashed var(--line2); border-radius:8px; padding:3px 8px; cursor:text; transition:border-color .15s;}
+  .srow .specpage:empty:before{content:"pág?"; color:var(--mut2); font-weight:600;}
+  .srow .specpage:focus{outline:none; border-color:var(--c-blue); border-style:solid; background:rgba(91,160,230,.08);}
   .cracks-sum{font-size:14.5px; color:var(--ink2); font-weight:700; margin:0 2px 14px;}
   .cracks-sum b{color:var(--c-pink); font-family:var(--font-disp); font-size:17px;}
   .tier-sec{margin-bottom:18px;}
@@ -548,7 +554,7 @@
 
 <div class="toolbar">
   <div class="qa">
-    <input id="quickAdd" type="text" name="album-codigo" aria-label="Anotar código de lámina" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
+    <input id="quickAdd" type="text" name="album-codigo" aria-label="Anotar código de lámina" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly placeholder="Anota un código: ej. ARG5, BRA12, FWC3…" />
     <button id="qaBtn">+ Sumar</button>
   </div>
   <div id="recentTray" class="recent" style="display:none"></div>
@@ -730,7 +736,7 @@
 
 <div class="ov" id="ovSet"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
-  <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
+  <div class="set-row"><div><div class="lab">Especiales FIFA (00, FWC1–FWC19)</div><div class="des">Sección de 20 láminas especiales (foil)</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Felicitar al sacar un crack 🎉</div><div class="des">Ventana con felicitación y un dato cuando marcas un crack</div></div><label class="switch"><input type="checkbox" id="tgCelebrate" checked><span class="tr"></span></label></div>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
@@ -742,7 +748,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.4</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.5</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -843,7 +849,8 @@ const GROUPS = [
   {id:"K", color:"#7B2D8E", teams:[["POR","Portugal","🇵🇹"],["COD","RD Congo","🇨🇩"],["UZB","Uzbekistán","🇺🇿"],["COL","Colombia","🇨🇴"]]},
   {id:"L", color:"#A4123F", teams:[["ENG","Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],["CRO","Croacia","🇭🇷"],["GHA","Ghana","🇬🇭"],["PAN","Panamá","🇵🇦"]]},
 ];
-const SPECIAL_CODES = ["00"]; for(let i=1;i<=19;i++) SPECIAL_CODES.push("FW"+i);
+const SPECIAL_CODES = ["00"]; for(let i=1;i<=19;i++) SPECIAL_CODES.push("FWC"+i);
+const SPECIAL_NAMES={"00":"Logo Panini","FWC1":"Emblema oficial","FWC2":"Emblema oficial","FWC3":"Mascotas oficiales","FWC4":"Eslogan oficial","FWC5":"Balón oficial","FWC6":"Sede: Canadá","FWC7":"Sede: México","FWC8":"Sede: USA","FWC9":"Italia 1934","FWC10":"Uruguay 1950","FWC11":"Alemania 1954","FWC12":"Brasil 1962","FWC13":"Alemania 1974","FWC14":"Argentina 1986","FWC15":"Brasil 1994","FWC16":"Brasil 2002","FWC17":"Italia 2006","FWC18":"Alemania 2014","FWC19":"Argentina 2022"};
 const EXTRA_COLORS = [["O","Oro","🥇"],["P","Plata","🥈"],["B","Bronce","🥉"],["M","Morado","🟣"]];
 const EXTRA_COUNT = 20;
 
@@ -864,7 +871,7 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -1000,7 +1007,7 @@ function closeStar(){ if(!_starShowing) return; _starShowing=false; const ov=doc
 function normalize(raw){
   let s=raw.toUpperCase().replace(/[^A-Z0-9]/g,""); if(!s) return null;
   if(s==="00") return state.config.specials?"00":null;
-  let m=s.match(/^FW(\d{1,2})$/); if(m){ const c="FW"+parseInt(m[1],10); return (state.config.specials&&VALID_SPECIAL.has(c))?c:null; }
+  let m=s.match(/^FWC?(\d{1,2})$/); if(m){ const c="FWC"+parseInt(m[1],10); return (state.config.specials&&VALID_SPECIAL.has(c))?c:null; }
   m=s.match(/^([A-Z]{3})0*(\d{1,2})$/); if(m){ const c=m[1]+parseInt(m[2],10); return VALID_TEAM.has(c)?c:null; }
   return null;
 }
@@ -1009,8 +1016,8 @@ function findCodes(text){
   const push=c=>{ if(c&&!seen.has(c)){ seen.add(c); out.push(c); } };
   let m; const reTeam=/([A-Z]{3})\s*[-–—]?\s*0*(\d{1,2})/g;
   while((m=reTeam.exec(up))){ const c=m[1]+parseInt(m[2],10); if(VALID_TEAM.has(c)) push(c); }
-  const reFW=/F\s*W\s*[-–—]?\s*0*(\d{1,2})/g;
-  while((m=reFW.exec(up))){ const c="FW"+parseInt(m[1],10); if(state.config.specials&&VALID_SPECIAL.has(c)) push(c); }
+  const reFW=/F\s*W\s*C?\s*[-–—]?\s*0*(\d{1,2})/g;
+  while((m=reFW.exec(up))){ const c="FWC"+parseInt(m[1],10); if(state.config.specials&&VALID_SPECIAL.has(c)) push(c); }
   return out;
 }
 
@@ -1250,15 +1257,33 @@ function render(){
     });
   }
   if(state.config.specials){
-    const matchS=!term||"especiales fifa fw 00".includes(term);
     const gWrap=document.createElement("div"); gWrap.className="grp";
     gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#ffb020,#ff8a00)">Especiales</span><span class="line"></span></div>';
-    const team=document.createElement("div"); team.className="team"; let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
+    const team=document.createElement("div"); team.className="team"; team.style.setProperty("--accent","#F2A20C");
+    let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
     const pct=Math.round(have/SPECIAL_CODES.length*100);
-    team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FW1–FW19</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
-    const cells=document.createElement("div"); cells.className="cells"; let vis=0;
-    SPECIAL_CODES.forEach(c=>{ const cell=buildCell(c,c==="00"?"00":c.replace("FW","")); const show=matchS&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
-    team.appendChild(cells); if(vis===0){ team.classList.add("hide"); if(term) gWrap.classList.add("hide"); } gWrap.appendChild(team); main.appendChild(gWrap);
+    team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FWC1–FWC19 · repartidas por el álbum</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
+    const list=document.createElement("div"); list.className="squad-list spec-list"; let vis=0;
+    SPECIAL_CODES.forEach(c=>{
+      const nm=SPECIAL_NAMES[c]||c;
+      const match=!term||nm.toLowerCase().includes(term)||c.toLowerCase().includes(term)||"especiales fifa fwc 00".includes(term);
+      if(!(match&&passFilter(c))) return;
+      vis++;
+      const s=cellState(c), n=getCount(c);
+      const numLabel=c==="00"?"00":c.replace("FWC","");
+      const pg=(state.config.specialPages&&state.config.specialPages[c])||"";
+      const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
+      row.innerHTML='<span class="snum">'+numLabel+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
+        +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span><span class="scode">'+c+'</span></span>'
+        +'<span class="sright"><span class="pgic">📄</span><span class="specpage" contenteditable="true" spellcheck="false">'+escHTML(pg)+'</span></span>';
+      const pgEl=row.querySelector(".specpage");
+      pgEl.addEventListener("click",e=>e.stopPropagation());
+      pgEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); pgEl.blur(); } });
+      pgEl.addEventListener("blur",()=>{ const v=(pgEl.textContent||"").replace(/[^0-9]/g,"").slice(0,3); pgEl.textContent=v; if(!state.config.specialPages) state.config.specialPages={}; if(v) state.config.specialPages[c]=v; else delete state.config.specialPages[c]; save(); });
+      row.addEventListener("click",()=>openEditor(c));
+      list.appendChild(row);
+    });
+    team.appendChild(list); if(vis===0){ team.classList.add("hide"); if(term) gWrap.classList.add("hide"); } gWrap.appendChild(team); main.appendChild(gWrap);
   }
   if(state.config.extras){
     const matchE=!term||"extra stickers foil leyendas oro plata bronce morado".includes(term);
@@ -1312,7 +1337,7 @@ function updateStats(){
 /* ---------- editor ---------- */
 let editCode=null; const ovEdit=document.getElementById("ovEdit");
 function openEditor(code){
-  editCode=code; const meta=CODE_TEAM[code]; let who="Especial FIFA";
+  editCode=code; const meta=CODE_TEAM[code]; let who=SPECIAL_NAMES[code]?("⭐ "+SPECIAL_NAMES[code]):"Especial FIFA";
   if(meta) who=flagHTML(meta.code, meta.flag, "flaginline")+meta.name+" · Grupo "+meta.group;
   else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
   document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
@@ -1518,10 +1543,10 @@ function aiPrompt(){
   const teamCodes=GROUPS.map(g=>g.teams.map(t=>t[0]).join(", ")).join(", ");
   return "Estas son fotos de figuritas (láminas) del álbum Panini de la Copa del Mundo FIFA 2026. "
     +"Cada lámina lleva un código impreso: 3 letras del equipo seguidas de un número del 1 al 20 (ejemplos: ARG5, BRA20, MEX1), "
-    +"o un código especial: 00, o FW1 hasta FW19. "
+    +"o un código especial: 00, o FWC1 hasta FWC19. "
     +"Los códigos de equipo válidos (3 letras) son exactamente estos: "+teamCodes+". "
     +"Mira las imágenes con mucha atención y devuelve SOLO un arreglo JSON con los códigos que puedas leer con claridad, en MAYÚSCULAS y sin espacios. "
-    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FW3\"]. "
+    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FWC3\"]. "
     +"Si no logras leer ninguno, responde []. No agregues texto, comentarios ni explicaciones: solo el arreglo JSON.";
 }
 function fileToScaledBase64(file, maxDim, q){
@@ -1657,7 +1682,7 @@ function ensureXLSX(cb){
 }
 function codeLabel(c){
   if(CODE_TEAM[c]){ const t=CODE_TEAM[c]; return t.name+" "+c.slice(t.code.length); }
-  if(c==="00"||/^FW\d+$/.test(c)) return "Especial "+c;
+  if(c==="00"||/^FWC\d+$/.test(c)) return "Especial: "+(SPECIAL_NAMES[c]||c)+" ("+c+")";
   const m=c.match(/^X(\d+)([OPBM])$/); if(m){ const pn=state.config.extraNames["p"+m[1]]||("Jugador "+m[1]); const col={O:"Oro",P:"Plata",B:"Bronce",M:"Morado"}[m[2]]; return "Extra: "+pn+" ("+col+")"; }
   return c;
 }
@@ -2041,6 +2066,7 @@ function subscribeAlbum(){
     cloud.applyingRemote=true;
     state.counts = (data.counts && typeof data.counts==="object") ? data.counts : {};
     if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
+    if(data.specialPages && typeof data.specialPages==="object") state.config.specialPages=data.specialPages;
     if(!cloud.viewOnly){ if(typeof data.nick==="string") state.config.nick=data.nick; if(typeof data.city==="string") state.config.city=data.city; }
     try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
     render(); cloud.applyingRemote=false;
@@ -2049,7 +2075,7 @@ function subscribeAlbum(){
 function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote||cloud.viewOnly) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
 function pushCloud(seed){
   if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return; const id=currentAlbumId(); if(!id) return;
-  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, specialPages:state.config.specialPages||{}, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
   pushLeaderboard();
 }
 function goToAlbum(code){
