@@ -57,6 +57,16 @@
   .icbtn:hover{box-shadow:var(--shadow);}
   .icbtn:active{transform:scale(.94);}
 
+  /* HERO MUNDIAL (copa + lockup tipo portada) */
+  .hero{position:relative; display:flex; align-items:center; gap:13px; padding:14px 16px 13px;
+        background:radial-gradient(130% 150% at 100% -10%, rgba(0,103,185,.07), transparent 55%), linear-gradient(180deg,#fff,#FCFBF9);
+        border-bottom:1px solid var(--line);}
+  .hero .trophy{flex:0 0 auto; width:44px; height:auto; filter:drop-shadow(0 4px 8px rgba(169,118,27,.38));}
+  .hero-lock{display:flex; flex-direction:column; line-height:1; min-width:0;}
+  .hero-kick{font-family:var(--font-disp); font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--mut);}
+  .hero-big{font-family:var(--font-disp); font-weight:900; font-size:28px; letter-spacing:-.01em; text-transform:uppercase; color:var(--ink); margin-top:5px;}
+  .hero-big b{font-weight:900; background:linear-gradient(90deg,var(--c-blue),var(--c-green) 42%,var(--c-amber) 70%,var(--c-pink)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+
   .cloudpill{position:relative; display:inline-flex; align-items:center; gap:7px; margin-top:14px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line2); background:var(--surface2); font-size:12.5px; font-weight:600; color:var(--mut); cursor:pointer; max-width:100%; transition:.18s;}
   .cloudpill:hover{border-color:var(--c-blue);}
   .cloudpill .ic{font-size:14px;}
@@ -532,6 +542,32 @@
 <div class="rail" id="railR" aria-hidden="true"><div class="railpat"></div></div>
 <header>
   <div class="geoband" id="geoband" aria-hidden="true"></div>
+  <div class="hero">
+    <svg class="trophy" viewBox="0 0 120 180" role="img" aria-label="Copa del Mundo" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tpGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#FCE7A6"/><stop offset=".34" stop-color="#EAC24E"/><stop offset=".63" stop-color="#CB982C"/><stop offset="1" stop-color="#9E6B16"/>
+        </linearGradient>
+        <linearGradient id="tpMal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2BA06A"/><stop offset="1" stop-color="#0C5734"/>
+        </linearGradient>
+      </defs>
+      <rect x="42" y="148" width="36" height="12" rx="3" fill="url(#tpMal)"/>
+      <rect x="44" y="146" width="32" height="2.4" fill="url(#tpGold)"/>
+      <rect x="46" y="137" width="28" height="10" rx="2.5" fill="url(#tpMal)"/>
+      <path d="M54 130 L66 130 L68 137 L52 137 Z" fill="url(#tpGold)"/>
+      <path d="M45 28 C38 40 36 50 37 60 C39 82 49 106 54 130 L66 130 C71 106 81 82 83 60 C84 50 82 40 75 28 C69 42 64 50 60 53 C56 50 51 42 45 28 Z" fill="url(#tpGold)"/>
+      <path d="M58 54 C53 59 51 70 52 84 C53 100 56 116 58 130 L60 130 C58 114 55 98 55 84 C55 70 56 60 60 54 Z" fill="rgba(255,255,255,.26)"/>
+      <circle cx="60" cy="30" r="17" fill="url(#tpGold)"/>
+      <path d="M50 26 q7 -6 13 -1 q4 4 0 8 q-7 4 -13 -1 q-3 -3 0 -6 Z" fill="rgba(120,82,15,.30)"/>
+      <path d="M64 33 q6 -1 8 3 q1 4 -4 5 q-5 0 -6 -4 Z" fill="rgba(120,82,15,.26)"/>
+      <ellipse cx="53" cy="24" rx="6" ry="7" fill="rgba(255,255,255,.42)"/>
+    </svg>
+    <div class="hero-lock">
+      <span class="hero-kick">Colección de figuritas</span>
+      <span class="hero-big">Mundial <b>2026</b></span>
+    </div>
+  </div>
   <div class="hpad">
   <div class="htop">
     <div class="ring">
@@ -787,7 +823,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.3</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.4</div>
 </div></div>
 
 <!-- TRADE LISTS -->
