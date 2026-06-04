@@ -168,6 +168,20 @@
   .ed-code .ed-pos{display:inline-block; margin-top:9px; font-size:11.5px; font-weight:800; padding:5px 13px; border-radius:999px; background:var(--surface2); color:var(--ink2); border:1.5px solid var(--line2); text-transform:uppercase; letter-spacing:.05em;}
   .team .cd .cstand{color:var(--c-green); font-weight:800;}
   .team .cd .cstand.gold{color:var(--c-amber);}
+  .ed-code .ed-stat-ro{display:none; margin-top:8px; font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--c-green);}
+  .team .rchev{flex:0 0 auto; color:var(--mut2); font-size:13px; transition:transform .2s;}
+  .team.open .rchev{transform:rotate(180deg);}
+  .roster{margin-top:12px; border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
+  .rrow{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
+  .rrow:active{transform:scale(.99);}
+  .rrow .rnum{flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
+  .rrow.have .rnum{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent;}
+  .rrow.dup .rnum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
+  .rrow .rinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;}
+  .rrow .rname{font-weight:700; font-size:14px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rrow .rpos{font-size:11px; color:var(--mut); font-weight:600;}
+  .rrow .rstat{flex:0 0 auto; max-width:46%; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--c-green); text-align:right; line-height:1.25;}
+  .rrow.hit{outline:2px solid var(--c-pink); outline-offset:1px;}
   .ed-code .st{display:inline-block; margin-top:11px; font-size:12px; padding:5px 13px; border-radius:999px; font-weight:700;}
   .st.s0{background:var(--surface2); color:var(--mut); border:1px solid var(--line2);}
   .st.s1{background:rgba(0,128,43,.13); color:var(--ok-d);}
@@ -521,7 +535,7 @@
 <!-- CELL EDITOR -->
 <div class="ov" id="ovEdit"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Lámina</h2><button class="x" data-close>✕</button></div>
-  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
+  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="ed-stat-ro" id="edStatRo"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
   <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
   <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
 </div></div>
@@ -664,7 +678,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.6</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.7</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -944,6 +958,8 @@ const CLUB_ABBR={"Real Madrid": "RMA", "FC Barcelona": "BAR", "Atlético de Madr
 const POS={"FRA20": "Delantero", "BRA14": "Delantero", "BRA15": "Delantero", "ENG11": "Mediocampista", "FRA10": "Mediocampista", "FRA9": "Mediocampista", "BRA5": "Defensa", "URU10": "Mediocampista", "BEL2": "Portero", "GER6": "Defensa", "ESP7": "Defensa", "ESP5": "Defensa", "TUR14": "Mediocampista", "ENG6": "Defensa", "ARG15": "Delantero", "ESP15": "Delantero", "ESP11": "Mediocampista", "BRA19": "Delantero", "ESP18": "Delantero", "ESP16": "Mediocampista", "URU4": "Defensa", "NED14": "Mediocampista", "FRA5": "Defensa", "ARG19": "Delantero", "ARG20": "Delantero", "ESP3": "Defensa", "ARG3": "Defensa", "NOR16": "Delantero", "ESP17": "Delantero", "GHA15": "Delantero", "ESP20": "Delantero", "JAP12": "Delantero", "GHA10": "Mediocampista", "SEN11": "Mediocampista", "NOR15": "Delantero", "ENG16": "Mediocampista", "ESP10": "Mediocampista", "POR9": "Mediocampista", "POR4": "Defensa", "BEL16": "Delantero", "CRO4": "Defensa", "EGY20": "Delantero", "NED10": "Mediocampista", "ALG5": "Defensa", "ENG17": "Delantero", "ENG10": "Mediocampista", "NOR10": "Mediocampista", "BRA6": "Defensa", "BRA18": "Delantero", "FRA4": "Defensa", "NED5": "Defensa", "GER17": "Delantero", "SWE20": "Delantero", "ESP9": "Mediocampista", "EGY17": "Delantero", "NED3": "Defensa", "NED20": "Delantero", "ARG9": "Mediocampista", "NED11": "Mediocampista", "FRA6": "Defensa", "GER11": "Mediocampista", "FRA19": "Delantero", "SWE19": "Delantero", "NED8": "Defensa", "SCO6": "Defensa", "ENG12": "Mediocampista", "ARG8": "Mediocampista", "ESP8": "Defensa", "ECU9": "Mediocampista", "ENG7": "Defensa", "BRA16": "Delantero", "POR19": "Delantero", "BRA20": "Delantero", "ARG4": "Defensa", "URU12": "Mediocampista", "NED4": "Defensa", "SEN10": "Mediocampista", "SWE8": "Mediocampista", "SWE17": "Mediocampista", "NED15": "Mediocampista", "GHA14": "Delantero", "ARG2": "Portero", "ENG5": "Defensa", "FRA8": "Defensa", "BEL9": "Mediocampista", "BEL10": "Mediocampista", "ENG14": "Mediocampista", "ENG20": "Delantero", "NED2": "Portero", "NED9": "Defensa", "BEL7": "Defensa", "SWE11": "Mediocampista", "PAR10": "Mediocampista", "PAR15": "Delantero", "POR10": "Mediocampista", "POR6": "Defensa", "BRA10": "Mediocampista", "BRA17": "Delantero", "CIV15": "Delantero", "ENG4": "Defensa", "USA3": "Defensa", "JAP11": "Mediocampista", "SEN16": "Delantero", "BRA9": "Mediocampista", "CZE12": "Mediocampista", "MEX10": "Mediocampista", "COD3": "Defensa", "BRA11": "Mediocampista", "ENG15": "Delantero", "ENG8": "Defensa", "ARG18": "Delantero", "TUR11": "Mediocampista", "NED6": "Defensa", "CRO15": "Mediocampista", "TUR20": "Delantero", "USA10": "Mediocampista", "NED12": "Mediocampista", "CAN20": "Delantero", "BEL15": "Mediocampista", "SCO11": "Mediocampista", "BEL20": "Delantero", "SCO12": "Mediocampista", "USA16": "Delantero", "FRA2": "Portero", "POR20": "Delantero", "CIV6": "Defensa", "FRA11": "Mediocampista", "BRA8": "Defensa", "BEL17": "Delantero", "CRO14": "Mediocampista", "BIH4": "Defensa", "GER10": "Mediocampista", "GER15": "Mediocampista", "GER14": "Mediocampista", "GER16": "Delantero", "ENG18": "Delantero", "FRA7": "Defensa", "FRA14": "Delantero", "AUT12": "Defensa", "KOR4": "Defensa", "COL20": "Delantero", "GER3": "Defensa", "GER4": "Defensa", "AUT10": "Mediocampista", "AUT15": "Mediocampista", "AUT18": "Mediocampista", "NOR19": "Delantero", "SUI2": "Portero", "GER5": "Defensa", "GER7": "Defensa", "GER12": "Mediocampista", "GER19": "Delantero", "SWE9": "Mediocampista", "TUR17": "Mediocampista", "JAP14": "Delantero", "POR12": "Mediocampista", "POR7": "Defensa", "POR14": "Mediocampista", "FRA17": "Delantero", "FRA16": "Delantero", "FRA15": "Delantero", "MAR4": "Defensa", "ESP12": "Mediocampista", "POR18": "Delantero", "BRA4": "Defensa", "ECU6": "Defensa", "SUI10": "Mediocampista", "JAP16": "Delantero", "SEN14": "Mediocampista", "MAR12": "Delantero", "USA20": "Delantero", "ARG7": "Defensa", "ALG18": "Delantero", "ARG5": "Defensa", "TUR12": "Mediocampista", "TUR19": "Delantero", "NOR12": "Delantero", "COL12": "Mediocampista", "POR8": "Defensa", "CIV9": "Defensa", "POR16": "Delantero", "URU16": "Defensa", "BEL5": "Defensa", "POR2": "Portero", "CAN10": "Mediocampista", "MAR15": "Mediocampista", "CRO16": "Delantero", "USA18": "Delantero", "CUW3": "Defensa", "ALG17": "Delantero", "JAP20": "Delantero", "URU11": "Mediocampista", "URU15": "Mediocampista", "URU8": "Defensa", "BRA7": "Defensa", "ARG12": "Mediocampista", "FRA3": "Defensa", "POR5": "Defensa", "POR11": "Mediocampista", "SEN8": "Defensa", "MAR2": "Portero", "KSA16": "Delantero", "POR15": "Delantero", "POR17": "Delantero", "FRA18": "Delantero", "SEN15": "Delantero", "BRA3": "Portero"};
 const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool": "5°", "Chelsea": "10°", "Tottenham": "17°", "Aston Villa": "4° · 🏆 Europa League", "Brighton": "8°", "Manchester United": "3°", "Crystal Palace": "15° · 🏆 Conference", "West Ham": "⬇️ Descendió", "Newcastle": "12°", "Real Madrid": "2°", "FC Barcelona": "🏆 Campeón", "Atlético de Madrid": "4°", "Athletic Club": "12°", "Real Sociedad": "10° · 🏆 Copa del Rey", "Villarreal": "3°", "Inter": "🏆 Campeón", "Juventus": "Europa League", "Napoli": "Champions League", "AC Milan": "Europa League", "Roma": "Champions League", "Atalanta": "Conference League", "Bayern Múnich": "🏆 Campeón", "RB Leipzig": "Champions League", "Borussia Dortmund": "Champions League", "Eintracht Frankfurt": "Bundesliga", "PSG": "🏆 Campeón · 🏆 Champions", "Mónaco": "Conference League", "Marsella": "5°", "Benfica": "3°", "Sporting CP": "2°", "FC Porto": "🏆 Campeón", "PSV": "🏆 Campeón", "Feyenoord": "2°", "Al-Hilal": "2° (invicto)", "Al-Nassr": "🏆 Campeón", "Flamengo": "🏆 Campeón Libertadores", "Boca Juniors": "Liga Profesional"};
 function playerPos(code){ return POS[code]||''; }
+const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
+function playerStat(code){ return PLAYER_STATS[code]||''; }
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
   const nameHit = !dterm || deburr(club.name).includes(dterm);
@@ -963,6 +979,21 @@ function makeClub(club, term){
     if(isHit) cell.classList.add("hit");
     const show=matchClub&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
   card.appendChild(cells); if(vis===0) card.classList.add("hide");
+  const roster=document.createElement("div"); roster.className="roster"; roster.hidden=true;
+  club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
+    const s=cellState(c);
+    const row=document.createElement("div"); row.className="rrow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
+    const nm=playerName(c)||c, pos=playerPos(c)||"", sv=playerStat(c);
+    if(dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm)) row.classList.add("hit");
+    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span>'+(pos?'<span class="rpos">'+pos+'</span>':'')+'</span>'+(sv?'<span class="rstat">'+escHTML(sv)+'</span>':'');
+    row.addEventListener("click",()=>openEditor(c));
+    roster.appendChild(row);
+  });
+  card.appendChild(roster);
+  th.insertAdjacentHTML("beforeend",'<span class="rchev" aria-hidden="true">\u25be</span>');
+  th.style.cursor="pointer"; th.setAttribute("role","button"); th.setAttribute("aria-expanded","false");
+  th.addEventListener("click",()=>{ const open=card.classList.toggle("open"); roster.hidden=!open; th.setAttribute("aria-expanded",open?"true":"false"); });
+  if(dterm && !nameHit && playerHit){ card.classList.add("open"); roster.hidden=false; th.setAttribute("aria-expanded","true"); }
   return card;
 }
 function render(){
@@ -1085,6 +1116,7 @@ function openEditor(code){
   document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
   const pn=playerName(code); const ep=document.getElementById("edPlayer"); ep.textContent=pn; ep.style.display=pn?"block":"none";
   const ps=playerPos(code); const epz=document.getElementById("edPos"); epz.textContent=ps; epz.style.display=ps?"inline-block":"none";
+  const sv=playerStat(code); const esr=document.getElementById("edStatRo"); esr.textContent=sv; esr.style.display=sv?"block":"none";
   refreshEditor(); ovEdit.classList.add("show");
 }
 function displayCode(code){
@@ -1107,7 +1139,7 @@ function refreshCellInDom(code){
   if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
   const old=cell.querySelector(".badge"); if(old) old.remove();
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); cell.appendChild(b); }
-  const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl);
+  const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl); updateRosterRow(code);
 }
 function refreshTeamProgress(teamEl){
   const cells=[...teamEl.querySelectorAll(".cell")]; let have=0; cells.forEach(c=>{ if(getCount(c.dataset.code)>0) have++; });
@@ -1115,6 +1147,8 @@ function refreshTeamProgress(teamEl){
   if(fr) fr.textContent=have+"/"+tot; if(bar) bar.style.width=(have/tot*100)+"%"; if(tp) tp.classList.toggle("full",have===tot);
 }
 function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
+function escHTML(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+function updateRosterRow(code){ const row=main.querySelector('.rrow[data-code="'+cssEsc(code)+'"]'); if(!row) return; const s=cellState(code); row.classList.remove("have","dup"); if(s===1) row.classList.add("have"); else if(s===2) row.classList.add("dup"); }
 
 /* ---------- recién agregadas (sesión) ---------- */
 let recent=[];
