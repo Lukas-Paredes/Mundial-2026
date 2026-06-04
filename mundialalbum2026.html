@@ -543,6 +543,7 @@
     </div>
     <div class="hbtns">
       <button class="icbtn" id="btnCracks" aria-label="Mis cracks">🏆</button>
+      <button class="icbtn" id="btnRankingTop" aria-label="Ranking">👑</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
@@ -766,7 +767,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.0</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.1</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -781,8 +782,8 @@
 
 <!-- LUJITO: lo más importante -->
 <div class="ov" id="ovLujito"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">Datos</h2><button class="x" data-close>✕</button></div>
-  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="ranking">Ranking</button><button data-h="datos">Datos</button></div>
+  <div class="sheet-h"><h2 class="disp" id="hubTitle">Datos</h2><button class="x" data-close>✕</button></div>
+  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="datos">Datos</button></div>
 
   <div id="hubDatos" style="display:none">
   <div class="lx-sec">
@@ -1848,8 +1849,8 @@ async function adminFetchAll(){
   const out=[];
   for(const u of users.values()){
     try{ const doc=await cloud.db.collection("albums").doc(u.uid).get(); const data=doc.exists?(doc.data()||{}):{};
-      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), city:(u.city||data.city||""), counts:(data.counts||{}), updatedAt:(data.updatedAt||0)}); }
-    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), city:(u.city||""), counts:{}, updatedAt:0}); }
+      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), city:(u.city||data.city||""), counts:(data.counts||{}), extraNames:(data.extraNames||{}), specialPages:(data.specialPages||{}), updatedAt:(data.updatedAt||0)}); }
+    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), city:(u.city||""), counts:{}, extraNames:{}, specialPages:{}, updatedAt:0}); }
   }
   return out;
 }
@@ -1878,6 +1879,15 @@ function buildAdminWorkbook(users){
   if(rep.length===1) rep.push(["—","","(nadie tiene repetidas aún)",""]);
   const wsRep=XLSX.utils.aoa_to_sheet(rep); wsRep["!cols"]=[{wch:18},{wch:8},{wch:26},{wch:10}];
   XLSX.utils.book_append_sheet(wb,wsRep,"Repetidas");
+  // Detalle COMPLETO (cada lámina que tiene cada persona) — para respaldo/restauración
+  const det=[["Nick","Código","Jugador/Lámina","Cantidad","Repetidas"]];
+  users.forEach(u=>{
+    const keys=Object.keys(u.counts).filter(c=>(u.counts[c]||0)>0).sort();
+    keys.forEach(c=>{ const n=u.counts[c]; det.push([u.nick,c,codeLabel(c),n,n>=2?n-1:0]); });
+  });
+  if(det.length===1) det.push(["—","","(nadie tiene láminas aún)","",""]);
+  const wsD=XLSX.utils.aoa_to_sheet(det); wsD["!cols"]=[{wch:18},{wch:8},{wch:28},{wch:9},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,wsD,"Detalle");
   return wb;
 }
 async function adminDownloadAll(){
@@ -2106,10 +2116,20 @@ function hubShow(t){
 document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; hubShow(b.dataset.h); });
 function openHub(){
   fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="Datos";
   hubShow("progreso");
   document.getElementById("ovLujito").classList.add("show");
 }
+function openRankingTop(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="none";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="👑 Ranking";
+  hubShow("ranking");
+  document.getElementById("ovLujito").classList.add("show");
+}
 document.getElementById("btnHub").onclick=openHub;
+document.getElementById("btnRankingTop").onclick=openRankingTop;
 document.getElementById("btnCracks").onclick=openCracks;
 
 /* ---------- overlays close ---------- */
