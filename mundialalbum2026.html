@@ -78,7 +78,8 @@
   .chip.total .n{color:var(--c-pink);}
 
   /* TOOLBAR */
-  .toolbar{position:relative; z-index:30; background:rgba(251,250,248,.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:11px 12px;}
+  .toolbar{position:sticky; top:0; z-index:30; background:rgba(251,250,248,.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:11px 12px;}
+  body.scrolled .toolbar{top:54px;}
   .qa{display:flex; gap:8px;}
   .qa input{flex:1; min-width:0; background:var(--surface); border:2px solid var(--line2); color:var(--ink); border-radius:15px; padding:0 15px; height:48px; font-size:16px; font-family:var(--font-mono); letter-spacing:.04em; text-transform:uppercase; box-shadow:var(--shadow-sm);}
   .qa input::placeholder{color:var(--mut2); text-transform:none; letter-spacing:0; font-family:var(--font-ui);}
@@ -315,6 +316,13 @@
   body.viewonly #rkBackBtn{display:block;}
   body.viewonly #hTitle{cursor:pointer;}
   body.viewonly #hTitle h1{text-decoration:underline; text-decoration-color:var(--c-blue); text-underline-offset:3px;}
+  #miniBar{position:fixed; top:0; left:0; right:0; z-index:55; display:flex; align-items:center; gap:10px; padding:8px 14px; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); box-shadow:0 4px 14px rgba(26,26,34,.07); transform:translateY(-110%); transition:transform .22s cubic-bezier(.2,.7,.2,1);}
+  body.scrolled #miniBar{transform:translateY(0);}
+  #miniBar .mb-pct{font-family:var(--font-disp); font-weight:900; font-size:12.5px; color:var(--c-blue); background:var(--surface2); border:1.5px solid var(--line2); border-radius:999px; padding:4px 9px; flex:0 0 auto;}
+  #miniBar .mb-title{font-family:var(--font-disp); font-weight:900; font-size:17px; text-transform:uppercase; letter-spacing:-.02em; color:var(--ink); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #miniBar .mb-btns{display:flex; gap:6px; flex:0 0 auto;}
+  #miniBar .icbtn{width:38px; height:38px; font-size:16px; border-radius:11px;}
+  body.viewonly #miniBar{display:none;}
   body.viewonly #viewBanner{display:flex;}
   body.viewonly .qa{display:none;}
   body.viewonly .fab{display:none;}
@@ -543,8 +551,8 @@
       <h1 class="disp">Mi Álbum</h1>
     </div>
     <div class="hbtns">
-      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">🏆</button>
-      <button class="icbtn" id="btnRankingTop" aria-label="Ranking">👑</button>
+      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">⭐</button>
+      <button class="icbtn" id="btnRankingTop" aria-label="Ranking">🏆</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
@@ -559,6 +567,16 @@
   </div>
 </header>
 
+<div id="miniBar" aria-hidden="true">
+  <span class="mb-pct" id="miniPct">0%</span>
+  <span class="mb-title">Mi Álbum</span>
+  <div class="mb-btns">
+    <button class="icbtn" id="mbCracks" aria-label="Mis cracks">⭐</button>
+    <button class="icbtn" id="mbRanking" aria-label="Ranking">🏆</button>
+    <button class="icbtn" id="mbHub" aria-label="Datos">📊</button>
+    <button class="icbtn" id="mbSet" aria-label="Ajustes">⚙</button>
+  </div>
+</div>
 <div id="viewBanner">
   <span>👁️ Estás viendo un álbum compartido · <b>solo lectura</b></span>
   <button id="viewBack">← Volver al mío</button>
@@ -600,7 +618,7 @@
 
 <!-- CRACKS (galería con tiers) -->
 <div class="ov" id="ovCracks"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">🏆 Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="sheet-h"><h2 class="disp">⭐ Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
   <div class="cracks-sum" id="cracksSum"></div>
   <div id="cracksBody"></div>
   <div class="tip">Toca un crack pa' marcarlo o ver su info. Los que te faltan salen 🔒.</div>
@@ -768,7 +786,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.2</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.3</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1359,6 +1377,7 @@ function updateStats(){
   const pct=total?tengo/total:0, circ=157.1;
   const rf=document.getElementById("ringFill"); rf.style.strokeDashoffset=(circ*(1-pct)).toFixed(1);
   document.getElementById("ringTxt").textContent=Math.round(pct*100)+"%";
+  const _mp=document.getElementById("miniPct"); if(_mp) _mp.textContent=Math.round(pct*100)+"%";
   document.getElementById("ringSvg").setAttribute("aria-label","Progreso del álbum: "+Math.round(pct*100)+"%");
 }
 
@@ -2126,13 +2145,24 @@ function openHub(){
 function openRankingTop(){
   fillPersonal();
   const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="none";
-  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="👑 Ranking";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="🏆 Ranking";
   hubShow("ranking");
   document.getElementById("ovLujito").classList.add("show");
 }
 document.getElementById("btnHub").onclick=openHub;
 document.getElementById("btnRankingTop").onclick=openRankingTop;
 document.getElementById("btnCracks").onclick=openCracks;
+/* Mini-barra fija: aparece al bajar y mantiene los botones a mano */
+document.getElementById("mbCracks").onclick=openCracks;
+document.getElementById("mbRanking").onclick=openRankingTop;
+document.getElementById("mbHub").onclick=openHub;
+document.getElementById("mbSet").onclick=()=>document.getElementById("btnSet").click();
+(function(){
+  let ticking=false;
+  function onScroll(){ document.body.classList.toggle("scrolled", (window.scrollY||window.pageYOffset||0)>150); }
+  window.addEventListener("scroll",function(){ if(!ticking){ requestAnimationFrame(function(){ onScroll(); ticking=false; }); ticking=true; } }, {passive:true});
+  onScroll();
+})();
 
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
