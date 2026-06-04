@@ -309,6 +309,9 @@
   #viewBackFab{display:none; position:fixed; left:50%; transform:translateX(-50%); bottom:calc(18px + env(safe-area-inset-bottom)); z-index:45; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15px; padding:14px 24px; border-radius:999px; box-shadow:0 12px 30px rgba(0,103,185,.5); cursor:pointer;}
   #viewBackFab:active{transform:translateX(-50%) scale(.96);}
   body.viewonly #viewBackFab{display:block;}
+  #rkBackBtn{display:none; width:100%; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15.5px; padding:15px; border-radius:14px; margin-bottom:14px; cursor:pointer; box-shadow:0 8px 20px rgba(0,103,185,.4);}
+  #rkBackBtn:active{transform:scale(.97);}
+  body.viewonly #rkBackBtn{display:block;}
   body.viewonly #viewBanner{display:flex;}
   body.viewonly .qa{display:none;}
   body.viewonly .fab{display:none;}
@@ -754,7 +757,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.7</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.8</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -810,6 +813,7 @@
   <div id="hubProgreso"><div id="pgBody"></div></div>
 
   <div id="hubRanking" style="display:none">
+    <button id="rkBackBtn">← Volver a MI álbum</button>
     <div class="rk-nick">
       <label>Tu nick y de dónde eres</label>
       <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off">
@@ -2197,6 +2201,7 @@ document.getElementById("joinGo").onclick=()=>{
 function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="group")); } goToAlbum(""); updateCloudUI(); toast("¡Volviste a tu álbum! ✓"); }
 document.getElementById("viewBack").onclick=backToMyAlbum;
 document.getElementById("viewBackFab").onclick=backToMyAlbum;
+document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); backToMyAlbum(); };
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
   const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
