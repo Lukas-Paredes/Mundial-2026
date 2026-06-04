@@ -173,6 +173,20 @@
   .team .rchev{flex:0 0 auto; color:var(--mut2); font-size:13px; transition:transform .2s;}
   .team.open .rchev{transform:rotate(180deg);}
   .roster{margin-top:12px; border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
+  .squad-sub{font-size:13px; color:var(--mut); font-weight:700; margin:0 2px 12px;}
+  .squad-list{display:flex; flex-direction:column; gap:7px;}
+  .srow{display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:13px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
+  .srow:active{transform:scale(.99);}
+  .srow .snum{position:relative; flex:0 0 auto; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
+  .srow.have .snum{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent;}
+  .srow.dup .snum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
+  .srow .snum .sdup{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:9px; font-weight:800; min-width:16px; height:16px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 3px; border:2px solid var(--surface);}
+  .srow .sinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+  .srow .sname{font-weight:700; font-size:14.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .srow .sstat{font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:var(--c-green); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .srow .sright{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+  .srow .spos{font-size:10px; font-weight:800; letter-spacing:.03em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; white-space:nowrap;}
+  .srow .sval{font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--dup-d); white-space:nowrap;}
   .rrow{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
   .rrow:active{transform:scale(.99);}
   .rrow .rnum{flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
@@ -522,7 +536,7 @@
     <button class="fbtn" data-f="miss">Que faltan <span class="b" id="cMiss">0</span></button>
     <button class="fbtn" data-f="dup">Repetidas <span class="b" id="cDup">0</span></button>
   </div>
-  <div class="search"><input id="search" type="text" name="album-buscar" aria-label="Buscar equipo, código o jugador" placeholder="🔎 Busca equipo o jugador (ej. Messi, Francia)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
+  <div class="search"><input id="search" type="text" name="album-buscar" aria-label="Buscar selección, código o jugador" placeholder="🔎 Busca selección o jugador (ej. Argentina, Messi)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
   <div class="sortrow">
     <span class="slbl">Orden:</span>
     <div class="sortseg" id="sortSeg">
@@ -542,6 +556,14 @@
   </svg>
   Escanear
 </button>
+
+<!-- SQUAD (nómina en ventana) -->
+<div class="ov" id="ovSquad"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp" id="squadTitle">Nómina</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="squad-sub" id="squadSub"></div>
+  <div class="squad-list" id="squadList"></div>
+  <div class="tip">Toca un jugador pa' marcarlo como que lo tienes o repetido. 👆</div>
+</div></div>
 
 <!-- CELL EDITOR -->
 <div class="ov" id="ovEdit"><div class="sheet">
@@ -690,7 +712,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.0</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.3</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -873,7 +895,37 @@ const STAR_FACTS={
   "ARG18":"Goleador de la Serie A (capocannoniere) con el Inter campeón. 🐂",
   "URU11":"Elegido el mejor jugador de la Copa Libertadores con Flamengo. 🏆",
   "SEN16":"Héroe de la Conference League: 9 goles y mejor jugador del torneo. 🏆",
-  "JAP20":"Goleador de la liga de Países Bajos (Eredivisie) con 25 goles. 👟"
+  "JAP20":"Goleador de la liga de Países Bajos (Eredivisie) con 25 goles. 👟",
+  "BEL15":"Uno de los mejores mediocampistas creativos de su generación; lo ganó casi todo con el Manchester City. 🎩",
+  "ESP10":"¡Ganó el Balón de Oro 2024! Y fue campeón y mejor jugador de la Eurocopa 2024. 🏆",
+  "CRO9":"Balón de Oro 2018 (cortó la racha de Messi y Cristiano) y leyenda del Real Madrid. 👑",
+  "ENG11":"A su edad ya es figura del Real Madrid; fue clave en la Liga 2023-24. ⭐",
+  "ESP11":"Joya del Barcelona; ganó el Trofeo Kopa al mejor jugador joven del mundo. 🎯",
+  "ENG16":"Elegido Mejor Jugador de la Premier League en la temporada 2023-24. 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "ENG17":"Estrella del Arsenal y de Inglaterra, imparable por la banda. 🚀",
+  "GER15":"Regateador letal del Bayern; una de las grandes joyas del fútbol mundial. ✨",
+  "GER11":"Fue el cerebro del Leverkusen que salió campeón INVICTO de la Bundesliga. 🧠",
+  "ENG12":"Explotó en el Chelsea como uno de los mejores jóvenes de Europa. ❄️",
+  "URU10":"El motor del mediocampo del Real Madrid; corre como nadie y mete golazos de lejos. 🚂",
+  "EGY17":"El 'Faraón' del Liverpool; varias veces Bota de Oro de la Premier League. 👑",
+  "KOR18":"Capitán de Corea y del Tottenham; ganó la Bota de Oro de la Premier 2021-22. 🇰🇷",
+  "NED3":"Uno de los mejores defensas del mundo y capitán del Liverpool. 🧱",
+  "ARG2":"El 'Dibu': héroe en los penales del Mundial 2022 y dos veces mejor portero del mundo. 🧤",
+  "ARG19":"Campeón del mundo 2022 con Argentina; un killer dentro del área. 🦊",
+  "NOR10":"Capitán del Arsenal; un crack creativo con una zurda mágica. 🎩",
+  "POR9":"Mago del Manchester City; ganó varias Premier y la Champions del triplete. 🪄",
+  "BRA15":"Especialista en noches grandes de Champions con el Real Madrid. 🌟",
+  "MAR4":"Estrella de Marruecos (semifinalista en 2022) y del PSG campeón de Europa. 🚀",
+  "GER10":"Líder y multiusos del Bayern y de Alemania; juega en todas partes. ⚙️",
+  "ARG9":"Campeón del mundo 2022; mediocampista clave del Liverpool. 🏆",
+  "ARG8":"Mejor Jugador Joven del Mundial 2022 con Argentina; cerebro del Chelsea. 🌟",
+  "BEL2":"Uno de los mejores porteros del mundo; figura en la final de Champions 2022. 🧤",
+  "ENG10":"El pulmón del Arsenal y de Inglaterra; lo gana todo en el medio campo. 💪",
+  "CRO4":"Defensa-crack del Manchester City: fuerte, rápido y con muy buena salida. 🧱",
+  "POR20":"Extremo explosivo del Milan; pura velocidad y desborde. ⚡",
+  "COL14":"Bota de Oro del Mundial 2014; el mago de la selección colombiana. 🎩",
+  "SWE19":"Delantero letal y elegante; una de las grandes referencias del gol. 🎯",
+  "FRA4":"Muralla del Arsenal; uno de los mejores centrales jóvenes del mundo. 🧱"
 };
 const STAR_PROB="📦 Dato: una lámina puntual sale en ~1 de cada 140 sobres (hay 980 distintas y cada sobre trae 7). ¡Por eso se celebra!";
 const EXTRA_PROB="🤯 Rareza nivel dios: las Extra Stickers (foil) salen ~1 cada 100 sobres.";
@@ -944,17 +996,26 @@ function buildCell(code,label,opts){
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
   if(opts.viewer){ d.addEventListener("click",()=>openEditor(code)); return d; }
   let lp=false, lpTimer=null;
+  const quickEdit=(delta)=>{ const cur=getCount(code); setCount(code, Math.max(0,cur+delta)); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); const m=getCount(code); toast(delta>0 ? (displayCode(code)+(m>1?" · repetida ×"+m:" ✓ agregada")) : (m>0?(displayCode(code)+" −1 (×"+m+")"):(displayCode(code)+" quitada"))); };
   d.addEventListener("touchstart",()=>{ lp=false; lpTimer=setTimeout(()=>{ lp=true; openEditor(code); },450); },{passive:true});
   d.addEventListener("touchend",()=>clearTimeout(lpTimer));
   d.addEventListener("touchmove",()=>clearTimeout(lpTimer));
-  d.addEventListener("contextmenu",e=>{ e.preventDefault(); openEditor(code); });
+  // click derecho: simple = editor · doble = −1 (atajo)
+  d.addEventListener("contextmenu",e=>{ e.preventDefault();
+    if(d._ctxT){ clearTimeout(d._ctxT); d._ctxT=null; quickEdit(-1); return; }
+    d._ctxT=setTimeout(()=>{ d._ctxT=null; openEditor(code); }, 260);
+  });
+  // click izquierdo: simple = marcar/desmarcar (o editor si ya es repetida) · doble = +1 (atajo)
   d.addEventListener("click",()=>{
     if(lp){ lp=false; return; }                 // fue mantener-apretado: ya abrió el editor
-    const cur=getCount(code);
-    if(cur>=2){ openEditor(code); return; }      // repetidas: abre el editor para no borrarlas sin querer
-    setCount(code, cur===0?1:0);                 // toca para marcar / desmarcar
-    refreshCellInDom(code); updateStats();
-    if(currentFilter!=="all") render();
+    if(d._clkT){ clearTimeout(d._clkT); d._clkT=null; quickEdit(1); return; }  // doble click: +1
+    d._clkT=setTimeout(()=>{ d._clkT=null;
+      const cur=getCount(code);
+      if(cur>=2){ openEditor(code); return; }    // repetidas: abre el editor para no borrarlas sin querer
+      setCount(code, cur===0?1:0);               // toca para marcar / desmarcar
+      refreshCellInDom(code); updateStats();
+      if(currentFilter!=="all") render();
+    }, 260);
   });
   return d;
 }
@@ -1039,7 +1100,7 @@ const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool
 function playerPos(code){ return POS[code]||''; }
 const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
 function playerStat(code){ return PLAYER_STATS[code]||''; }
-const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 200 M€","NOR15":"≈ 200 M€","BRA14":"≈ 180 M€","ENG11":"≈ 180 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","ENG12":"≈ 130 M€","ESP10":"≈ 120 M€","ENG16":"≈ 110 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","POR10":"≈ 55 M€","ARG17":"≈ 20 M€","POR15":"≈ 12 M€"};
+const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 200 M€","NOR15":"≈ 200 M€","BRA14":"≈ 180 M€","ENG11":"≈ 180 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","ENG12":"≈ 130 M€","ESP10":"≈ 120 M€","ENG16":"≈ 110 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","POR10":"≈ 55 M€","ARG17":"≈ 20 M€","POR15":"≈ 12 M€","URU10":"≈ 130 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","NOR10":"≈ 100 M€","BRA15":"≈ 100 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 70 M€","MAR4":"≈ 65 M€","EGY17":"≈ 50 M€","POR9":"≈ 50 M€","GER10":"≈ 50 M€","KOR18":"≈ 40 M€","BEL15":"≈ 35 M€","NED3":"≈ 35 M€","ARG2":"≈ 28 M€","BEL2":"≈ 25 M€","CRO9":"≈ 10 M€","COL14":"≈ 6 M€"};
 function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
 function makeClub(club, term){
   const dterm = term ? deburr(term) : "";
@@ -1060,21 +1121,9 @@ function makeClub(club, term){
     if(isHit) cell.classList.add("hit");
     const show=matchClub&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
   card.appendChild(cells); if(vis===0) card.classList.add("hide");
-  const roster=document.createElement("div"); roster.className="roster"; roster.hidden=true;
-  club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
-    const s=cellState(c);
-    const row=document.createElement("div"); row.className="rrow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
-    const nm=playerName(c)||c;
-    if(dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm)) row.classList.add("hit");
-    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span></span><span class="rchev2">›</span>';
-    row.addEventListener("click",()=>openEditor(c));
-    roster.appendChild(row);
-  });
-  card.appendChild(roster);
-  th.insertAdjacentHTML("beforeend",'<span class="rchev" aria-hidden="true">\u25be</span>');
-  th.style.cursor="pointer"; th.setAttribute("role","button"); th.setAttribute("aria-expanded","false");
-  th.addEventListener("click",()=>{ const open=card.classList.toggle("open"); roster.hidden=!open; th.setAttribute("aria-expanded",open?"true":"false"); });
-  if(dterm && !nameHit && playerHit){ card.classList.add("open"); roster.hidden=false; th.setAttribute("aria-expanded","true"); }
+  th.insertAdjacentHTML("beforeend",'<span class="rchev" aria-hidden="true">\u203a</span>');
+  th.style.cursor="pointer"; th.setAttribute("role","button");
+  th.addEventListener("click",()=>openSquad(club));
   return card;
 }
 function render(){
@@ -1216,6 +1265,7 @@ document.getElementById("edMinus").onclick=()=>{ setCount(editCode,getCount(edit
 document.getElementById("edRemove").onclick=()=>{ setCount(editCode,0); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
 document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show"); if(currentFilter!=="all") render(); };
 function refreshCellInDom(code){
+  updateSquadRow(code);
   const cell=main.querySelector('.cell[data-code="'+cssEsc(code)+'"]'); if(!cell) return;
   const n=getCount(code),st=cellState(code); cell.classList.remove("have","dup");
   if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
@@ -1231,6 +1281,35 @@ function refreshTeamProgress(teamEl){
 function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
 function escHTML(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
 function updateRosterRow(code){ const row=main.querySelector('.rrow[data-code="'+cssEsc(code)+'"]'); if(!row) return; const s=cellState(code); row.classList.remove("have","dup"); if(s===1) row.classList.add("have"); else if(s===2) row.classList.add("dup"); }
+
+/* ---------- nómina del club en ventana ---------- */
+let _squadClub=null;
+function squadSubText(club){ let have=0; club.codes.forEach(c=>{ if(getCount(c)>0) have++; }); return (STANDING[club.name]?STANDING[club.name]+" · ":"")+have+"/"+club.codes.length+" láminas"; }
+function buildSquadRow(c){
+  const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c; const s=cellState(c), n=getCount(c);
+  const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
+  const nm=playerName(c)||c, pos=playerPos(c), sv=playerStat(c), mv=MARKET_VALUE[c];
+  let right=""; if(pos) right+='<span class="spos">'+pos+'</span>'; if(mv) right+='<span class="sval">💰 '+mv+'</span>';
+  row.innerHTML='<span class="snum">'+num+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
+    +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span>'+(sv?'<span class="sstat">'+escHTML(sv)+'</span>':'')+'</span>'
+    +'<span class="sright">'+right+'</span>';
+  row.addEventListener("click",()=>openEditor(c));
+  return row;
+}
+function openSquad(club){
+  _squadClub=club;
+  document.getElementById("squadTitle").textContent=club.name;
+  document.getElementById("squadSub").textContent=squadSubText(club);
+  const list=document.getElementById("squadList"); list.innerHTML="";
+  club.codes.forEach(c=>list.appendChild(buildSquadRow(c)));
+  document.getElementById("ovSquad").classList.add("show");
+}
+function updateSquadRow(code){
+  const row=document.querySelector('#squadList .srow[data-code="'+cssEsc(code)+'"]'); if(!row) return;
+  const s=cellState(code), n=getCount(code); row.classList.remove("have","dup"); if(s===1) row.classList.add("have"); else if(s===2) row.classList.add("dup");
+  const numEl=row.querySelector(".snum"); if(numEl){ const old=numEl.querySelector(".sdup"); if(old) old.remove(); if(n>1){ const b=document.createElement("span"); b.className="sdup"; b.textContent="+"+(n-1); numEl.appendChild(b); } }
+  if(_squadClub){ const sub=document.getElementById("squadSub"); if(sub) sub.textContent=squadSubText(_squadClub); }
+}
 
 /* ---------- recién agregadas (sesión) ---------- */
 let recent=[];
@@ -1269,7 +1348,8 @@ qa.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doQu
 document.getElementById("filters").addEventListener("click",e=>{ const b=e.target.closest(".fbtn"); if(!b) return;
   document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active")); b.classList.add("active"); currentFilter=b.dataset.f; render(); });
 let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
-document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; render(); });
+function updateSearchPlaceholder(){ const s=document.getElementById("search"); if(!s) return; s.placeholder = sortMode==="clubs" ? "🔎 Busca club o jugador (ej. Real Madrid, Mbappé)…" : "🔎 Busca selección o jugador (ej. Argentina, Messi)…"; }
+document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; updateSearchPlaceholder(); render(); });
 
 /* ---------- OCR refinado: worker + preprocesado + corrección ---------- */
 let ocrWorker=null, ocrWorkerTried=false;
@@ -2058,6 +2138,7 @@ function buildRails(){
 buildGeoBand();
 buildRails();
 render();
+updateSearchPlaceholder();
 initCloud();
 updateCloudUI();
 
