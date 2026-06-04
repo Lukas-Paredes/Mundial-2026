@@ -543,25 +543,35 @@
 <header>
   <div class="geoband" id="geoband" aria-hidden="true"></div>
   <div class="hero">
-    <svg class="trophy" viewBox="0 0 120 180" role="img" aria-label="Copa del Mundo" xmlns="http://www.w3.org/2000/svg">
+    <svg class="trophy" viewBox="0 0 120 200" role="img" aria-label="Copa del Mundo" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="tpGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#FCE7A6"/><stop offset=".34" stop-color="#EAC24E"/><stop offset=".63" stop-color="#CB982C"/><stop offset="1" stop-color="#9E6B16"/>
+        <linearGradient id="tpGold" x1=".15" y1="0" x2=".85" y2="1">
+          <stop offset="0" stop-color="#FDEFB4"/><stop offset=".32" stop-color="#F4CB52"/><stop offset=".62" stop-color="#D69E2C"/><stop offset="1" stop-color="#A9761B"/>
         </linearGradient>
         <linearGradient id="tpMal" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#2BA06A"/><stop offset="1" stop-color="#0C5734"/>
         </linearGradient>
       </defs>
-      <rect x="42" y="148" width="36" height="12" rx="3" fill="url(#tpMal)"/>
-      <rect x="44" y="146" width="32" height="2.4" fill="url(#tpGold)"/>
-      <rect x="46" y="137" width="28" height="10" rx="2.5" fill="url(#tpMal)"/>
-      <path d="M54 130 L66 130 L68 137 L52 137 Z" fill="url(#tpGold)"/>
-      <path d="M45 28 C38 40 36 50 37 60 C39 82 49 106 54 130 L66 130 C71 106 81 82 83 60 C84 50 82 40 75 28 C69 42 64 50 60 53 C56 50 51 42 45 28 Z" fill="url(#tpGold)"/>
-      <path d="M58 54 C53 59 51 70 52 84 C53 100 56 116 58 130 L60 130 C58 114 55 98 55 84 C55 70 56 60 60 54 Z" fill="rgba(255,255,255,.26)"/>
-      <circle cx="60" cy="30" r="17" fill="url(#tpGold)"/>
-      <path d="M50 26 q7 -6 13 -1 q4 4 0 8 q-7 4 -13 -1 q-3 -3 0 -6 Z" fill="rgba(120,82,15,.30)"/>
-      <path d="M64 33 q6 -1 8 3 q1 4 -4 5 q-5 0 -6 -4 Z" fill="rgba(120,82,15,.26)"/>
-      <ellipse cx="53" cy="24" rx="6" ry="7" fill="rgba(255,255,255,.42)"/>
+      <g stroke="#7a5410" stroke-width="1.4" stroke-linejoin="round">
+        <path d="M48 150 L72 150 L70 158 L50 158 Z" fill="url(#tpGold)"/>
+        <path d="M50 158 L70 158 L72 168 L48 168 Z" fill="url(#tpMal)"/>
+        <path d="M48 168 L72 168 L71 171 L49 171 Z" fill="url(#tpGold)"/>
+        <path d="M49 171 L71 171 L76 185 L44 185 Z" fill="url(#tpMal)"/>
+        <path d="M54 84 C49 104 45 124 44 145 L44 149 Q48 141 52 150 Q56 141 60 152 Q64 141 68 150 Q72 141 76 149 L76 145 C75 124 71 104 66 84 C63 87 57 87 54 84 Z" fill="url(#tpGold)"/>
+        <path d="M40 48 C42 62 50 76 58 86 L60 84 C52 74 45 62 43 50 C42 48 41 47 40 48 Z" fill="url(#tpGold)"/>
+        <path d="M80 48 C78 62 70 76 62 86 L60 84 C68 74 75 62 77 50 C78 48 79 47 80 48 Z" fill="url(#tpGold)"/>
+        <circle cx="60" cy="82" r="3.4" fill="url(#tpGold)"/>
+        <circle cx="60" cy="42" r="24" fill="url(#tpGold)"/>
+      </g>
+      <path d="M48 38 q8 -7 15 -2 q5 4 1 9 q-8 5 -15 -1 q-4 -4 -1 -5 Z" fill="#9E6B16" opacity=".34"/>
+      <path d="M64 45 q7 -2 10 3 q2 5 -4 6 q-6 1 -8 -4 Z" fill="#9E6B16" opacity=".3"/>
+      <path d="M63 22 C67 33 65 44 60 52" stroke="#7a5410" stroke-width="1.4" opacity=".42" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="32" rx="7" ry="9" fill="#fff" opacity=".42"/>
+      <g stroke="#9E6B16" stroke-width="1.4" opacity=".4" fill="none" stroke-linecap="round">
+        <path d="M58 88 C53 108 49 126 47 140"/>
+        <path d="M60 88 L60 148"/>
+        <path d="M62 88 C67 108 71 126 73 140"/>
+      </g>
     </svg>
     <div class="hero-lock">
       <span class="hero-kick">Colección de figuritas</span>
@@ -823,7 +833,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.4</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.6</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1224,13 +1234,15 @@ function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor ap
 
 /* ---------- tiers de cracks ---------- */
 const TIERS=[
+  {key:"goat", name:"GOAT", icon:"🐐", color:"#16181D", sub:"Los 2 más grandes"},
   {key:"diamante", name:"Diamante", icon:"💎", color:"#2EC5E0", sub:"Fuera de serie"},
   {key:"oro", name:"Oro", icon:"🥇", color:"#F2A20C", sub:"Élite mundial"},
   {key:"plata", name:"Plata", icon:"🥈", color:"#9AA7B4", sub:"Grandes figuras"},
   {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Buenos cracks"}
 ];
 const CRACK_TIER={
-  "ARG17":"diamante","POR15":"diamante","FRA20":"diamante","NOR15":"diamante","ESP15":"diamante","BRA14":"diamante",
+  "ARG17":"goat","POR15":"goat",
+  "FRA20":"diamante","NOR15":"diamante","ESP15":"diamante","BRA14":"diamante",
   "ESP10":"oro","MAR4":"oro","EGY17":"oro","CRO9":"oro","BEL15":"oro","ENG18":"oro","NED3":"oro","KOR18":"oro","ESP11":"oro","ARG18":"oro",
   "ENG11":"plata","ENG16":"plata","ENG17":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG19":"plata","NOR10":"plata","ENG10":"plata","BRA15":"plata","BEL2":"plata","COL14":"plata",
   "POR9":"bronce","POR10":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce","ARG2":"bronce"
@@ -1256,7 +1268,7 @@ function openCracks(){
     codes.sort((a,b)=>{ const ga=getCount(a)>0?0:1, gb=getCount(b)>0?0:1; if(ga!==gb) return ga-gb; return (playerName(a)||a).localeCompare(playerName(b)||b,"es"); });
     const gt=codes.filter(c=>getCount(c)>0).length;
     const sec=document.createElement("div"); sec.className="tier-sec";
-    const stars="★".repeat({diamante:5,oro:4,plata:3,bronce:2}[t.key]||0);
+    const stars=t.key==="goat" ? "👑" : "★".repeat({diamante:5,oro:4,plata:3,bronce:2}[t.key]||0);
     sec.innerHTML='<div class="tier-h" style="--tc:'+t.color+'"><span class="tier-ic">'+t.icon+'</span><span class="tier-nm">'+t.name+'</span><span class="tier-stars">'+stars+'</span><span class="tier-sub">'+t.sub+'</span><span class="tier-ct">'+gt+'/'+codes.length+'</span></div>';
     const grid=document.createElement("div"); grid.className="crack-grid";
     codes.forEach(c=>grid.appendChild(buildCrackCard(c,t)));
@@ -2398,32 +2410,31 @@ document.getElementById("rkList").addEventListener("click",e=>{
   var unlock=function(){ el.removeAttribute("readonly"); };
   ["focus","pointerdown","mousedown","touchstart","keydown"].forEach(function(ev){ el.addEventListener(ev,unlock); });
 });
-/* Banda geométrica "We Are 26" (cuartos de círculo en colores oficiales) */
-function buildGeoBand(){
-  const band=document.getElementById("geoband"); if(!band) return;
-  const cols=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
-  const corners=["100% 0 0 0","0 100% 0 0","0 0 100% 0","0 0 0 100%","100% 100% 0 0","0 0 100% 100%","0 0 0 0","0 0 0 0","999px 999px 999px 999px"];
-  band.innerHTML="";
-  let prev=-1;
-  for(let i=0;i<14;i++){
-    const d=document.createElement("i");
-    let c; do{ c=Math.floor(Math.random()*cols.length); }while(c===prev); prev=c;
-    d.style.background=cols[c];
-    d.style.borderRadius=corners[Math.floor(Math.random()*corners.length)];
-    band.appendChild(d);
+/* Olas de color que fluyen (We Are 26, versión orgánica) */
+const WAVE_COLS=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
+function waveRnd(a,b){ return a+Math.random()*(b-a); }
+function wavePickColors(n){ const out=[]; let prev=-1; for(let i=0;i<n;i++){ let c; do{ c=Math.floor(Math.random()*WAVE_COLS.length); }while(c===prev); prev=c; out.push(WAVE_COLS[c]); } return out; }
+function waveSvg(vertical, count, viewW, viewH){
+  const main = vertical ? viewW : viewH, cross = vertical ? viewH : viewW;
+  const step = main/count, wob = step*0.34;
+  const P = (m,cr)=> vertical ? (m.toFixed(1)+","+cr.toFixed(1)) : (cr.toFixed(1)+","+m.toFixed(1));
+  function boundary(k){ const base=k*step;
+    if(k===0) return [0,0,0,0];
+    if(k===count) return [main,main,main,main];
+    return [base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob)];
   }
+  const B=[]; for(let k=0;k<=count;k++) B.push(boundary(k));
+  const cols=wavePickColors(count);
+  const fwd = a => "C "+P(a[1],cross/3)+" "+P(a[2],2*cross/3)+" "+P(a[3],cross);
+  const rev = a => "C "+P(a[2],2*cross/3)+" "+P(a[1],cross/3)+" "+P(a[0],0);
+  let paths="";
+  for(let k=0;k<count;k++){ const t=B[k], b=B[k+1];
+    paths+='<path d="M '+P(t[0],0)+" "+fwd(t)+" L "+P(b[3],cross)+" "+rev(b)+' Z" fill="'+cols[k]+'"/>';
+  }
+  return '<svg preserveAspectRatio="none" viewBox="0 0 '+viewW+' '+viewH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">'+paths+'</svg>';
 }
-function buildRails(){
-  const cols=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
-  const corners=["100% 0 0 0","0 100% 0 0","0 0 100% 0","0 0 0 100%","100% 100% 0 0","0 0 100% 100%","0 0 0 0","0 0 0 0","999px 999px 999px 999px"];
-  ["railL","railR"].forEach(id=>{
-    const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(!pat) return;
-    pat.innerHTML=""; let prev=-1;
-    for(let i=0;i<16;i++){ const d=document.createElement("i");
-      let c; do{ c=Math.floor(Math.random()*cols.length); }while(c===prev); prev=c;
-      d.style.background=cols[c]; d.style.borderRadius=corners[Math.floor(Math.random()*corners.length)]; pat.appendChild(d); }
-  });
-}
+function buildGeoBand(){ const band=document.getElementById("geoband"); if(band) band.innerHTML=waveSvg(true, 14, 1200, 80); }
+function buildRails(){ ["railL","railR"].forEach(id=>{ const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(pat) pat.innerHTML=waveSvg(false, 16, 100, 800); }); }
 buildGeoBand();
 buildRails();
 render();
