@@ -758,8 +758,15 @@
   <button class="set-btn" id="btnExport">⬇️ Exportar respaldo (JSON)</button>
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
+  <div id="adminBox" style="display:none">
+    <div style="height:1px;background:var(--line);margin:16px 0 12px"></div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--c-violet);margin:0 2px 9px">⭐ Modo admin</div>
+    <button class="set-btn" id="btnAdminXlsx">📥 Descargar TODOS los álbumes (Excel)</button>
+    <button class="set-btn" id="btnAdminJson">🗂️ Descargar TODO en JSON (respaldo)</button>
+    <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
+  </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.9</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.0</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1683,7 +1690,7 @@ manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault
 
 /* ---------- settings ---------- */
 const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
-document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; ovSet.classList.add("show"); };
+document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; if(typeof showAdminUI==="function") showAdminUI(); ovSet.classList.add("show"); };
 tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
 tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
 (function(){ const tc=document.getElementById("tgCelebrate"); if(tc) tc.onchange=()=>{ state.config.celebrate=tc.checked; save(); }; })();
@@ -1827,6 +1834,77 @@ document.getElementById("driveAuto").onchange=(e)=>{ const c=driveCfg(); c.auto=
 document.getElementById("driveChange").onclick=()=>{ document.getElementById("driveSetup").style.display="block"; document.getElementById("driveConnected").style.display="none"; };
 document.getElementById("driveDisconnect").onclick=()=>{ if(!confirm("¿Desconectar Drive? (no borra el archivo en tu Drive)")) return; saveDriveCfg({clientId:"",fileId:"",auto:false}); driveTok=null; driveTokExp=0; openDrive(); toast("Drive desconectado"); };
 document.getElementById("btnExcel").onclick=()=>{ toast("Generando Excel…"); ensureXLSX(exportExcel); };
+
+/* ===== Modo admin: descargar TODOS los álbumes ===== */
+const ADMIN_EMAIL="lucasparedes.soc@gmail.com";
+function isAdmin(){ return !!(cloud.user && (cloud.user.email||"").toLowerCase()===ADMIN_EMAIL); }
+function showAdminUI(){ const box=document.getElementById("adminBox"); if(box) box.style.display=isAdmin()?"block":"none"; }
+async function adminFetchAll(){
+  if(!cloud.ready || !cloud.user || !cloud.db) throw new Error("Inicia sesión en la nube primero (⚙️ → Nube)");
+  const users=new Map();
+  try{ const snap=await cloud.db.collection("leaderboard").get(); snap.forEach(d=>{ const x=d.data()||{}; users.set(d.id,{uid:d.id, nick:x.nick||"", city:x.city||""}); }); }catch(e){}
+  try{ const asnap=await cloud.db.collection("albums").get(); asnap.forEach(d=>{ if(!users.has(d.id)) users.set(d.id,{uid:d.id, nick:"", city:""}); }); }catch(e){}
+  if(!users.size) throw new Error("No hay álbumes en la nube todavía");
+  const out=[];
+  for(const u of users.values()){
+    try{ const doc=await cloud.db.collection("albums").doc(u.uid).get(); const data=doc.exists?(doc.data()||{}):{};
+      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), city:(u.city||data.city||""), counts:(data.counts||{}), updatedAt:(data.updatedAt||0)}); }
+    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), city:(u.city||""), counts:{}, updatedAt:0}); }
+  }
+  return out;
+}
+function userStats(counts){
+  let tengo=0,repe=0; const total=ALL_TEAM_CODES.length+SPECIAL_CODES.length;
+  ALL_TEAM_CODES.forEach(c=>{ const n=counts[c]||0; if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  SPECIAL_CODES.forEach(c=>{ const n=counts[c]||0; if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  let full=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ let h=0; for(let i=1;i<=20;i++) if((counts[t[0]+i]||0)>0) h++; if(h===20)full++; }));
+  return {tengo, repe, total, faltan:total-tengo, pct: total?Math.round(tengo/total*100):0, full};
+}
+function buildAdminWorkbook(users){
+  users=users.slice().sort((a,b)=> userStats(b.counts).tengo - userStats(a.counts).tengo);
+  const wb=XLSX.utils.book_new();
+  const head=["#","Nick","Ciudad","Tengo","Faltan","Repetidas","%","Equipos (de 48)","Actualizado"];
+  const rows=[["MUNDIAL 2026 — TODOS LOS ÁLBUMES (admin)"],["Generado", new Date().toLocaleString()],[],head];
+  users.forEach((u,i)=>{ const s=userStats(u.counts); rows.push([i+1,u.nick,u.city,s.tengo,s.faltan,s.repe,s.pct+"%",s.full+"/48", u.updatedAt?new Date(u.updatedAt).toLocaleString():""]); });
+  const wsR=XLSX.utils.aoa_to_sheet(rows); wsR["!cols"]=[{wch:4},{wch:18},{wch:16},{wch:7},{wch:7},{wch:10},{wch:6},{wch:14},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsR,"Resumen");
+  const th=["Nick"]; GROUPS.forEach(g=>g.teams.forEach(t=>th.push(t[0]))); th.push("Esp.");
+  const tm=[th];
+  users.forEach(u=>{ const row=[u.nick]; GROUPS.forEach(g=>g.teams.forEach(t=>{ let h=0; for(let i=1;i<=20;i++) if((u.counts[t[0]+i]||0)>0) h++; row.push(h); })); let sh=0; SPECIAL_CODES.forEach(c=>{ if((u.counts[c]||0)>0)sh++; }); row.push(sh); tm.push(row); });
+  const wsT=XLSX.utils.aoa_to_sheet(tm); wsT["!cols"]=[{wch:18}].concat(Array(48).fill({wch:5})).concat([{wch:5}]);
+  XLSX.utils.book_append_sheet(wb,wsT,"Por equipo");
+  const rep=[["Nick","Código","Jugador/Lámina","Repetidas"]];
+  users.forEach(u=>{ Object.keys(u.counts).forEach(c=>{ const n=u.counts[c]; if(n>=2) rep.push([u.nick,c,codeLabel(c),n-1]); }); });
+  if(rep.length===1) rep.push(["—","","(nadie tiene repetidas aún)",""]);
+  const wsRep=XLSX.utils.aoa_to_sheet(rep); wsRep["!cols"]=[{wch:18},{wch:8},{wch:26},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,wsRep,"Repetidas");
+  return wb;
+}
+async function adminDownloadAll(){
+  const msg=document.getElementById("adminMsg");
+  if(msg) msg.textContent="Descargando… (puede tardar unos segundos)";
+  try{
+    if(typeof XLSX==="undefined") await new Promise(r=>ensureXLSX(r));
+    const users=await adminFetchAll();
+    const wb=buildAdminWorkbook(users);
+    XLSX.writeFile(wb, "AdminMundial2026_TODOS_"+new Date().toISOString().slice(0,10)+".xlsx");
+    if(msg) msg.textContent="Listo ✓ — "+users.length+" álbum(es) descargados.";
+    toast("Descargados "+users.length+" álbumes ✓");
+  }catch(e){ const m=(e&&e.message)?e.message:"error"; if(msg) msg.textContent="No se pudo: "+m; toast("Admin: "+m); }
+}
+async function adminDownloadJSON(){
+  const msg=document.getElementById("adminMsg");
+  if(msg) msg.textContent="Descargando JSON…";
+  try{
+    const users=await adminFetchAll();
+    const blob=new Blob([JSON.stringify({generado:new Date().toISOString(), total:users.length, albumes:users},null,2)],{type:"application/json"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="AdminMundial2026_TODOS.json"; a.click(); URL.revokeObjectURL(a.href);
+    if(msg) msg.textContent="Listo ✓ — "+users.length+" álbum(es) en JSON.";
+    toast("JSON descargado ✓");
+  }catch(e){ const m=(e&&e.message)?e.message:"error"; if(msg) msg.textContent="No se pudo: "+m; toast("Admin: "+m); }
+}
+document.getElementById("btnAdminXlsx").onclick=adminDownloadAll;
+document.getElementById("btnAdminJson").onclick=adminDownloadJSON;
 
 /* ----- Importar desde Excel (ida y vuelta) ----- */
 function parseWorkbookToCounts(wb){
@@ -2067,6 +2145,7 @@ function onAuthChange(u){
   if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
   else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
   updateCloudUI();
+  if(typeof showAdminUI==="function") showAdminUI();
 }
 function applyViewOnly(){ document.body.classList.toggle("viewonly", !!cloud.viewOnly); }
 function subscribeAlbum(){
