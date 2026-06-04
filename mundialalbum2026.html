@@ -50,7 +50,7 @@
   .htitle{flex:1; min-width:0;}
   .htitle .kick{font-family:var(--font-disp); font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--c-blue); display:flex; align-items:center; gap:7px;}
   .htitle .kick .dot{width:8px;height:8px;border-radius:50% 50% 50% 0;background:var(--c-pink);}
-  .htitle h1{font-family:var(--font-disp); font-weight:900; font-size:36px; line-height:.9; margin:3px 0 0; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
+  .htitle h1{font-family:var(--font-disp); font-weight:900; font-size:36px; line-height:1; margin:8px 0 0; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
   .hbtns{display:flex; gap:8px; flex:0 0 auto;}
   .icbtn{width:var(--tap); height:var(--tap); border:1.5px solid var(--line2); background:var(--surface); color:var(--ink2); border-radius:14px; font-size:19px; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .12s, box-shadow .2s;}
   .icbtn:hover{box-shadow:var(--shadow);}
@@ -78,7 +78,7 @@
   .chip.total .n{color:var(--c-pink);}
 
   /* TOOLBAR */
-  .toolbar{position:sticky; top:0; z-index:30; background:rgba(251,250,248,.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:11px 12px;}
+  .toolbar{position:relative; z-index:30; background:rgba(251,250,248,.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:11px 12px;}
   .qa{display:flex; gap:8px;}
   .qa input{flex:1; min-width:0; background:var(--surface); border:2px solid var(--line2); color:var(--ink); border-radius:15px; padding:0 15px; height:48px; font-size:16px; font-family:var(--font-mono); letter-spacing:.04em; text-transform:uppercase; box-shadow:var(--shadow-sm);}
   .qa input::placeholder{color:var(--mut2); text-transform:none; letter-spacing:0; font-family:var(--font-ui);}
@@ -200,6 +200,7 @@
   .tier-ic{font-size:20px; line-height:1;}
   .tier-nm{font-family:var(--font-disp); font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:-.01em; color:var(--ink);}
   .tier-sub{font-size:11px; color:var(--mut); font-weight:700;}
+  .tier-stars{color:#F2A20C; font-size:11px; letter-spacing:1.5px; margin-left:5px; vertical-align:middle; white-space:nowrap;}
   .tier-ct{margin-left:auto; font-family:var(--font-mono); font-weight:700; font-size:13.5px; color:var(--tc);}
   .crack-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:9px;}
   .crack-card{position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px 11px; border-radius:16px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; text-align:center; transition:transform .1s;}
@@ -309,7 +310,7 @@
   #viewBackFab{display:none; position:fixed; left:50%; transform:translateX(-50%); bottom:calc(18px + env(safe-area-inset-bottom)); z-index:45; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15px; padding:14px 24px; border-radius:999px; box-shadow:0 12px 30px rgba(0,103,185,.5); cursor:pointer;}
   #viewBackFab:active{transform:translateX(-50%) scale(.96);}
   body.viewonly #viewBackFab{display:block;}
-  #rkBackBtn{display:none; width:100%; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15.5px; padding:15px; border-radius:14px; margin-bottom:14px; cursor:pointer; box-shadow:0 8px 20px rgba(0,103,185,.4);}
+  #rkBackBtn{display:block; width:100%; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15.5px; padding:15px; border-radius:14px; margin-bottom:14px; cursor:pointer; box-shadow:0 8px 20px rgba(0,103,185,.4);}
   #rkBackBtn:active{transform:scale(.97);}
   body.viewonly #rkBackBtn{display:block;}
   body.viewonly #hTitle{cursor:pointer;}
@@ -767,7 +768,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.1</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 7.2</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1200,7 +1201,8 @@ function openCracks(){
     codes.sort((a,b)=>{ const ga=getCount(a)>0?0:1, gb=getCount(b)>0?0:1; if(ga!==gb) return ga-gb; return (playerName(a)||a).localeCompare(playerName(b)||b,"es"); });
     const gt=codes.filter(c=>getCount(c)>0).length;
     const sec=document.createElement("div"); sec.className="tier-sec";
-    sec.innerHTML='<div class="tier-h" style="--tc:'+t.color+'"><span class="tier-ic">'+t.icon+'</span><span class="tier-nm">'+t.name+'</span><span class="tier-sub">'+t.sub+'</span><span class="tier-ct">'+gt+'/'+codes.length+'</span></div>';
+    const stars="★".repeat({diamante:5,oro:4,plata:3,bronce:2}[t.key]||0);
+    sec.innerHTML='<div class="tier-h" style="--tc:'+t.color+'"><span class="tier-ic">'+t.icon+'</span><span class="tier-nm">'+t.name+'</span><span class="tier-stars">'+stars+'</span><span class="tier-sub">'+t.sub+'</span><span class="tier-ct">'+gt+'/'+codes.length+'</span></div>';
     const grid=document.createElement("div"); grid.className="crack-grid";
     codes.forEach(c=>grid.appendChild(buildCrackCard(c,t)));
     sec.appendChild(grid); body.appendChild(sec);
@@ -2088,7 +2090,7 @@ function renderRanking(){
     const me=cloud.user.uid;
     list.innerHTML=rows.map((r,i)=>{ const pos=i+1; const top=pos<=3?(" top"+pos):""; const mine=r.uid===me?" me":"";
       const place=r.city?("📍 "+esc(r.city)+" · "):"";
-      const posLabel = pos===1 ? '👑' : pos;
+      const posLabel = pos===1 ? '👑' : pos===2 ? '🥈' : pos===3 ? '🥉' : pos;
       return '<div class="rk-row'+top+mine+'" data-uid="'+esc(r.uid)+'"><div class="rk-pos">'+posLabel+'</div>'
         +'<div class="rk-mid"><div class="rk-nm">'+esc(r.nick)+(mine?' <span class="rk-meta">(tú)</span>':'')+'</div>'
         +'<div class="rk-bar"><i style="width:'+r.pct+'%"></i></div>'
@@ -2300,7 +2302,7 @@ document.getElementById("joinGo").onclick=()=>{
 function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="group")); } goToAlbum(""); updateCloudUI(); toast("¡Volviste a tu álbum! ✓"); }
 document.getElementById("viewBack").onclick=backToMyAlbum;
 document.getElementById("viewBackFab").onclick=backToMyAlbum;
-document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); backToMyAlbum(); };
+document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); if(document.body.classList.contains("viewonly")) backToMyAlbum(); else { try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); } } };
 document.getElementById("hTitle").onclick=()=>{ if(document.body.classList.contains("viewonly")) backToMyAlbum(); };
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
