@@ -144,7 +144,7 @@
   .cell .badge{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:10px; font-weight:800; min-width:19px; height:19px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid var(--surface); box-shadow:0 2px 6px rgba(224,50,42,.4);}
   .cell.hide, .team.hide, .grp.hide{display:none;}
   .cell.hit{outline:3px solid var(--c-pink); outline-offset:2px; z-index:2;}
-  .clubnav{margin:0 0 14px;}
+  .clubnav{margin:0 0 14px; flex-wrap:wrap; overflow:visible;}
 
   /* FAB */
   .fab{position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom)); height:60px; padding:0 24px 0 19px; border-radius:30px; border:none; z-index:40; background:linear-gradient(135deg,#f24a3d,var(--c-pink)); color:#fff; font-weight:800; font-size:16px; box-shadow:0 12px 28px rgba(224,50,42,.42); cursor:pointer; display:flex; align-items:center; gap:9px; transition:transform .14s, box-shadow .2s;}
@@ -177,9 +177,9 @@
   .rrow .rnum{flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
   .rrow.have .rnum{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent;}
   .rrow.dup .rnum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
-  .rrow .rinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;}
+  .rrow .rinfo{flex:1; min-width:0; display:flex; align-items:center; gap:8px;}
   .rrow .rname{font-weight:700; font-size:14px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .rrow .rpos{font-size:11px; color:var(--mut); font-weight:600;}
+  .rrow .rpos{flex:0 0 auto; font-size:10px; font-weight:800; letter-spacing:.04em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 6px;}
   .rrow .rstat{flex:0 0 auto; max-width:46%; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--c-green); text-align:right; line-height:1.25;}
   .rrow.hit{outline:2px solid var(--c-pink); outline-offset:1px;}
   .ed-code .st{display:inline-block; margin-top:11px; font-size:12px; padding:5px 13px; border-radius:999px; font-weight:700;}
@@ -678,7 +678,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.7</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.8</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -984,8 +984,9 @@ function makeClub(club, term){
     const s=cellState(c);
     const row=document.createElement("div"); row.className="rrow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
     const nm=playerName(c)||c, pos=playerPos(c)||"", sv=playerStat(c);
+    const pa=({"Portero":"POR","Defensa":"DEF","Mediocampista":"MED","Delantero":"DEL"})[pos]||"";
     if(dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm)) row.classList.add("hit");
-    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span>'+(pos?'<span class="rpos">'+pos+'</span>':'')+'</span>'+(sv?'<span class="rstat">'+escHTML(sv)+'</span>':'');
+    row.innerHTML='<span class="rnum">'+num+'</span><span class="rinfo"><span class="rname">'+escHTML(nm)+'</span>'+(pa?'<span class="rpos" title="'+escHTML(pos)+'">'+pa+'</span>':'')+'</span>'+(sv?'<span class="rstat">'+escHTML(sv)+'</span>':'');
     row.addEventListener("click",()=>openEditor(c));
     roster.appendChild(row);
   });
@@ -1002,7 +1003,7 @@ function render(){
     const present=CLUB_COUNTRIES.filter(co=>CLUBS.some(c=>c.country===co.key));
     if(clubCountry!=="all" && !present.some(co=>co.key===clubCountry)) clubCountry="all";
     const bar=document.createElement("div"); bar.className="filters clubnav";
-    const mk=(key,label)=>{ const b=document.createElement("button"); b.type="button"; b.className="fbtn"+(clubCountry===key?" active":""); b.innerHTML=label; b.onclick=()=>{ clubCountry=key; render(); window.scrollTo({top:0,behavior:"smooth"}); }; return b; };
+    const mk=(key,label)=>{ const b=document.createElement("button"); b.type="button"; b.className="fbtn"+(clubCountry===key?" active":""); b.innerHTML=label; b.onclick=()=>{ clubCountry=key; render(); }; return b; };
     bar.appendChild(mk("all","🌐 Todos"));
     present.forEach(co=>{ const cnt=CLUBS.filter(c=>c.country===co.key).length; bar.appendChild(mk(co.key, co.flag+" "+co.name+' <span class="b">'+cnt+'</span>')); });
     main.appendChild(bar);
