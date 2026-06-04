@@ -306,6 +306,9 @@
   #viewBanner b{color:var(--c-blue);}
   #viewBack{flex:0 0 auto; border:1.5px solid var(--c-blue); background:var(--surface); color:var(--c-blue); font-weight:700; font-size:12.5px; border-radius:999px; padding:6px 12px; cursor:pointer;}
   #viewBack:active{transform:scale(.95);}
+  #viewBackFab{display:none; position:fixed; left:50%; transform:translateX(-50%); bottom:calc(18px + env(safe-area-inset-bottom)); z-index:45; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15px; padding:14px 24px; border-radius:999px; box-shadow:0 12px 30px rgba(0,103,185,.5); cursor:pointer;}
+  #viewBackFab:active{transform:translateX(-50%) scale(.96);}
+  body.viewonly #viewBackFab{display:block;}
   body.viewonly #viewBanner{display:flex;}
   body.viewonly .qa{display:none;}
   body.viewonly .fab{display:none;}
@@ -406,6 +409,8 @@
   .star-kick{font-family:var(--font-disp); font-weight:900; font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-amber);}
   .star-name{font-family:var(--font-disp); font-weight:900; font-size:30px; line-height:1.02; margin:6px 0 2px; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
   .star-team{font-size:13.5px; font-weight:700; color:var(--mut); margin-bottom:14px;}
+  .star-tier{display:none; font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#fff; padding:4px 12px; border-radius:999px; margin:3px 0 9px;}
+  .star-value{display:none; font-family:var(--font-mono); font-weight:700; font-size:14px; color:var(--ok-d); background:rgba(0,128,43,.10); border:1px solid rgba(0,128,43,.25); border-radius:12px; padding:9px 12px; margin-bottom:12px;}
   .star-fact{background:var(--surface2); border:1px solid var(--line); border-radius:16px; padding:13px 15px; font-size:14.5px; line-height:1.5; color:var(--ink2); font-weight:600;}
   .star-prob{font-size:12px; color:var(--mut); line-height:1.5; margin-top:12px;}
   #confetti{position:fixed; inset:0; pointer-events:none; z-index:70; overflow:hidden;}
@@ -532,7 +537,7 @@
       <h1 class="disp">Mi Álbum</h1>
     </div>
     <div class="hbtns">
-      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">💎</button>
+      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">🏆</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
@@ -549,8 +554,9 @@
 
 <div id="viewBanner">
   <span>👁️ Estás viendo un álbum compartido · <b>solo lectura</b></span>
-  <button id="viewBack">Volver al mío</button>
+  <button id="viewBack">← Volver al mío</button>
 </div>
+<button id="viewBackFab" aria-label="Volver a mi álbum">← Volver a MI álbum</button>
 
 <div class="toolbar">
   <div class="qa">
@@ -587,7 +593,7 @@
 
 <!-- CRACKS (galería con tiers) -->
 <div class="ov" id="ovCracks"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">💎 Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="sheet-h"><h2 class="disp">🏆 Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
   <div class="cracks-sum" id="cracksSum"></div>
   <div id="cracksBody"></div>
   <div class="tip">Toca un crack pa' marcarlo o ver su info. Los que te faltan salen 🔒.</div>
@@ -748,7 +754,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.5</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.7</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -822,7 +828,9 @@
   <div class="star-burst">🎉</div>
   <div class="star-kick">¡Crack desbloqueado!</div>
   <div class="star-name" id="starName">—</div>
+  <div class="star-tier" id="starTier"></div>
   <div class="star-team" id="starTeam">—</div>
+  <div class="star-value" id="starValue"></div>
   <div class="star-fact" id="starFact">—</div>
   <div class="star-prob" id="starProb">—</div>
   <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Bkn! 🙌</button>
@@ -921,48 +929,48 @@ function celebrateTeam(code,name){
 
 /* ---------- ¡Felicidades! cracks ---------- */
 const STAR_FACTS={
-  "ARG17":"8 Balones de Oro (récord absoluto del fútbol) y campeón del mundo en Qatar 2022. El GOAT. 🐐",
-  "POR15":"Máximo goleador de selecciones en la historia del fútbol y 5 veces campeón de la Champions. 🚀",
-  "FRA20":"Hizo un hat-trick en la final del Mundial 2022, algo que no pasaba en una final desde 1966. ⚡",
-  "BRA14":"Elegido el mejor jugador del mundo (premio The Best de la FIFA) en 2024. 🇧🇷",
-  "ESP15":"El goleador más joven en la historia de la Eurocopa: lo logró con 16 años en 2024. 🤯",
-  "NOR15":"Tiene el récord de goles en una sola temporada de la Premier League: 36. 🤖",
-  "ENG18":"Es el máximo goleador histórico de la selección de Inglaterra. 🎯",
-  "POR10":"Capitán del Manchester United y uno de los reyes de la asistencia en la Premier. 🅰️",
-  "ARG18":"Goleador de la Serie A (capocannoniere) con el Inter campeón. 🐂",
-  "URU11":"Elegido el mejor jugador de la Copa Libertadores con Flamengo. 🏆",
-  "SEN16":"Héroe de la Conference League: 9 goles y mejor jugador del torneo. 🏆",
-  "JAP20":"Goleador de la liga de Países Bajos (Eredivisie) con 25 goles. 👟",
-  "BEL15":"Uno de los mejores mediocampistas creativos de su generación; lo ganó casi todo con el Manchester City. 🎩",
-  "ESP10":"¡Ganó el Balón de Oro 2024! Y fue campeón y mejor jugador de la Eurocopa 2024. 🏆",
-  "CRO9":"Balón de Oro 2018 (cortó la racha de Messi y Cristiano) y leyenda del Real Madrid. 👑",
-  "ENG11":"A su edad ya es figura del Real Madrid; fue clave en la Liga 2023-24. ⭐",
-  "ESP11":"Joya del Barcelona; ganó el Trofeo Kopa al mejor jugador joven del mundo. 🎯",
-  "ENG16":"Elegido Mejor Jugador de la Premier League en la temporada 2023-24. 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-  "ENG17":"Estrella del Arsenal y de Inglaterra, imparable por la banda. 🚀",
-  "GER15":"Regateador letal del Bayern; una de las grandes joyas del fútbol mundial. ✨",
-  "GER11":"Fue el cerebro del Leverkusen que salió campeón INVICTO de la Bundesliga. 🧠",
-  "ENG12":"Explotó en el Chelsea como uno de los mejores jóvenes de Europa. ❄️",
-  "URU10":"El motor del mediocampo del Real Madrid; corre como nadie y mete golazos de lejos. 🚂",
-  "EGY17":"El 'Faraón' del Liverpool; varias veces Bota de Oro de la Premier League. 👑",
-  "KOR18":"Capitán de Corea y del Tottenham; ganó la Bota de Oro de la Premier 2021-22. 🇰🇷",
-  "NED3":"Uno de los mejores defensas del mundo y capitán del Liverpool. 🧱",
-  "ARG2":"El 'Dibu': héroe en los penales del Mundial 2022 y dos veces mejor portero del mundo. 🧤",
-  "ARG19":"Campeón del mundo 2022 con Argentina; un killer dentro del área. 🦊",
-  "NOR10":"Capitán del Arsenal; un crack creativo con una zurda mágica. 🎩",
-  "POR9":"Mago del Manchester City; ganó varias Premier y la Champions del triplete. 🪄",
-  "BRA15":"Especialista en noches grandes de Champions con el Real Madrid. 🌟",
-  "MAR4":"Estrella de Marruecos (semifinalista en 2022) y del PSG campeón de Europa. 🚀",
-  "GER10":"Líder y multiusos del Bayern y de Alemania; juega en todas partes. ⚙️",
-  "ARG9":"Campeón del mundo 2022; mediocampista clave del Liverpool. 🏆",
-  "ARG8":"Mejor Jugador Joven del Mundial 2022 con Argentina; cerebro del Chelsea. 🌟",
-  "BEL2":"Uno de los mejores porteros del mundo; figura en la final de Champions 2022. 🧤",
-  "ENG10":"El pulmón del Arsenal y de Inglaterra; lo gana todo en el medio campo. 💪",
-  "CRO4":"Defensa-crack del Manchester City: fuerte, rápido y con muy buena salida. 🧱",
-  "POR20":"Extremo explosivo del Milan; pura velocidad y desborde. ⚡",
-  "COL14":"Bota de Oro del Mundial 2014; el mago de la selección colombiana. 🎩",
-  "SWE19":"Delantero letal y elegante; una de las grandes referencias del gol. 🎯",
-  "FRA4":"Muralla del Arsenal; uno de los mejores centrales jóvenes del mundo. 🧱"
+  "ARG17":"8 Balones de Oro (récord histórico), campeón del Mundial 2022, 4 Champions League y máximo goleador en la historia del Barcelona (~670 goles). El GOAT. 🐐",
+  "POR15":"5 Balones de Oro, máximo goleador de la historia del fútbol (+900 goles oficiales), 5 Champions League y campeón de la Eurocopa 2016. 🚀",
+  "FRA20":"Campeón del mundo 2018 y hat-trick en la final de 2022; máximo goleador histórico del PSG (~256) y varias veces Bota de Oro. ⚡",
+  "NOR15":"Récord de goles en una temporada de Premier League (36) y triplete (Liga, Copa y Champions) con el City en 2023. Una máquina. 🤖",
+  "BRA14":"Premio The Best de la FIFA 2024, campeón de la Champions 2024 (marcó en la final) y de LaLiga con el Real Madrid. 🇧🇷",
+  "ESP15":"Goleador más joven en la historia de la Eurocopa (16 años), Trofeo Kopa al mejor joven y subcampeón del Balón de Oro 2025. 🤯",
+  "ESP10":"¡Balón de Oro 2024! Campeón y mejor jugador de la Eurocopa 2024 y campeón de la Champions 2023 con el City. 🏆",
+  "MAR4":"6º en el Balón de Oro 2025 (récord para Marruecos), campeón de la Champions con el PSG y semifinalista del Mundial 2022. ¡11 goles siendo lateral! 🚀",
+  "EGY17":"Varias veces Bota de Oro de la Premier, campeón de la Champions 2019 y de la Premier; máximo goleador africano en la historia de la liga inglesa. 👑",
+  "CRO9":"Balón de Oro 2018 (cortó la racha de Messi y Cristiano), 6 Champions League con el Real Madrid y finalista del Mundial 2018. 👑",
+  "BEL15":"Dos veces Jugador del Año de la Premier League, campeón de la Champions del triplete con el City y rey de las asistencias. 🎩",
+  "COL14":"Bota de Oro (máximo goleador) del Mundial 2014 y mejor jugador de la Copa América 2024. El 10 mágico de Colombia. 🎩",
+  "ENG18":"Máximo goleador histórico de la selección de Inglaterra y del Tottenham; Bota de Oro del Mundial 2018 y goleador de la Bundesliga con el Bayern. 🎯",
+  "NED3":"Mejor defensa del mundo (2º en el Balón de Oro 2019), campeón de la Champions 2019 y de la Premier con el Liverpool. 🧱",
+  "ESP11":"Dos veces Trofeo Kopa al mejor joven del mundo y campeón de LaLiga con el Barça. El cerebro del equipo. 🎯",
+  "ENG16":"Jugador del Año de la Premier League 2023-24 y campeón del triplete con el City. 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "ENG17":"Estrella del Arsenal y de Inglaterra, finalista de dos Eurocopas; imparable por la banda derecha. 🚀",
+  "GER15":"Joya del Bayern, regateador letal y goleador; varias veces campeón de la Bundesliga siendo muy joven. ✨",
+  "GER11":"Cerebro del Leverkusen que salió campeón INVICTO de la Bundesliga 2024; fichó por el Liverpool por +100 M€. 🧠",
+  "ENG12":"8º en el Balón de Oro 2025; explotó en el Chelsea y fue figura del Mundial de Clubes (doblete en la final). ❄️",
+  "URU10":"Motor del Real Madrid, campeón de Champions y LaLiga; pulmón infinito y golazos de larga distancia. 🚂",
+  "ARG18":"Capocannoniere (goleador) de la Serie A con el Inter y campeón del mundo 2022 con Argentina. 🐂",
+  "ARG19":"Campeón del mundo 2022 y del triplete con el City; killer del área, hoy estrella del Atlético. 🦊",
+  "NOR10":"Capitán del Arsenal; crack creativo con una zurda mágica que casi lleva a los Gunners al título. 🎩",
+  "POR9":"Mago del City: múltiple campeón de la Premier y campeón de la Champions del triplete 2023. 🪄",
+  "POR10":"Capitán del Manchester United y de Portugal; rey de las asistencias y goles desde el mediocampo, máximo goleador del United varias temporadas. 🅰️",
+  "BRA15":"Especialista en noches mágicas de Champions; campeón de Europa 2024 y de LaLiga con el Real Madrid. 🌟",
+  "GER10":"Capitán del Bayern y de Alemania; multicampeón de la Bundesliga y campeón de la Champions 2020. ⚙️",
+  "ARG9":"Campeón del mundo 2022 y campeón de la Premier League con el Liverpool; mediocampista todoterreno. 🏆",
+  "ARG8":"Mejor Jugador Joven del Mundial 2022, campeón del mundo y del Mundial de Clubes 2025 con el Chelsea. 🌟",
+  "CRO4":"Central-crack del City: rápido, fuerte y goleador; campeón de la Premier y figura del Mundial 2022. 🧱",
+  "POR20":"Extremo explosivo, campeón de la Serie A con el Milan (MVP de la liga); pura velocidad y desborde. ⚡",
+  "SWE19":"Delantero letal; brilló en el Newcastle y fichó por el Liverpool en un traspaso récord. 🎯",
+  "FRA4":"Muralla del Arsenal y de Francia; uno de los mejores centrales del mundo. 🧱",
+  "URU11":"Mejor jugador de la Copa Libertadores con Flamengo; el 10 mágico de Uruguay. 🏆",
+  "SEN16":"Extremo explosivo de Senegal; goles decisivos en Inglaterra y figura de su selección. ⚡",
+  "JAP20":"Goleador de la Eredivisie (liga de Países Bajos) con +25 goles en una temporada. 👟",
+  "KOR18":"Bota de Oro de la Premier 2021-22, capitán de Corea y leyenda del Tottenham con +170 goles. 🇰🇷",
+  "BEL2":"Mejor portero del mundo (Premio Yashin), héroe de la final de Champions 2022 y campeón con el Real Madrid. 🧤",
+  "ENG10":"Pulmón del Arsenal y de Inglaterra; fichaje récord británico, lo gana todo en el mediocampo. 💪",
+  "ARG2":"El 'Dibu': héroe en los penales del Mundial 2022, dos veces mejor portero del mundo (Guante de Oro) y bicampeón de América. 🧤",
+  "ENG11":"Figura del Real Madrid: campeón de la Champions y de LaLiga, decisivo en su primera temporada con goles clave. ⭐"
 };
 const STAR_PROB="📦 Dato: una lámina puntual sale en ~1 de cada 140 sobres (hay 980 distintas y cada sobre trae 7). ¡Por eso se celebra!";
 const EXTRA_PROB="🤯 Rareza nivel dios: las Extra Stickers (foil) salen ~1 cada 100 sobres.";
@@ -996,6 +1004,10 @@ function showNextStar(){
   }
   document.getElementById("starName").textContent=name;
   document.getElementById("starTeam").textContent=sub;
+  const tierEl=document.getElementById("starTier");
+  if(tierEl){ const tk=(d.kind!=="extra")&&CRACK_TIER[d.code]; const tier=tk&&TIERS.find(t=>t.key===tk); if(tier){ tierEl.textContent=tier.icon+" Tier "+tier.name; tierEl.style.background=tier.color; tierEl.style.display="inline-block"; } else tierEl.style.display="none"; }
+  const valEl=document.getElementById("starValue");
+  if(valEl){ const v=(d.kind==="extra")?"":playerValue(d.code); valEl.textContent=v; valEl.style.display=v?"block":"none"; }
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
   launchConfetti();
@@ -1137,21 +1149,23 @@ const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool
 function playerPos(code){ return POS[code]||''; }
 const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
 function playerStat(code){ return PLAYER_STATS[code]||''; }
-const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 200 M€","NOR15":"≈ 200 M€","BRA14":"≈ 180 M€","ENG11":"≈ 180 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","ENG12":"≈ 130 M€","ESP10":"≈ 120 M€","ENG16":"≈ 110 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","POR10":"≈ 55 M€","ARG17":"≈ 20 M€","POR15":"≈ 12 M€","URU10":"≈ 130 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","NOR10":"≈ 100 M€","BRA15":"≈ 100 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 70 M€","MAR4":"≈ 65 M€","EGY17":"≈ 50 M€","POR9":"≈ 50 M€","GER10":"≈ 50 M€","KOR18":"≈ 40 M€","BEL15":"≈ 35 M€","NED3":"≈ 35 M€","ARG2":"≈ 28 M€","BEL2":"≈ 25 M€","CRO9":"≈ 10 M€","COL14":"≈ 6 M€"};
+const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 180 M€","ENG11":"≈ 180 M€","NOR15":"≈ 180 M€","BRA14":"≈ 170 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","URU10":"≈ 130 M€","ESP10":"≈ 120 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","ENG12":"≈ 110 M€","ENG16":"≈ 100 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","NOR10":"≈ 90 M€","BRA15":"≈ 90 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","MAR4":"≈ 75 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 65 M€","GER10":"≈ 50 M€","POR10":"≈ 45 M€","POR9":"≈ 45 M€","EGY17":"≈ 45 M€","NED3":"≈ 35 M€","SEN16":"≈ 30 M€","BEL15":"≈ 28 M€","ARG2":"≈ 25 M€","BEL2":"≈ 25 M€","KOR18":"≈ 25 M€","JAP20":"≈ 20 M€","ARG17":"≈ 18 M€","URU11":"≈ 15 M€","POR15":"≈ 12 M€","CRO9":"≈ 4 M€","COL14":"≈ 3 M€"};
 function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
 
 /* ---------- tiers de cracks ---------- */
 const TIERS=[
-  {key:"diamante", name:"Diamante", icon:"💎", color:"#39BEE6", sub:"Los GOAT"},
-  {key:"oro", name:"Oro", icon:"🥇", color:"#F2A20C", sub:"Élite mundial"},
-  {key:"plata", name:"Plata", icon:"🥈", color:"#8E9AA8", sub:"Figuras top"},
-  {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Cracks"}
+  {key:"goat", name:"GOAT", icon:"🐐", color:"#F2A20C", sub:"Fuera de serie"},
+  {key:"leyenda", name:"Leyenda", icon:"👑", color:"#8A4FD0", sub:"Leyendas del juego"},
+  {key:"elite", name:"Élite", icon:"🔥", color:"#FF5A36", sub:"Top mundial hoy"},
+  {key:"figura", name:"Figura", icon:"⭐", color:"#2E8BE6", sub:"Grandes figuras"},
+  {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Buenos cracks"}
 ];
 const CRACK_TIER={
-  "ARG17":"diamante","POR15":"diamante",
-  "FRA20":"oro","NOR15":"oro","BRA14":"oro","ESP15":"oro","ENG11":"oro","CRO9":"oro","BEL15":"oro","ESP10":"oro",
-  "EGY17":"plata","KOR18":"plata","ENG18":"plata","NED3":"plata","ESP11":"plata","ENG16":"plata","ENG17":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG18":"plata","ARG19":"plata","NOR10":"plata","POR9":"plata","ARG2":"plata","BEL2":"plata","ENG10":"plata","COL14":"plata","POR10":"plata",
-  "BRA15":"bronce","MAR4":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce"
+  "ARG17":"goat","POR15":"goat",
+  "CRO9":"leyenda","BEL15":"leyenda","COL14":"leyenda",
+  "FRA20":"elite","NOR15":"elite","BRA14":"elite","ESP15":"elite","ESP10":"elite","MAR4":"elite","EGY17":"elite","KOR18":"figura",
+  "ENG18":"figura","NED3":"figura","ESP11":"figura","BEL2":"figura","ENG16":"figura","ENG17":"figura","GER15":"figura","GER11":"figura","ENG12":"figura","URU10":"figura","ARG18":"figura","ARG19":"figura","NOR10":"figura","ENG10":"figura","BRA15":"figura","ENG11":"figura",
+  "POR10":"bronce","POR9":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce","ARG2":"bronce"
 };
 function buildCrackCard(code, tier){
   const got=getCount(code)>0, meta=CODE_TEAM[code];
@@ -2180,7 +2194,9 @@ document.getElementById("joinGo").onclick=()=>{
   goToAlbum(v);
   toast(v?"Viendo álbum compartido 👁️ (solo lectura)":"Volviste a tu álbum ✓");
 };
-document.getElementById("viewBack").onclick=()=>{ goToAlbum(""); updateCloudUI(); toast("Volviste a tu álbum ✓"); };
+function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="group")); } goToAlbum(""); updateCloudUI(); toast("¡Volviste a tu álbum! ✓"); }
+document.getElementById("viewBack").onclick=backToMyAlbum;
+document.getElementById("viewBackFab").onclick=backToMyAlbum;
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
   const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
