@@ -312,6 +312,8 @@
   #rkBackBtn{display:none; width:100%; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15.5px; padding:15px; border-radius:14px; margin-bottom:14px; cursor:pointer; box-shadow:0 8px 20px rgba(0,103,185,.4);}
   #rkBackBtn:active{transform:scale(.97);}
   body.viewonly #rkBackBtn{display:block;}
+  body.viewonly #hTitle{cursor:pointer;}
+  body.viewonly #hTitle h1{text-decoration:underline; text-decoration-color:var(--c-blue); text-underline-offset:3px;}
   body.viewonly #viewBanner{display:flex;}
   body.viewonly .qa{display:none;}
   body.viewonly .fab{display:none;}
@@ -535,7 +537,7 @@
         <text id="ringTxt" x="30" y="31" text-anchor="middle" dominant-baseline="central" fill="#1A1A22" font-family="Rubik,sans-serif" font-weight="900" font-size="14">0%</text>
       </svg>
     </div>
-    <div class="htitle">
+    <div class="htitle" id="hTitle">
       <div class="kick"><span class="dot"></span> We Are 26</div>
       <h1 class="disp">Mi Álbum</h1>
     </div>
@@ -757,7 +759,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.8</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 6.9</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -819,10 +821,10 @@
       <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off">
       <input id="rkCity" class="rk-in" type="text" maxlength="24" placeholder="Ciudad (ej: Calbuco)" autocomplete="off" style="margin-top:8px">
       <button id="rkSave" class="rk-savebtn">Guardar</button>
-      <div class="rk-hint">Ponte nick pa aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — nunca tu correo. Deja el nick vacío y guardas pa salirte.</div>
+      <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — nunca tu correo. Deja el nick vacío y guarda para salir.</div>
     </div>
     <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
-    <div class="rk-tap">👀 Toca a un wn pa ver su álbum y pispear qué cartas tiene</div>
+    <div class="rk-tap">👀 Toca a alguien para ver su álbum y las láminas que tiene</div>
     <div id="rkList"><div class="rk-empty">Cargando…</div></div>
   </div>
 </div></div>
@@ -830,14 +832,14 @@
 <!-- STAR CELEBRATION -->
 <div class="ov starpop" id="ovStar"><div class="sheet starcard">
   <div class="star-burst">🎉</div>
-  <div class="star-kick">¡Crack desbloqueado!</div>
+  <div class="star-kick">🎉 ¡Felicitaciones!</div>
   <div class="star-name" id="starName">—</div>
   <div class="star-tier" id="starTier"></div>
   <div class="star-team" id="starTeam">—</div>
   <div class="star-value" id="starValue"></div>
   <div class="star-fact" id="starFact">—</div>
   <div class="star-prob" id="starProb">—</div>
-  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Bkn! 🙌</button>
+  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Genial! 🙌</button>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -1158,18 +1160,16 @@ function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor ap
 
 /* ---------- tiers de cracks ---------- */
 const TIERS=[
-  {key:"goat", name:"GOAT", icon:"🐐", color:"#F2A20C", sub:"Fuera de serie"},
-  {key:"leyenda", name:"Leyenda", icon:"👑", color:"#8A4FD0", sub:"Leyendas del juego"},
-  {key:"elite", name:"Élite", icon:"🔥", color:"#FF5A36", sub:"Top mundial hoy"},
-  {key:"figura", name:"Figura", icon:"⭐", color:"#2E8BE6", sub:"Grandes figuras"},
+  {key:"diamante", name:"Diamante", icon:"💎", color:"#2EC5E0", sub:"Fuera de serie"},
+  {key:"oro", name:"Oro", icon:"🥇", color:"#F2A20C", sub:"Élite mundial"},
+  {key:"plata", name:"Plata", icon:"🥈", color:"#9AA7B4", sub:"Grandes figuras"},
   {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Buenos cracks"}
 ];
 const CRACK_TIER={
-  "ARG17":"goat","POR15":"goat",
-  "CRO9":"leyenda","BEL15":"leyenda","COL14":"leyenda",
-  "FRA20":"elite","NOR15":"elite","BRA14":"elite","ESP15":"elite","ESP10":"elite","MAR4":"elite","EGY17":"elite","KOR18":"figura",
-  "ENG18":"figura","NED3":"figura","ESP11":"figura","BEL2":"figura","ENG16":"figura","ENG17":"figura","GER15":"figura","GER11":"figura","ENG12":"figura","URU10":"figura","ARG18":"figura","ARG19":"figura","NOR10":"figura","ENG10":"figura","BRA15":"figura","ENG11":"figura",
-  "POR10":"bronce","POR9":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce","ARG2":"bronce"
+  "ARG17":"diamante","POR15":"diamante","FRA20":"diamante","NOR15":"diamante","ESP15":"diamante","BRA14":"diamante",
+  "ESP10":"oro","MAR4":"oro","EGY17":"oro","CRO9":"oro","BEL15":"oro","ENG18":"oro","NED3":"oro","KOR18":"oro","ESP11":"oro","ARG18":"oro",
+  "ENG11":"plata","ENG16":"plata","ENG17":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG19":"plata","NOR10":"plata","ENG10":"plata","BRA15":"plata","BEL2":"plata","COL14":"plata",
+  "POR9":"bronce","POR10":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce","ARG2":"bronce"
 };
 function buildCrackCard(code, tier){
   const got=getCount(code)>0, meta=CODE_TEAM[code];
@@ -1991,7 +1991,7 @@ function renderRanking(){
   const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
   const cityIn=document.getElementById("rkCity"); if(cityIn) cityIn.value=state.config.city||"";
   const list=document.getElementById("rkList");
-  if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) pa entrar al ranking 🙌</div>'; return; }
+  if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) para entrar al ranking 🙌</div>'; return; }
   list.innerHTML='<div class="rk-empty">Cargando…</div>';
   Promise.resolve(pushLeaderboard()).catch(()=>null).then(()=> cloud.db.collection("leaderboard").get() ).then(snap=>{
     const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
@@ -2202,6 +2202,7 @@ function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("s
 document.getElementById("viewBack").onclick=backToMyAlbum;
 document.getElementById("viewBackFab").onclick=backToMyAlbum;
 document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); backToMyAlbum(); };
+document.getElementById("hTitle").onclick=()=>{ if(document.body.classList.contains("viewonly")) backToMyAlbum(); };
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
   const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
