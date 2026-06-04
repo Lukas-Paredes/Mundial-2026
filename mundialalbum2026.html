@@ -356,6 +356,15 @@
   .trade-text{width:100%; min-height:230px; resize:vertical; background:var(--surface2); border:1px solid var(--line2); border-radius:15px; padding:13px 15px; color:var(--ink); font-family:var(--font-mono); font-size:12.5px; line-height:1.6;}
 
   /* celebración */
+  .ov.starpop{align-items:center; padding:18px;}
+  .starcard{width:100%; max-width:360px; border-radius:28px; padding:26px 22px 22px; text-align:center; background:linear-gradient(180deg,#ffffff,#fbfdff); border:1.5px solid var(--line); box-shadow:0 24px 60px rgba(26,26,34,.30); animation:pop .3s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes pop{from{transform:scale(.82); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .star-burst{font-size:52px; line-height:1; margin-bottom:4px;}
+  .star-kick{font-family:var(--font-disp); font-weight:900; font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-amber);}
+  .star-name{font-family:var(--font-disp); font-weight:900; font-size:30px; line-height:1.02; margin:6px 0 2px; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
+  .star-team{font-size:13.5px; font-weight:700; color:var(--mut); margin-bottom:14px;}
+  .star-fact{background:var(--surface2); border:1px solid var(--line); border-radius:16px; padding:13px 15px; font-size:14.5px; line-height:1.5; color:var(--ink2); font-weight:600;}
+  .star-prob{font-size:12px; color:var(--mut); line-height:1.5; margin-top:12px;}
   #confetti{position:fixed; inset:0; pointer-events:none; z-index:70; overflow:hidden;}
   .cft{position:absolute; top:-14px; border-radius:2px; will-change:transform,opacity; animation:fall 1900ms cubic-bezier(.25,.6,.4,1) forwards;}
   @keyframes fall{0%{transform:translateY(-12px) rotate(0); opacity:1;} 100%{transform:translateY(104vh) rotate(720deg); opacity:.85;}}
@@ -669,6 +678,7 @@
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
   <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
+  <div class="set-row"><div><div class="lab">Felicitar al sacar un crack 🎉</div><div class="des">Ventana con felicitación y un dato cuando marcas un crack</div></div><label class="switch"><input type="checkbox" id="tgCelebrate" checked><span class="tr"></span></label></div>
   <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
   <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
   <button class="set-btn" id="btnExcel">📊 Exportar a Excel (.xlsx)</button>
@@ -678,7 +688,7 @@
   <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
   <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.8</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 5.9</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -747,6 +757,17 @@
   </div>
 </div></div>
 
+<!-- STAR CELEBRATION -->
+<div class="ov starpop" id="ovStar"><div class="sheet starcard">
+  <div class="star-burst">🎉</div>
+  <div class="star-kick">¡Crack desbloqueado!</div>
+  <div class="star-name" id="starName">—</div>
+  <div class="star-team" id="starTeam">—</div>
+  <div class="star-fact" id="starFact">—</div>
+  <div class="star-prob" id="starProb">—</div>
+  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Bkn! 🙌</button>
+</div></div>
+
 <div id="confetti" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -789,7 +810,7 @@ function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},nick:"",city:""}, r.config||{}); r.counts=r.counts||{}; return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -798,9 +819,11 @@ function setCount(c,v){
   v=Math.max(0,v|0);
   const t=CODE_TEAM[c];
   const before = t ? teamHave(t.code) : 0;
+  const wasZero = getCount(c)===0;
   if(v===0) delete state.counts[c]; else state.counts[c]=v;
   save();
   if(t){ const after=teamHave(t.code); if(before<20 && after===20) celebrateTeam(t.code, t.name); }
+  if(wasZero && v>=1) maybeCelebrateStar(c);
 }
 function reduceMotion(){ try{ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } }
 function launchConfetti(){
@@ -834,6 +857,60 @@ function celebrateTeam(code,name){
     toastTimer=setTimeout(()=>{ t.classList.remove("show"); setTimeout(()=>t.classList.remove("party"),260); }, 2800);
   }, 80);
 }
+
+/* ---------- ¡Felicidades! cracks ---------- */
+const STAR_FACTS={
+  "ARG17":"8 Balones de Oro (récord absoluto del fútbol) y campeón del mundo en Qatar 2022. El GOAT. 🐐",
+  "POR15":"Máximo goleador de selecciones en la historia del fútbol y 5 veces campeón de la Champions. 🚀",
+  "FRA20":"Hizo un hat-trick en la final del Mundial 2022, algo que no pasaba en una final desde 1966. ⚡",
+  "BRA14":"Elegido el mejor jugador del mundo (premio The Best de la FIFA) en 2024. 🇧🇷",
+  "ESP15":"El goleador más joven en la historia de la Eurocopa: lo logró con 16 años en 2024. 🤯",
+  "NOR15":"Tiene el récord de goles en una sola temporada de la Premier League: 36. 🤖",
+  "ENG18":"Es el máximo goleador histórico de la selección de Inglaterra. 🎯",
+  "POR10":"Capitán del Manchester United y uno de los reyes de la asistencia en la Premier. 🅰️",
+  "ARG18":"Goleador de la Serie A (capocannoniere) con el Inter campeón. 🐂",
+  "URU11":"Elegido el mejor jugador de la Copa Libertadores con Flamengo. 🏆",
+  "SEN16":"Héroe de la Conference League: 9 goles y mejor jugador del torneo. 🏆",
+  "JAP20":"Goleador de la liga de Países Bajos (Eredivisie) con 25 goles. 👟"
+};
+const STAR_PROB="📦 Dato: una lámina puntual sale en ~1 de cada 140 sobres (hay 980 distintas y cada sobre trae 7). ¡Por eso se celebra!";
+const EXTRA_PROB="🤯 Rareza nivel dios: las Extra Stickers (foil) salen ~1 cada 100 sobres.";
+let _starQueue=[], _starShowing=false;
+function maybeCelebrateStar(code){
+  if(!state.config.celebrate) return;
+  let d=null;
+  if(STAR_FACTS[code]) d={kind:"star",code};
+  else if(code[0]==="X") d={kind:"extra",code};
+  if(!d) return;
+  _starQueue.push(d);
+  if(!_starShowing) showNextStar();
+}
+function showNextStar(){
+  const ov=document.getElementById("ovStar"); if(!ov){ _starShowing=false; _starQueue=[]; return; }
+  if(!_starQueue.length){ _starShowing=false; return; }
+  _starShowing=true;
+  const d=_starQueue.shift();
+  let name,sub,fact,prob;
+  if(d.kind==="extra"){
+    const m=d.code.match(/X(\d+)([A-Z])/);
+    name=(m && state.config.extraNames["p"+m[1]]) || "Extra Sticker";
+    const col=EXTRA_COLORS.find(c=>m && c[0]===m[2]);
+    sub="✨ Foil de leyenda"+(col?" · "+col[1]:"");
+    fact="¡Una de las láminas más difíciles de todo el álbum!"; prob=EXTRA_PROB;
+  } else {
+    name=playerName(d.code)||d.code;
+    const t=CODE_TEAM[d.code], pos=playerPos(d.code);
+    sub=(t?(t.flag+" "+t.name):"")+(pos?" · "+pos:"");
+    fact=STAR_FACTS[d.code]||""; prob=STAR_PROB;
+  }
+  document.getElementById("starName").textContent=name;
+  document.getElementById("starTeam").textContent=sub;
+  document.getElementById("starFact").textContent=fact;
+  document.getElementById("starProb").textContent=prob;
+  launchConfetti();
+  ov.classList.add("show");
+}
+function closeStar(){ if(!_starShowing) return; _starShowing=false; const ov=document.getElementById("ovStar"); if(ov) ov.classList.remove("show"); setTimeout(showNextStar,260); }
 
 /* ---------- code parsing ---------- */
 function normalize(raw){
@@ -1407,9 +1484,11 @@ manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault
 
 /* ---------- settings ---------- */
 const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
-document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; ovSet.classList.add("show"); };
+document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; ovSet.classList.add("show"); };
 tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
 tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
+(function(){ const tc=document.getElementById("tgCelebrate"); if(tc) tc.onchange=()=>{ state.config.celebrate=tc.checked; save(); }; })();
+(function(){ const sb=document.getElementById("starClose"), ov=document.getElementById("ovStar"); if(sb) sb.onclick=closeStar; if(ov) ov.addEventListener("click",e=>{ if(e.target===ov) closeStar(); }); })();
 document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="album-mundial-2026-respaldo.json"; a.click(); URL.revokeObjectURL(a.href); toast("Respaldo descargado ⬇️"); };
 
 /* ----- Exportar a Excel (.xlsx) ----- */
