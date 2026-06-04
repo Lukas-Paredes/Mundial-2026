@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © Lucas Paredes · Mi Álbum Mundial 2026. Código y diseño propios; prohibida su copia o reutilización sin permiso. -->
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -25,8 +26,8 @@
     --c-blue:#0067B9; --c-pink:#E0322A; --c-green:#00802B; --c-amber:#F2A20C; --c-violet:#6A1B9A;
     --ok:#00802B; --ok-d:#00702A; --dup:#F2A20C; --dup-d:#B97700; --red:#C8202A;
     --radius:22px; --tap:46px;
-    --shadow:0 12px 30px rgba(26,26,34,.10), 0 2px 8px rgba(26,26,34,.05);
-    --shadow-sm:0 2px 10px rgba(26,26,34,.07);
+    --shadow:0 6px 20px rgba(26,26,34,.07), 0 1px 3px rgba(26,26,34,.06);
+    --shadow-sm:0 1px 2px rgba(26,26,34,.06);
     --font-disp:"Rubik", system-ui, -apple-system, sans-serif;
     --font-ui:"Rubik", system-ui, -apple-system, sans-serif;
     --font-mono:"Space Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -50,11 +51,25 @@
   .htitle{flex:1; min-width:0;}
   .htitle .kick{font-family:var(--font-disp); font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--c-blue); display:flex; align-items:center; gap:7px;}
   .htitle .kick .dot{width:8px;height:8px;border-radius:50% 50% 50% 0;background:var(--c-pink);}
-  .htitle h1{font-family:var(--font-disp); font-weight:900; font-size:36px; line-height:.9; margin:3px 0 0; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
+  .htitle h1{font-family:var(--font-disp); font-weight:900; font-size:36px; line-height:1; margin:8px 0 0; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
   .hbtns{display:flex; gap:8px; flex:0 0 auto;}
   .icbtn{width:var(--tap); height:var(--tap); border:1.5px solid var(--line2); background:var(--surface); color:var(--ink2); border-radius:14px; font-size:19px; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .12s, box-shadow .2s;}
   .icbtn:hover{box-shadow:var(--shadow);}
   .icbtn:active{transform:scale(.94);}
+  .icbtn{display:grid; place-items:center;}
+  .icbtn svg{width:21px; height:21px;}
+  .cloudpill .ic{display:inline-flex; align-items:center;}
+  .cloudpill .ic svg{width:15px; height:15px;}
+
+  /* HERO MUNDIAL (copa + lockup tipo portada) */
+  .hero{position:relative; display:flex; align-items:center; gap:13px; padding:14px 16px 13px;
+        background:radial-gradient(130% 150% at 100% -10%, rgba(0,103,185,.07), transparent 55%), linear-gradient(180deg,#fff,#FCFBF9);
+        border-bottom:1px solid var(--line);}
+  .hero .trophy{flex:0 0 auto; width:44px; height:auto; filter:drop-shadow(0 4px 8px rgba(169,118,27,.38));}
+  .hero-lock{display:flex; flex-direction:column; line-height:1; min-width:0;}
+  .hero-kick{font-family:var(--font-disp); font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--mut);}
+  .hero-big{font-family:var(--font-disp); font-weight:900; font-size:28px; letter-spacing:-.01em; text-transform:uppercase; color:var(--ink); margin-top:5px;}
+  .hero-big b{font-weight:900; background:linear-gradient(90deg,var(--c-blue),var(--c-green) 42%,var(--c-amber) 70%,var(--c-pink)); -webkit-background-clip:text; background-clip:text; color:transparent;}
 
   .cloudpill{position:relative; display:inline-flex; align-items:center; gap:7px; margin-top:14px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line2); background:var(--surface2); font-size:12.5px; font-weight:600; color:var(--mut); cursor:pointer; max-width:100%; transition:.18s;}
   .cloudpill:hover{border-color:var(--c-blue);}
@@ -79,6 +94,7 @@
 
   /* TOOLBAR */
   .toolbar{position:sticky; top:0; z-index:30; background:rgba(251,250,248,.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:11px 12px;}
+  body.scrolled .toolbar{top:54px;}
   .qa{display:flex; gap:8px;}
   .qa input{flex:1; min-width:0; background:var(--surface); border:2px solid var(--line2); color:var(--ink); border-radius:15px; padding:0 15px; height:48px; font-size:16px; font-family:var(--font-mono); letter-spacing:.04em; text-transform:uppercase; box-shadow:var(--shadow-sm);}
   .qa input::placeholder{color:var(--mut2); text-transform:none; letter-spacing:0; font-family:var(--font-ui);}
@@ -94,8 +110,10 @@
   .fbtn.active{background:var(--ink); color:#fff; border-color:var(--ink);}
   .fbtn .b{font-family:var(--font-mono); opacity:.6; margin-left:5px; font-size:11.5px;}
   .fbtn.active .b{opacity:.8;}
-  .search{margin-top:9px;}
-  .search input{width:100%; background:var(--surface); border:2px solid var(--line2); color:var(--ink); border-radius:14px; padding:0 13px; height:42px; font-size:14px; box-shadow:var(--shadow-sm); font-family:var(--font-ui);}
+  .search{margin-top:9px; position:relative;}
+  .search .si{position:absolute; left:13px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--mut2); pointer-events:none;}
+  .search .si svg{width:18px; height:18px; display:block;}
+  .search input{width:100%; background:var(--surface); border:2px solid var(--line2); color:var(--ink); border-radius:14px; padding:0 13px 0 39px; height:42px; font-size:14px; box-shadow:var(--shadow-sm); font-family:var(--font-ui);}
   .search input::placeholder{color:var(--mut2);}
   .search input:focus{outline:none; border-color:var(--c-blue); box-shadow:0 0 0 4px rgba(0,103,185,.12);}
 
@@ -122,6 +140,8 @@
   .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
   .team-h{display:flex; align-items:center; gap:12px; margin-bottom:13px; padding-left:4px;}
   .flag{font-size:27px; line-height:1; width:34px; text-align:center;}
+  .flagimg{width:32px; height:auto; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.18); display:block; flex:0 0 auto;}
+  .flaginline{width:24px; height:auto; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,.08); vertical-align:middle; display:inline-block; margin-right:3px;}
   .team-name{flex:1; min-width:0;}
   .team-name .weare{font-family:var(--font-disp); font-weight:800; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent,#0067B9); line-height:1; margin-bottom:2px;}
   .team-name .nm{font-family:var(--font-disp); font-weight:900; font-size:19px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); letter-spacing:-.02em; text-transform:uppercase; line-height:1;}
@@ -141,26 +161,8 @@
   .cell.dup{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent; box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 4px 12px rgba(242,162,12,.34);}
   .cell .badge{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:10px; font-weight:800; min-width:19px; height:19px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid var(--surface); box-shadow:0 2px 6px rgba(224,50,42,.4);}
   .cell.hide, .team.hide, .grp.hide{display:none;}
-  /* celda con carita (láminas de equipos que ya tienes) */
-  .cell.face{padding:0; overflow:hidden; border-style:solid;}
-  .cell.face svg{position:absolute; inset:0; width:100%; height:100%; display:block;}
-  .cell.face .cnum{position:absolute; bottom:3px; right:3px; z-index:2; font-family:var(--font-mono); font-size:10px; font-weight:700; background:rgba(255,255,255,.92); color:var(--ink); padding:1px 5px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.2);}
-  .cell.have.face{background:var(--surface); border:2.5px solid var(--ok); box-shadow:0 4px 12px rgba(0,128,43,.22);}
-  .cell.dup.face{background:var(--surface); border:2.5px solid var(--dup-d); box-shadow:0 4px 12px rgba(242,162,12,.30);}
-
-  /* popup de revelado al desbloquear */
-  #ovReveal{align-items:center;}
-  .reveal-card{--rev:#0067B9; width:min(86vw,330px); background:var(--surface); border:2.5px solid var(--rev); border-radius:26px; padding:24px 22px 20px; text-align:center; position:relative; overflow:hidden; box-shadow:0 24px 60px rgba(26,26,34,.32); animation:revpop .42s cubic-bezier(.2,.9,.3,1.35);}
-  .reveal-card:before{content:""; position:absolute; left:0; right:0; top:0; height:120px; background:radial-gradient(120% 100% at 50% 0, var(--rev), transparent 70%); opacity:.16; pointer-events:none;}
-  @keyframes revpop{0%{transform:scale(.6) translateY(22px); opacity:0;} 100%{transform:scale(1) translateY(0); opacity:1;}}
-  .reveal-kick{position:relative; font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--rev);}
-  .reveal-ava{position:relative; width:148px; height:148px; margin:10px auto 12px; border-radius:24px; overflow:hidden; background:var(--surface2); box-shadow:0 10px 26px rgba(0,0,0,.18); animation:revflip .55s .06s both;}
-  .reveal-ava svg{width:100%; height:100%; display:block;}
-  @keyframes revflip{0%{transform:perspective(500px) rotateY(82deg); opacity:.2;} 100%{transform:perspective(500px) rotateY(0); opacity:1;}}
-  .rev-emoji{font-size:92px; line-height:148px;}
-  .reveal-name{font-family:var(--font-disp); font-weight:900; font-size:24px; text-transform:uppercase; letter-spacing:-.01em; margin:2px 0 3px; color:var(--ink);}
-  .reveal-sub{font-family:var(--font-mono); font-size:12px; color:var(--mut); margin-bottom:16px;}
-  .reveal-card .btn{width:100%;}
+  .cell.hit{outline:3px solid var(--c-pink); outline-offset:2px; z-index:2;}
+  .clubnav{margin:0 0 14px; flex-wrap:wrap; overflow:visible;}
 
   /* FAB */
   .fab{position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom)); height:60px; padding:0 24px 0 19px; border-radius:30px; border:none; z-index:40; background:linear-gradient(135deg,#f24a3d,var(--c-pink)); color:#fff; font-weight:800; font-size:16px; box-shadow:0 12px 28px rgba(224,50,42,.42); cursor:pointer; display:flex; align-items:center; gap:9px; transition:transform .14s, box-shadow .2s;}
@@ -180,6 +182,68 @@
   .ed-code{text-align:center; margin:8px 0 18px;}
   .ed-code .big{font-family:var(--font-mono); font-weight:700; font-size:40px; line-height:1; letter-spacing:.02em; color:var(--ink);}
   .ed-code .who{font-family:var(--font-disp); font-weight:800; color:var(--ink2); font-size:16px; margin-top:5px; text-transform:uppercase; letter-spacing:.02em;}
+  .ed-code .ed-player{font-family:var(--font-disp); font-weight:900; font-size:23px; color:var(--ink); margin-top:8px; line-height:1.05; letter-spacing:-.01em;}
+  .ed-code .ed-pos{display:inline-block; margin-top:9px; font-size:11.5px; font-weight:800; padding:5px 13px; border-radius:999px; background:var(--surface2); color:var(--ink2); border:1.5px solid var(--line2); text-transform:uppercase; letter-spacing:.05em;}
+  .team .cd .cstand{color:var(--c-green); font-weight:800;}
+  .team .cd .cstand.gold{color:var(--c-amber);}
+  .ed-code .ed-stat-ro{display:none; margin-top:8px; font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--c-green);}
+  .ed-code .ed-value{display:none; margin-top:6px; font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--dup-d);}
+  .team .rchev{flex:0 0 auto; color:var(--mut2); font-size:13px; transition:transform .2s;}
+  .team.open .rchev{transform:rotate(180deg);}
+  .roster{margin-top:12px; border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
+  .squad-sub{font-size:13px; color:var(--mut); font-weight:700; margin:0 2px 12px;}
+  .squad-list{display:flex; flex-direction:column; gap:7px;}
+  .srow{display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:13px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
+  .srow:active{transform:scale(.99);}
+  .srow .snum{position:relative; flex:0 0 auto; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
+  .srow.have .snum{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent;}
+  .srow.dup .snum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
+  .srow .snum .sdup{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:9px; font-weight:800; min-width:16px; height:16px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 3px; border:2px solid var(--surface);}
+  .srow .sinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+  .srow .sname{font-weight:700; font-size:14.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .srow .sstat{font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:var(--c-green); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .srow .sright{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+  .srow .spos{font-size:10px; font-weight:800; letter-spacing:.03em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; white-space:nowrap;}
+  .srow .sval{font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--dup-d); white-space:nowrap;}
+  .srow .scode{font-family:var(--font-mono); font-size:10.5px; color:var(--mut2); font-weight:700; letter-spacing:.02em;}
+  .spec-list .sright{display:flex; flex-direction:row; align-items:center; gap:5px;}
+  .srow .pgic{font-size:13px; opacity:.65;}
+  .srow .specpage{min-width:30px; text-align:center; font-family:var(--font-mono); font-weight:800; font-size:13px; color:var(--c-blue); border:1px dashed var(--line2); border-radius:8px; padding:3px 8px; cursor:text; transition:border-color .15s;}
+  .srow .specpage:empty:before{content:"pág?"; color:var(--mut2); font-weight:600;}
+  .srow .specpage:focus{outline:none; border-color:var(--c-blue); border-style:solid; background:rgba(91,160,230,.08);}
+  .cracks-sum{font-size:14.5px; color:var(--ink2); font-weight:700; margin:0 2px 14px;}
+  .cracks-sum b{color:var(--c-pink); font-family:var(--font-disp); font-size:17px;}
+  .tier-sec{margin-bottom:18px;}
+  .tier-h{display:flex; align-items:center; gap:9px; padding:9px 13px; border-radius:13px; background:var(--surface2); border:1px solid var(--line); border-left:5px solid var(--tc); margin-bottom:11px;}
+  .tier-ic{font-size:20px; line-height:1;}
+  .tier-nm{font-family:var(--font-disp); font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:-.01em; color:var(--ink);}
+  .tier-sub{font-size:11px; color:var(--mut); font-weight:700;}
+  .tier-stars{color:#F2A20C; font-size:11px; letter-spacing:1.5px; margin-left:5px; vertical-align:middle; white-space:nowrap;}
+  .tier-ct{margin-left:auto; font-family:var(--font-mono); font-weight:700; font-size:13.5px; color:var(--tc);}
+  .crack-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:9px;}
+  .crack-card{position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px 11px; border-radius:16px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; text-align:center; transition:transform .1s;}
+  .crack-card:active{transform:scale(.97);}
+  .crack-card.got{border-color:var(--tc); box-shadow:0 5px 16px rgba(0,0,0,.07);}
+  .crack-card.got:before{content:""; position:absolute; inset:0; border-radius:15px; background:var(--tc); opacity:.07; pointer-events:none;}
+  .crack-card.locked{opacity:.55; filter:grayscale(.7);}
+  .crack-card .crack-flag{height:24px; display:flex; align-items:center; justify-content:center;}
+  .crack-card .crack-flag img.crackflag{width:34px; height:23px; border-radius:4px; object-fit:cover; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .crack-card .crack-flag .flag{font-size:23px;}
+  .crack-card .crack-nm{font-weight:800; font-size:12.5px; line-height:1.12; color:var(--ink);}
+  .crack-card .crack-state{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.03em;}
+  .crack-card.got .crack-state{color:var(--ok-d);}
+  .crack-card.locked .crack-state{color:var(--mut2);}
+  .rrow{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:var(--surface2); border:1px solid var(--line); cursor:pointer; transition:transform .1s;}
+  .rrow:active{transform:scale(.99);}
+  .rrow .rnum{flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:13px; background:var(--surface); border:1.5px dashed var(--line2); color:var(--mut2);}
+  .rrow.have .rnum{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent;}
+  .rrow.dup .rnum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
+  .rrow .rinfo{flex:1; min-width:0; display:flex; align-items:center; gap:8px;}
+  .rrow .rname{font-weight:700; font-size:14px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rrow .rpos{flex:0 0 auto; font-size:10px; font-weight:800; letter-spacing:.04em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 6px;}
+  .rrow .rstat{flex:0 0 auto; max-width:46%; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--c-green); text-align:right; line-height:1.25;}
+  .rrow .rchev2{flex:0 0 auto; color:var(--mut2); font-size:19px; font-weight:700; line-height:1;}
+  .rrow.hit{outline:2px solid var(--c-pink); outline-offset:1px;}
   .ed-code .st{display:inline-block; margin-top:11px; font-size:12px; padding:5px 13px; border-radius:999px; font-weight:700;}
   .st.s0{background:var(--surface2); color:var(--mut); border:1px solid var(--line2);}
   .st.s1{background:rgba(0,128,43,.13); color:var(--ok-d);}
@@ -200,7 +264,8 @@
   .drop{border:2px dashed var(--line2); border-radius:18px; padding:26px 16px; text-align:center; cursor:pointer; background:var(--surface2); transition:.16s;}
   .drop:hover{border-color:var(--c-blue);}
   .drop:active{border-color:var(--c-pink);}
-  .drop .ic{font-size:38px;}
+  .drop .ic{font-size:38px; display:flex; justify-content:center;}
+  .drop .ic svg{width:34px; height:34px; color:var(--ink2);}
   .drop .t{font-weight:800; margin-top:8px;}
   .drop .s{color:var(--mut); font-size:12.5px; margin-top:4px;}
   .scan-opts{display:flex; flex-direction:column; gap:10px;}
@@ -232,9 +297,99 @@
   .switch .tr:before{content:""; position:absolute; width:23px; height:23px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.25);}
   .switch input:checked + .tr{background:var(--ok);}
   .switch input:checked + .tr:before{transform:translateX(21px);}
-  .set-btn{width:100%; height:48px; border-radius:14px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink2); font-weight:700; font-size:14px; cursor:pointer; margin-top:10px; transition:.15s;}
+  .set-btn{width:100%; height:48px; border-radius:14px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink2); font-weight:700; font-size:14px; cursor:pointer; margin-top:10px; transition:.15s; display:flex; align-items:center; gap:11px; text-align:left; padding:0 15px;}
+  .set-btn svg{width:19px; height:19px; flex:0 0 auto;}
   .set-btn:hover{border-color:var(--c-blue);}
   .set-btn.danger{color:var(--red); border-color:rgba(200,32,42,.3);}
+  .set-btn.lx{color:var(--c-violet); border-color:rgba(106,27,154,.32); background:linear-gradient(90deg, rgba(106,27,154,.09), rgba(242,162,12,.08)); font-weight:800;}
+  .set-btn.lx:hover{border-color:var(--c-violet);}
+
+  /* Lujito: lo más importante */
+  .lx-sec{margin-bottom:18px;}
+  .lx-h{display:flex; align-items:center; gap:8px; font-family:var(--font-disp); font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:.01em; color:var(--ink); margin:0 2px 10px;}
+  .lx-dot{width:9px; height:9px; border-radius:50% 50% 50% 0; flex:0 0 auto;}
+  .lx-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:9px; margin-bottom:6px;}
+  .lx-stat{position:relative; background:var(--surface2); border:1.5px solid var(--line); border-radius:16px; padding:13px 10px 11px; text-align:center; overflow:hidden;}
+  .lx-stat:before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--a,#0067B9);}
+  .lx-n{font-family:var(--font-disp); font-weight:900; font-size:26px; line-height:1; color:var(--a,#0067B9);}
+  .lx-l{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--mut); font-weight:700; margin-top:5px;}
+  .lx-fact{display:flex; gap:11px; align-items:flex-start; padding:10px 2px; border-bottom:1px solid var(--line);}
+  .lx-fact:last-child{border-bottom:none;}
+  .lx-ic{font-size:19px; line-height:1.35; flex:0 0 auto;}
+  .lx-tx{font-size:13.5px; line-height:1.5; color:var(--ink2);}
+  .lx-tx b{color:var(--ink); font-weight:800;}
+  .lx-src{font-size:11px; color:var(--mut2); text-align:center; margin-top:4px; line-height:1.5;}
+
+  .alfa-tag{font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:linear-gradient(120deg,var(--c-amber),var(--dup-d)); padding:3px 9px; border-radius:999px; vertical-align:middle; margin-left:6px;}
+
+  /* Modo solo lectura (viendo álbum compartido) */
+  #viewBanner{display:none; align-items:center; justify-content:space-between; gap:10px; background:linear-gradient(90deg, rgba(0,103,185,.12), rgba(106,27,154,.10)); border-bottom:1px solid var(--line2); color:var(--ink2); padding:10px 14px; font-size:13px; font-weight:600;}
+  #viewBanner b{color:var(--c-blue);}
+  #viewBack{flex:0 0 auto; border:1.5px solid var(--c-blue); background:var(--surface); color:var(--c-blue); font-weight:700; font-size:12.5px; border-radius:999px; padding:6px 12px; cursor:pointer;}
+  #viewBack:active{transform:scale(.95);}
+  #viewBackFab{display:none; position:fixed; left:50%; transform:translateX(-50%); bottom:calc(18px + env(safe-area-inset-bottom)); z-index:45; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15px; padding:14px 24px; border-radius:999px; box-shadow:0 12px 30px rgba(0,103,185,.5); cursor:pointer;}
+  #viewBackFab:active{transform:translateX(-50%) scale(.96);}
+  body.viewonly #viewBackFab{display:block;}
+  #rkBackBtn{display:block; width:100%; background:linear-gradient(135deg,#0a7bd6,var(--c-blue)); color:#fff; border:none; font-weight:800; font-size:15.5px; padding:15px; border-radius:14px; margin-bottom:14px; cursor:pointer; box-shadow:0 8px 20px rgba(0,103,185,.4);}
+  #rkBackBtn:active{transform:scale(.97);}
+  body.viewonly #rkBackBtn{display:block;}
+  body.viewonly #hTitle{cursor:pointer;}
+  body.viewonly #hTitle h1{text-decoration:underline; text-decoration-color:var(--c-blue); text-underline-offset:3px;}
+  #miniBar{position:fixed; top:0; left:0; right:0; z-index:55; display:flex; align-items:center; gap:10px; padding:8px 14px; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); box-shadow:0 4px 14px rgba(26,26,34,.07); transform:translateY(-110%); transition:transform .22s cubic-bezier(.2,.7,.2,1);}
+  body.scrolled #miniBar{transform:translateY(0);}
+  #miniBar .mb-pct{font-family:var(--font-disp); font-weight:900; font-size:12.5px; color:var(--c-blue); background:var(--surface2); border:1.5px solid var(--line2); border-radius:999px; padding:4px 9px; flex:0 0 auto;}
+  #miniBar .mb-title{font-family:var(--font-disp); font-weight:900; font-size:17px; text-transform:uppercase; letter-spacing:-.02em; color:var(--ink); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #miniBar .mb-btns{display:flex; gap:6px; flex:0 0 auto;}
+  #miniBar .icbtn{width:38px; height:38px; font-size:16px; border-radius:11px;}
+  body.viewonly #miniBar{display:none;}
+  body.viewonly #viewBanner{display:flex;}
+  body.viewonly .qa{display:none;}
+  body.viewonly .fab{display:none;}
+  body.viewonly .cell{pointer-events:none;}
+
+  /* Ranking */
+  .rk-nick{background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:14px;}
+  .rk-nick label{display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); margin-bottom:6px;}
+  .rk-in{width:100%; height:42px; border:2px solid var(--line2); border-radius:11px; background:var(--surface); padding:0 12px; font-size:15px; font-weight:600; color:var(--ink);}
+  .rk-in:focus{outline:none; border-color:var(--c-blue);}
+  .rk-savebtn{width:100%; margin-top:9px; border:none; border-radius:11px; background:var(--c-blue); color:#fff; font-weight:700; font-size:14.5px; height:44px; cursor:pointer;}
+  .rk-savebtn:active{transform:scale(.98);}
+  .rk-hint{font-size:11px; color:var(--mut2); margin-top:9px; line-height:1.45;}
+  .rk-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .rk-ref{flex:0 0 auto; width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line2); background:var(--surface2); color:var(--ink2); font-size:17px; cursor:pointer; line-height:1;}
+  .rk-ref:active{transform:scale(.92);}
+  .rk-tap{font-size:11.5px; color:var(--mut); font-weight:600; margin:8px 2px 11px;}
+  .rk-row{display:flex; align-items:center; gap:11px; padding:11px 10px; border-radius:13px; background:var(--surface); border:1px solid var(--line); margin-bottom:8px; cursor:pointer; transition:transform .1s, border-color .15s;}
+  .rk-row:hover{border-color:var(--c-blue);}
+  .rk-row:active{transform:scale(.985);}
+  .rk-row.me{border-color:var(--c-green); background:rgba(0,128,43,.06); box-shadow:0 0 0 1px var(--c-green) inset;}
+  .rk-pos{flex:0 0 auto; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:9px; font-family:var(--font-disp); font-weight:900; font-size:14px; background:var(--surface2); color:var(--mut);}
+  .rk-row.top1 .rk-pos{background:linear-gradient(135deg,#FFD75E,#E0A800); color:#5a4500; font-size:18px; box-shadow:0 2px 9px rgba(224,168,0,.55);}
+  .rk-row.top2 .rk-pos{background:linear-gradient(135deg,#E2E6EC,#AEB6C2); color:#3a4250;}
+  .rk-row.top3 .rk-pos{background:linear-gradient(135deg,#E7A867,#C57B2E); color:#4a2c0a;}
+  .rk-mid{flex:1; min-width:0;}
+  .rk-nm{font-size:14.5px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rk-bar{height:6px; border-radius:99px; background:var(--surface2); margin-top:5px; overflow:hidden;}
+  .rk-bar i{display:block; height:100%; border-radius:99px; background:var(--c-green);}
+  .rk-pct{flex:0 0 auto; font-family:var(--font-disp); font-weight:900; font-size:17px; color:var(--ok-d);}
+  .rk-go{flex:0 0 auto; color:var(--mut2); font-size:18px; margin-left:-4px;}
+  .rk-meta{font-size:11px; color:var(--mut2); font-weight:600;}
+  .rk-empty{text-align:center; color:var(--mut); font-size:13px; padding:24px 10px; line-height:1.5;}
+  .exp-note{font-size:12.5px; line-height:1.55; color:var(--dup-d); background:rgba(242,162,12,.10); border:1.5px solid rgba(242,162,12,.32); border-radius:14px; padding:11px 13px; margin-top:13px;}
+  .exp-note b{color:var(--dup-d);}
+
+  /* Progreso: gráficos simples */
+  .pg-overall{text-align:center; margin-bottom:6px;}
+  .pg-bignum{font-family:var(--font-disp); font-weight:900; font-size:44px; line-height:1; color:var(--ok-d);}
+  .pg-sub{font-size:12.5px; color:var(--mut); margin:7px 0 12px;}
+  .pg-track{height:12px; background:var(--surface2); border:1px solid var(--line); border-radius:7px; overflow:hidden;}
+  .pg-track i{display:block; height:100%; border-radius:7px; background:linear-gradient(90deg,#19a94a,var(--ok-d)); transition:width .35s cubic-bezier(.2,.7,.2,1);}
+  .pg-track.pg-big{height:18px; border-radius:9px;}
+  .pg-track.pg-big i{border-radius:9px;}
+  .pg-row{display:grid; grid-template-columns:94px 1fr 42px; gap:9px; align-items:center; padding:6px 2px;}
+  .pg-lbl{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--ink2);}
+  .pg-dot{width:10px; height:10px; border-radius:3px; flex:0 0 auto;}
+  .pg-pct{font-family:var(--font-mono); font-weight:700; font-size:12.5px; color:var(--mut); text-align:right;}
 
   .field{margin-top:13px;}
   .field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;}
@@ -243,6 +398,8 @@
   .field input:focus, .field textarea:focus{outline:none; border-color:var(--c-blue);}
   .steps{background:var(--surface2); border:1px solid var(--line); border-radius:15px; padding:14px 15px 14px 31px; margin:6px 0 4px; font-size:13px; color:var(--ink2); line-height:1.55;}
   .steps li{margin-bottom:6px;}
+  .steps ul{margin:6px 0 2px; padding-left:18px; list-style:disc;}
+  .steps ul li{margin-bottom:3px;}
   .steps a{color:var(--c-blue); font-weight:700;}
   .codebox{display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px dashed var(--line2); border-radius:14px; padding:11px 13px; margin-top:6px;}
   .codebox .v{flex:1; font-family:var(--font-mono); font-size:13px; color:var(--ink); overflow:hidden; text-overflow:ellipsis;}
@@ -278,6 +435,17 @@
   .trade-text{width:100%; min-height:230px; resize:vertical; background:var(--surface2); border:1px solid var(--line2); border-radius:15px; padding:13px 15px; color:var(--ink); font-family:var(--font-mono); font-size:12.5px; line-height:1.6;}
 
   /* celebración */
+  .ov.starpop{align-items:center; padding:18px;}
+  .starcard{width:100%; max-width:360px; border-radius:28px; padding:26px 22px 22px; text-align:center; background:linear-gradient(180deg,#ffffff,#fbfdff); border:1.5px solid var(--line); box-shadow:0 24px 60px rgba(26,26,34,.30); animation:pop .3s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes pop{from{transform:scale(.82); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .star-burst{font-size:52px; line-height:1; margin-bottom:4px;}
+  .star-kick{font-family:var(--font-disp); font-weight:900; font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-amber);}
+  .star-name{font-family:var(--font-disp); font-weight:900; font-size:30px; line-height:1.02; margin:6px 0 2px; color:var(--ink); text-transform:uppercase; letter-spacing:-.02em;}
+  .star-team{font-size:13.5px; font-weight:700; color:var(--mut); margin-bottom:14px;}
+  .star-tier{display:none; font-family:var(--font-disp); font-weight:800; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#fff; padding:4px 12px; border-radius:999px; margin:3px 0 9px;}
+  .star-value{display:none; font-family:var(--font-mono); font-weight:700; font-size:14px; color:var(--ok-d); background:rgba(0,128,43,.10); border:1px solid rgba(0,128,43,.25); border-radius:12px; padding:9px 12px; margin-bottom:12px;}
+  .star-fact{background:var(--surface2); border:1px solid var(--line); border-radius:16px; padding:13px 15px; font-size:14.5px; line-height:1.5; color:var(--ink2); font-weight:600;}
+  .star-prob{font-size:12px; color:var(--mut); line-height:1.5; margin-top:12px;}
   #confetti{position:fixed; inset:0; pointer-events:none; z-index:70; overflow:hidden;}
   .cft{position:absolute; top:-14px; border-radius:2px; will-change:transform,opacity; animation:fall 1900ms cubic-bezier(.25,.6,.4,1) forwards;}
   @keyframes fall{0%{transform:translateY(-12px) rotate(0); opacity:1;} 100%{transform:translateY(104vh) rotate(720deg); opacity:.85;}}
@@ -308,6 +476,30 @@
     .rail{display:block;}
     header{position:relative; z-index:2;}
     main{position:relative; z-index:2;}
+  }
+  /* ----- Vista general (mapa compacto del álbum) ----- */
+  main.ov-compact{max-width:1200px;}
+  main.ov-compact .grp{display:grid; grid-template-columns:repeat(2,1fr); column-gap:10px; row-gap:0; margin-bottom:0;}
+  main.ov-compact .grp-h{grid-column:1 / -1; margin:8px 2px 4px;}
+  main.ov-compact .grp-h .tag{font-size:10px; padding:4px 10px;}
+  main.ov-compact .team{padding:6px 8px 6px; margin-bottom:5px; border-radius:12px; border-width:1px; box-shadow:var(--shadow-sm);}
+  main.ov-compact .team-h{margin-bottom:4px; gap:6px; padding-left:2px;}
+  main.ov-compact .flagimg{width:16px;}
+  main.ov-compact .flag{font-size:15px; width:18px;}
+  main.ov-compact .team-name .weare{display:none;}
+  main.ov-compact .team-name .nm{font-size:11px;}
+  main.ov-compact .team-name .cd{display:none;}
+  main.ov-compact .tprog .bar{display:none;}
+  main.ov-compact .tprog .fr{font-size:10px;}
+  main.ov-compact .cells{grid-template-columns:repeat(20,1fr); gap:2px;}
+  main.ov-compact .cell{aspect-ratio:1/1; border-radius:3px; border-width:1px; font-size:0; pointer-events:none; cursor:default;}
+  main.ov-compact .cell .badge{display:none;}
+  main.ov-compact .cell.have, main.ov-compact .cell.dup{box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
+  @media (min-width:880px){
+    main.ov-compact .grp{grid-template-columns:repeat(4,1fr); column-gap:12px;}
+    main.ov-compact .team{padding:6px 9px 7px;}
+    main.ov-compact .cell{border-radius:4px;}
+    main.ov-compact .team-name .nm{font-size:11px;}
   }
   /* ----- Pantalla de login obligatoria ----- */
   #authGate{position:fixed; inset:0; z-index:300; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto;}
@@ -350,6 +542,7 @@
     <div class="field"><label>Contraseña</label><input id="agPass" type="password" autocomplete="current-password" placeholder="••••••"></div>
     <button class="btn btn-blue" id="agGo" style="width:100%;margin-top:14px">Entrar</button>
     <div class="err" id="agErr"></div>
+    <div style="text-align:center;margin-top:12px"><button id="agForgot" style="background:none;border:none;color:var(--c-blue);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit">¿Olvidaste tu contraseña?</button></div>
     <p class="tip">Tu colección queda guardada en tu cuenta y sincronizada en todos tus dispositivos. Necesitas conexión a internet.</p>
   </div>
 </div>
@@ -357,10 +550,46 @@
 <div class="rail" id="railR" aria-hidden="true"><div class="railpat"></div></div>
 <header>
   <div class="geoband" id="geoband" aria-hidden="true"></div>
+  <div class="hero">
+    <svg class="trophy" viewBox="0 0 120 200" role="img" aria-label="Copa del Mundo" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tpGold" x1=".15" y1="0" x2=".85" y2="1">
+          <stop offset="0" stop-color="#FDEFB4"/><stop offset=".32" stop-color="#F4CB52"/><stop offset=".62" stop-color="#D69E2C"/><stop offset="1" stop-color="#A9761B"/>
+        </linearGradient>
+        <linearGradient id="tpMal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2BA06A"/><stop offset="1" stop-color="#0C5734"/>
+        </linearGradient>
+      </defs>
+      <g stroke="#7a5410" stroke-width="1.4" stroke-linejoin="round">
+        <path d="M48 150 L72 150 L70 158 L50 158 Z" fill="url(#tpGold)"/>
+        <path d="M50 158 L70 158 L72 168 L48 168 Z" fill="url(#tpMal)"/>
+        <path d="M48 168 L72 168 L71 171 L49 171 Z" fill="url(#tpGold)"/>
+        <path d="M49 171 L71 171 L76 185 L44 185 Z" fill="url(#tpMal)"/>
+        <path d="M54 84 C49 104 45 124 44 145 L44 149 Q48 141 52 150 Q56 141 60 152 Q64 141 68 150 Q72 141 76 149 L76 145 C75 124 71 104 66 84 C63 87 57 87 54 84 Z" fill="url(#tpGold)"/>
+        <path d="M40 48 C42 62 50 76 58 86 L60 84 C52 74 45 62 43 50 C42 48 41 47 40 48 Z" fill="url(#tpGold)"/>
+        <path d="M80 48 C78 62 70 76 62 86 L60 84 C68 74 75 62 77 50 C78 48 79 47 80 48 Z" fill="url(#tpGold)"/>
+        <circle cx="60" cy="82" r="3.4" fill="url(#tpGold)"/>
+        <circle cx="60" cy="42" r="24" fill="url(#tpGold)"/>
+      </g>
+      <path d="M48 38 q8 -7 15 -2 q5 4 1 9 q-8 5 -15 -1 q-4 -4 -1 -5 Z" fill="#9E6B16" opacity=".34"/>
+      <path d="M64 45 q7 -2 10 3 q2 5 -4 6 q-6 1 -8 -4 Z" fill="#9E6B16" opacity=".3"/>
+      <path d="M63 22 C67 33 65 44 60 52" stroke="#7a5410" stroke-width="1.4" opacity=".42" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="32" rx="7" ry="9" fill="#fff" opacity=".42"/>
+      <g stroke="#9E6B16" stroke-width="1.4" opacity=".4" fill="none" stroke-linecap="round">
+        <path d="M58 88 C53 108 49 126 47 140"/>
+        <path d="M60 88 L60 148"/>
+        <path d="M62 88 C67 108 71 126 73 140"/>
+      </g>
+    </svg>
+    <div class="hero-lock">
+      <span class="hero-kick">Colección de figuritas</span>
+      <span class="hero-big">Mundial <b>2026</b></span>
+    </div>
+  </div>
   <div class="hpad">
   <div class="htop">
     <div class="ring">
-      <svg width="60" height="60" viewBox="0 0 60 60">
+      <svg id="ringSvg" role="img" aria-label="Progreso del álbum" width="60" height="60" viewBox="0 0 60 60">
         <defs>
           <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stop-color="#0067B9"/><stop offset=".5" stop-color="#00802B"/><stop offset="1" stop-color="#E0322A"/>
@@ -372,11 +601,14 @@
         <text id="ringTxt" x="30" y="31" text-anchor="middle" dominant-baseline="central" fill="#1A1A22" font-family="Rubik,sans-serif" font-weight="900" font-size="14">0%</text>
       </svg>
     </div>
-    <div class="htitle">
+    <div class="htitle" id="hTitle">
       <div class="kick"><span class="dot"></span> We Are 26</div>
       <h1 class="disp">Mi Álbum</h1>
     </div>
     <div class="hbtns">
+      <button class="icbtn" id="btnCracks" aria-label="Mis cracks">⭐</button>
+      <button class="icbtn" id="btnRankingTop" aria-label="Ranking">🏆</button>
+      <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
   </div>
@@ -390,9 +622,25 @@
   </div>
 </header>
 
+<div id="miniBar" aria-hidden="true">
+  <span class="mb-pct" id="miniPct">0%</span>
+  <span class="mb-title">Mi Álbum</span>
+  <div class="mb-btns">
+    <button class="icbtn" id="mbCracks" aria-label="Mis cracks">⭐</button>
+    <button class="icbtn" id="mbRanking" aria-label="Ranking">🏆</button>
+    <button class="icbtn" id="mbHub" aria-label="Datos">📊</button>
+    <button class="icbtn" id="mbSet" aria-label="Ajustes">⚙</button>
+  </div>
+</div>
+<div id="viewBanner">
+  <span>👁️ Estás viendo un álbum compartido · <b>solo lectura</b></span>
+  <button id="viewBack">← Volver al mío</button>
+</div>
+<button id="viewBackFab" aria-label="Volver a mi álbum">← Volver a MI álbum</button>
+
 <div class="toolbar">
   <div class="qa">
-    <input id="quickAdd" type="text" name="album-codigo" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly placeholder="Anota un código: ej. ARG5, BRA12, FW3…" />
+    <input id="quickAdd" type="text" name="album-codigo" aria-label="Anotar código de lámina" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly placeholder="Anota un código: ej. ARG5, BRA12, FWC3…" />
     <button id="qaBtn">+ Sumar</button>
   </div>
   <div id="recentTray" class="recent" style="display:none"></div>
@@ -402,12 +650,14 @@
     <button class="fbtn" data-f="miss">Que faltan <span class="b" id="cMiss">0</span></button>
     <button class="fbtn" data-f="dup">Repetidas <span class="b" id="cDup">0</span></button>
   </div>
-  <div class="search"><input id="search" type="text" name="album-buscar" placeholder="🔎 Buscar selección (ej. argentina, esp)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
+  <div class="search"><span class="si" id="searchIco"></span><input id="search" type="text" name="album-buscar" aria-label="Buscar selección, código o jugador" placeholder="Busca selección o jugador (ej. Argentina, Messi)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
   <div class="sortrow">
     <span class="slbl">Orden:</span>
     <div class="sortseg" id="sortSeg">
       <button class="active" data-s="group">Por grupo</button>
       <button data-s="alpha">A–Z</button>
+      <button data-s="overview" title="Todo el álbum de un vistazo" aria-label="Vista general del álbum">Vista</button>
+      <button data-s="clubs" title="Álbum por club (se llena solo)" aria-label="Álbum por club">Clubes</button>
     </div>
   </div>
 </div>
@@ -421,26 +671,33 @@
   Escanear
 </button>
 
+<!-- CRACKS (galería con tiers) -->
+<div class="ov" id="ovCracks"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">⭐ Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="cracks-sum" id="cracksSum"></div>
+  <div id="cracksBody"></div>
+  <div class="tip">Toca un crack pa' marcarlo o ver su info. Los que te faltan salen 🔒.</div>
+</div></div>
+
+<!-- SQUAD (nómina en ventana) -->
+<div class="ov" id="ovSquad"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp" id="squadTitle">Nómina</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="squad-sub" id="squadSub"></div>
+  <div class="squad-list" id="squadList"></div>
+  <div class="tip">Toca un jugador pa' marcarlo como que lo tienes o repetido. 👆</div>
+</div></div>
+
 <!-- CELL EDITOR -->
 <div class="ov" id="ovEdit"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Lámina</h2><button class="x" data-close>✕</button></div>
-  <div class="ed-code"><div class="big" id="edCode">—</div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
+  <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="ed-stat-ro" id="edStatRo"></div><div class="ed-value" id="edValue"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
   <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
   <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
 </div></div>
 
-<!-- REVEAL: carita al desbloquear -->
-<div class="ov" id="ovReveal"><div class="reveal-card">
-  <div class="reveal-kick">¡Nueva lámina! 🎉</div>
-  <div class="reveal-ava" id="revAva"></div>
-  <div class="reveal-name" id="revName">—</div>
-  <div class="reveal-sub" id="revSub">—</div>
-  <button class="btn btn-grn" data-close id="revClose">¡La tengo! ✓</button>
-</div></div>
-
 <!-- SCAN -->
 <div class="ov" id="ovScan"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">Escanear lámina</h2><button class="x" data-close>✕</button></div>
+  <div class="sheet-h"><h2 class="disp">Escanear <span class="alfa-tag">alfa</span></h2><button class="x" data-close>✕</button></div>
   <div class="aibar" id="aiBar"></div>
   <div class="aisetup" id="aiSetup" style="display:none">
     <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin:0 0 8px">Saca una llave gratis de la IA de Google (3 pasos) y el lector va a leer las fotos muchísimo mejor:</p>
@@ -465,7 +722,7 @@
   <div class="scan-status" id="scanStatus"></div>
   <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
   <div class="manual"><input id="manualCode" type="text" name="album-manual" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/><button id="manualBtn">Agregar</button></div>
-  <div class="tip">Las láminas brillan y a veces el lector falla. Por eso siempre confirmas tú antes de registrar. 💪</div>
+  <div class="exp-note">🧪 <b>Función experimental (alfa).</b> El lector todavía está en pruebas: puede fallar o equivocarse de número. Siempre revisa y confirma tú antes de registrar — y si no la pilla, escribe el código a mano. 💪</div>
 </div></div>
 
 <!-- CLOUD -->
@@ -497,18 +754,21 @@
     <div class="field"><label>Contraseña</label><input id="authPass" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres"/></div>
     <div class="err" id="authErr"></div>
     <button class="btn btn-blue" style="width:100%;margin-top:12px" id="authGo">Entrar</button>
+    <div style="text-align:center;margin-top:10px"><button id="authForgot" style="background:none;border:none;color:var(--c-blue);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit">¿Olvidaste tu contraseña?</button></div>
     <button class="set-btn" id="cfgEdit" style="margin-top:14px">Cambiar configuración de Firebase</button>
   </div>
 
   <div id="cloudUser" style="display:none">
     <div class="who-tag"><div class="av" id="userAv">?</div><div class="em" id="userEmail">—</div><span style="color:var(--ok-d);font-size:18px">✓</span></div>
-    <p style="font-size:12.5px;color:var(--mut);margin:10px 2px 4px">Comparte este código con alguien y, al unirse, los dos editan <b>el mismo álbum</b> en vivo:</p>
-    <div class="field"><label>Mi código de álbum</label>
+    <p style="font-size:12.5px;color:var(--mut);margin:10px 2px 4px">Comparte este código y la persona podrá <b>ver</b> tu álbum (solo lectura) — <b>no puede editarlo</b>. Solo tú editas el tuyo:</p>
+    <div class="field"><label>Mi código de álbum (para que me vean)</label>
       <div class="codebox"><span class="v" id="myAlbumCode">—</span><button id="copyCode">Copiar</button></div></div>
-    <div class="field"><label>Unirme a un álbum compartido (opcional)</label>
+    <div class="field"><label>Ver el álbum de alguien (pega su código)</label>
       <input id="joinCode" type="text" placeholder="Pega el código que te pasaron"/></div>
-    <button class="btn btn-blue" style="width:100%;margin-top:10px" id="joinGo">Usar este álbum</button>
+    <button class="btn btn-blue" style="width:100%;margin-top:10px" id="joinGo">Ver ese álbum</button>
     <div class="tip" id="syncTip">Sincronizado ✓ — los cambios se guardan solos.</div>
+    <button class="set-btn" id="changePw" style="margin-top:8px">Cambiar mi contraseña</button>
+    <div class="err" id="cpwMsg"></div>
     <button class="set-btn danger" id="signOut" style="margin-top:8px">Cerrar sesión</button>
   </div>
 </div></div>
@@ -519,17 +779,37 @@
   <div id="driveStatus" class="trade-count" style="margin:0 2px 8px"></div>
   <div id="driveLinkWrap" class="who-tag" style="display:none"><span class="av">📄</span><a id="driveLink" class="em" href="#" target="_blank" rel="noopener">Abrir mi álbum en Google Sheets ↗</a></div>
   <div id="driveSetup">
-    <p class="tip" style="text-align:left;margin-top:2px">Tu álbum se guarda solo como una Google Sheet (puedes tenerla abierta en otra pestaña). Configuración de una sola vez — puedes reusar tu mismo proyecto de Firebase:</p>
+    <p class="tip" style="text-align:left;margin-top:2px"><b>¿Qué hace esto?</b> Guarda una copia de tu álbum como una planilla (Google Sheet) en <b>tu</b> Google Drive. Es <b>opcional</b> y un poco técnico: tu álbum <b>ya queda guardado solo en tu cuenta</b>, esto es solo un respaldo extra. Es de una sola vez (~10 min). Sigue cada paso tal cual 👇</p>
     <ol class="steps">
-      <li>Entra a <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">console.cloud.google.com</a> (tu proyecto) y activa la <b>Google Drive API</b>.</li>
-      <li>En <b>Pantalla de consentimiento de OAuth</b> (Externo) agrégate como <b>usuario de prueba</b> con tu correo.</li>
-      <li>En <b>Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web</b>. En <b>Orígenes de JavaScript autorizados</b> agrega esto:</li>
+      <li><b>Abre Google Cloud</b> con tu cuenta de Google (la misma del álbum): <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a>. Arriba a la izquierda toca <b>“Selecciona un proyecto”</b>; si no tienes ninguno, <b>“Proyecto nuevo”</b>, ponle cualquier nombre (ej. <i>Album</i>), créalo y selecciónalo.</li>
+      <li><b>Activa el permiso de Drive:</b> entra a <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">este enlace</a> (con tu proyecto elegido arriba) y toca el botón azul <b>“Habilitar”</b>. Si ya dice “Administrar”, listo.</li>
+      <li>En el menú ☰ (arriba a la izquierda) entra a <b>“Google Auth Platform”</b>. Toca <b>“Comenzar”</b> y rellena:
+        <ul>
+          <li><b>Nombre de la app:</b> cualquiera (ej. <i>Mi Álbum</i>).</li>
+          <li><b>Correo de asistencia:</b> tu correo.</li>
+          <li>En <b>Público</b> elige <b>“Externo”</b>, acepta las condiciones y toca <b>“Crear”</b>.</li>
+        </ul>
+      </li>
+      <li><b>Agrégate como “usuario de prueba”:</b> en <b>Google Auth Platform → pestaña “Público”</b> → sección <b>“Usuarios de prueba” → “Agregar usuarios”</b>, escribe <b>tu correo</b> y guarda. <b>Esto es clave</b> — sin esto Google te bloquea.</li>
+      <li><b>Crea la llave</b> en <b>Google Auth Platform → pestaña “Clientes” → “Crear cliente”</b>:
+        <ul>
+          <li><b>Tipo de aplicación:</b> <b>“Aplicación web”</b>.</li>
+          <li><b>Nombre:</b> cualquiera (ej. <i>web</i>).</li>
+          <li>En <b>“Orígenes de JavaScript autorizados” → “Agregar URI”</b> pega <b>exactamente</b> esto (usa el botón Copiar, sin “/” al final):</li>
+        </ul>
+        <div class="codebox" style="margin-top:8px"><span class="v">https://lukas-paredes.github.io</span><button type="button" id="driveCopyOrigin">Copiar</button></div>
+      </li>
+      <li>Toca <b>“Crear”</b>. Te aparece un <b>ID de cliente</b> que termina en <span class="mono">.apps.googleusercontent.com</span>: <b>cópialo</b>.</li>
+      <li><b>Pégalo aquí abajo</b> y toca “Conectar”. La 1ª vez Google muestra <b>“Google no verificó esta app”</b> (es normal, es tuya): toca <b>“Configuración avanzada” → “Ir a (tu app)”</b> y luego <b>“Permitir”</b>.</li>
     </ol>
-    <div class="codebox"><span class="v">https://lukas-paredes.github.io</span><button type="button" id="driveCopyOrigin">Copiar</button></div>
     <div class="field"><label>Pega tu ID de cliente (termina en .apps.googleusercontent.com)</label><input id="driveClientId" placeholder="123...apps.googleusercontent.com" autocomplete="off"></div>
     <button class="btn btn-blue" id="driveConnect" style="width:100%;margin-top:12px">Conectar y guardar en Drive</button>
     <div class="err" id="driveErr"></div>
-    <p class="tip">La primera vez Google muestra un aviso de «app no verificada» (es normal en apps personales tuyas): toca <b>Configuración avanzada → Ir a la app</b>.</p>
+    <p class="tip" style="text-align:left">🛟 <b>Si algo falla:</b><br>
+    • <b>“Acceso bloqueado / no eres usuario de prueba”</b> → te faltó el Paso 4.<br>
+    • <b>“origin_mismatch / origen no permitido”</b> → revisa el Paso 5: el origen pegado debe ser idéntico y sin “/” al final.<br>
+    • <b>No abre la ventana de Google</b> → desactiva el bloqueador de pop-ups para esta página.<br>
+    • La conexión dura ~1 hora por seguridad de Google. Si después ves “cambios pendientes”, vuelve a abrir esto y toca “Guardar ahora”.</p>
   </div>
   <div id="driveConnected" style="display:none">
     <div class="set-row"><div><div class="lab">Guardar automáticamente</div><div class="des">Sube los cambios a Drive solos</div></div><label class="switch"><input type="checkbox" id="driveAuto"><span class="tr"></span></label></div>
@@ -542,19 +822,26 @@
 
 <div class="ov" id="ovSet"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Ajustes</h2><button class="x" data-close>✕</button></div>
-  <div class="set-row"><div><div class="lab">Especiales FIFA (00, FW1–FW19)</div><div class="des">Sección de 20 láminas especiales</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
+  <div class="set-row"><div><div class="lab">Especiales FIFA (00, FWC1–FWC19)</div><div class="des">Sección de 20 láminas especiales (foil)</div></div><label class="switch"><input type="checkbox" id="tgSpecials" checked><span class="tr"></span></label></div>
   <div class="set-row"><div><div class="lab">Extra Stickers (foil de leyendas)</div><div class="des">Las 80 doradas/plateadas fuera del álbum</div></div><label class="switch"><input type="checkbox" id="tgExtras"><span class="tr"></span></label></div>
-  <div class="set-row"><div><div class="lab">Carita al desbloquear</div><div class="des">Anima la lámina cuando marcas una nueva</div></div><label class="switch"><input type="checkbox" id="tgReveal" checked><span class="tr"></span></label></div>
-  <button class="set-btn" id="btnCloud2">☁️ Nube y compartir</button>
-  <button class="set-btn" id="btnTrade">🔁 Listas para canjes (faltan / repetidas)</button>
-  <button class="set-btn" id="btnExcel">📊 Exportar a Excel (.xlsx)</button>
-  <button class="set-btn" id="btnExcelImport">📥 Importar desde Excel (.xlsx)</button>
-  <button class="set-btn" id="btnDrive">☁️ Guardar en Google Drive (automático)</button>
-  <button class="set-btn" id="btnExport">⬇️ Exportar respaldo (JSON)</button>
-  <button class="set-btn" id="btnImport">⬆️ Importar respaldo (JSON)</button>
+  <div class="set-row"><div><div class="lab">Felicitar al sacar un crack 🎉</div><div class="des">Ventana con felicitación y un dato cuando marcas un crack</div></div><label class="switch"><input type="checkbox" id="tgCelebrate" checked><span class="tr"></span></label></div>
+  <button class="set-btn" id="btnCloud2">Nube y compartir</button>
+  <button class="set-btn" id="btnTrade">Listas para canjes (faltan / repetidas)</button>
+  <button class="set-btn" id="btnExcel">Exportar a Excel (.xlsx)</button>
+  <button class="set-btn" id="btnExcelImport">Importar desde Excel (.xlsx)</button>
+  <button class="set-btn" id="btnDrive">Guardar en Google Drive (automático)</button>
+  <button class="set-btn" id="btnExport">Exportar respaldo (JSON)</button>
+  <button class="set-btn" id="btnImport">Importar respaldo (JSON)</button>
   <input id="importFile" type="file" accept="application/json,.json" hidden />
-  <button class="set-btn danger" id="btnReset">🗑️ Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 3.4</div>
+  <div id="adminBox" style="display:none">
+    <div style="height:1px;background:var(--line);margin:16px 0 12px"></div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--c-violet);margin:0 2px 9px">⭐ Modo admin</div>
+    <button class="set-btn" id="btnAdminXlsx">Descargar TODOS los álbumes (Excel)</button>
+    <button class="set-btn" id="btnAdminJson">Descargar TODO en JSON (respaldo)</button>
+    <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
+  </div>
+  <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.0</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -565,6 +852,76 @@
   <textarea id="tradeText" class="trade-text" readonly></textarea>
   <button class="btn btn-blue" style="width:100%;margin-top:10px" id="tradeCopy">📋 Copiar lista</button>
   <div class="tip">Copia y mándala por WhatsApp a tus amigos para cambiar láminas. 🔁</div>
+</div></div>
+
+<!-- LUJITO: lo más importante -->
+<div class="ov" id="ovLujito"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp" id="hubTitle">Datos</h2><button class="x" data-close>✕</button></div>
+  <div class="seg" id="hubSeg"><button class="active" data-h="progreso">Progreso</button><button data-h="datos">Datos</button></div>
+
+  <div id="hubDatos" style="display:none">
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-green)"></span> Tu álbum en números</h3>
+    <div id="lxPersonal"></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-blue)"></span> El Mundial 2026</h3>
+    <div class="lx-fact"><span class="lx-ic">🌎</span><div class="lx-tx">Primer Mundial con <b>48 equipos</b> (antes eran 32) y el primero con <b>3 países anfitriones</b>: EE.UU., México y Canadá.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🗓️</span><div class="lx-tx">Se juega del <b>11 de junio al 19 de julio</b>: <b>104 partidos</b> en 39 días, el Mundial más largo de la historia.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🏟️</span><div class="lx-tx">Arranca con <b>México vs Sudáfrica en el Azteca</b>, el <b>primer estadio del mundo en albergar 3 Mundiales</b> (1970, 1986 y 2026).</div></div>
+    <div class="lx-fact"><span class="lx-ic">🆕</span><div class="lx-tx">Cuatro selecciones <b>debutan en un Mundial</b>: Cabo Verde, Curazao, Jordania y Uzbekistán — y las tienes en tu álbum.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">La final es en el <b>MetLife Stadium</b> (Nueva York/Nueva Jersey). Están todos los excampeones… <b>menos Italia</b>.</div></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-pink)"></span> El álbum</h3>
+    <div class="lx-fact"><span class="lx-ic">📔</span><div class="lx-tx"><b>980 láminas</b> en <b>112 páginas</b>: el álbum de Mundial <b>más grande en la historia de Panini</b>.</div></div>
+    <div class="lx-fact"><span class="lx-ic">👕</span><div class="lx-tx"><b>48 equipos</b>, <b>20 láminas cada uno</b> (18 jugadores + foto del equipo + escudo).</div></div>
+    <div class="lx-fact"><span class="lx-ic">📦</span><div class="lx-tx">Los sobres traen <b>7 láminas</b> (antes 5): la primera vez con más de cinco desde 2014.</div></div>
+    <div class="lx-fact"><span class="lx-ic">👑</span><div class="lx-tx">Panini hace álbumes del Mundial desde <b>1970</b>: este es <b>el último</b> antes de que la licencia pase a otra marca. Fin de una era.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🥤</span><div class="lx-tx">Hay <b>12 láminas que no vienen en los sobres</b>: son exclusivas de botellas de <b>Coca-Cola</b> marcadas.</div></div>
+  </div>
+
+  <div class="lx-sec">
+    <h3 class="lx-h"><span class="lx-dot" style="background:var(--c-amber)"></span> Datos freak 🤯</h3>
+    <div class="lx-fact"><span class="lx-ic">💸</span><div class="lx-tx">En Chile completarlo cuesta entre <b>~$160.000</b> (cambiando harto) y <b>~$440.000</b> (sin cambiar). Eso es <b>casi un sueldo mínimo</b> ($539.000).</div></div>
+    <div class="lx-fact"><span class="lx-ic">🤝</span><div class="lx-tx">Panini dice que con intercambio bastan <b>~140 sobres</b> (980 ÷ 7); sin cambiar se va a <b>~400 o más</b>. Por eso el lema es <i>“Got, Got, Need”</i>.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🥇</span><div class="lx-tx">Las <b>Extra Stickers</b> (foil de leyendas) salen ~<b>1 cada 100 sobres</b>; el <b>dorado de Messi</b>, ~<b>1 cada 2.000</b>. El santo grial.</div></div>
+    <div class="lx-fact"><span class="lx-ic">🇨🇱</span><div class="lx-tx">Dato chileno: acá completarlo sale <b>más barato que en Argentina, México, Perú o Colombia</b>.</div></div>
+  </div>
+
+  <div class="lx-src">Datos verificados con FIFA, Panini y prensa deportiva chilena (junio 2026). Tus números se calculan en vivo desde tu colección.</div>
+  </div>
+
+  <div id="hubProgreso"><div id="pgBody"></div></div>
+
+  <div id="hubRanking" style="display:none">
+    <button id="rkBackBtn">← Volver a MI álbum</button>
+    <div class="rk-nick">
+      <label>Tu nick y de dónde eres</label>
+      <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off">
+      <input id="rkCity" class="rk-in" type="text" maxlength="24" placeholder="Ciudad (ej: Calbuco)" autocomplete="off" style="margin-top:8px">
+      <button id="rkSave" class="rk-savebtn">Guardar</button>
+      <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — nunca tu correo. Deja el nick vacío y guarda para salir.</div>
+    </div>
+    <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
+    <div class="rk-tap">👀 Toca a alguien para ver su álbum y las láminas que tiene</div>
+    <div id="rkList"><div class="rk-empty">Cargando…</div></div>
+  </div>
+</div></div>
+
+<!-- STAR CELEBRATION -->
+<div class="ov starpop" id="ovStar"><div class="sheet starcard">
+  <div class="star-burst">🎉</div>
+  <div class="star-kick">🎉 ¡Felicitaciones!</div>
+  <div class="star-name" id="starName">—</div>
+  <div class="star-tier" id="starTier"></div>
+  <div class="star-team" id="starTeam">—</div>
+  <div class="star-value" id="starValue"></div>
+  <div class="star-fact" id="starFact">—</div>
+  <div class="star-prob" id="starProb">—</div>
+  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Genial! 🙌</button>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -588,7 +945,8 @@ const GROUPS = [
   {id:"K", color:"#7B2D8E", teams:[["POR","Portugal","🇵🇹"],["COD","RD Congo","🇨🇩"],["UZB","Uzbekistán","🇺🇿"],["COL","Colombia","🇨🇴"]]},
   {id:"L", color:"#A4123F", teams:[["ENG","Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],["CRO","Croacia","🇭🇷"],["GHA","Ghana","🇬🇭"],["PAN","Panamá","🇵🇦"]]},
 ];
-const SPECIAL_CODES = ["00"]; for(let i=1;i<=19;i++) SPECIAL_CODES.push("FW"+i);
+const SPECIAL_CODES = ["00"]; for(let i=1;i<=19;i++) SPECIAL_CODES.push("FWC"+i);
+const SPECIAL_NAMES={"00":"Logo Panini","FWC1":"Emblema oficial","FWC2":"Emblema oficial","FWC3":"Mascotas oficiales","FWC4":"Eslogan oficial","FWC5":"Balón oficial","FWC6":"Sede: Canadá","FWC7":"Sede: México","FWC8":"Sede: USA","FWC9":"Italia 1934","FWC10":"Uruguay 1950","FWC11":"Alemania 1954","FWC12":"Brasil 1962","FWC13":"Alemania 1974","FWC14":"Argentina 1986","FWC15":"Brasil 1994","FWC16":"Brasil 2002","FWC17":"Italia 2006","FWC18":"Alemania 2014","FWC19":"Argentina 2022"};
 const EXTRA_COLORS = [["O","Oro","🥇"],["P","Plata","🥈"],["B","Bronce","🥉"],["M","Morado","🟣"]];
 const EXTRA_COUNT = 20;
 
@@ -598,60 +956,31 @@ GROUPS.forEach(g=>g.teams.forEach(t=>{ const code=t[0],name=t[1],flag=t[2];
 const VALID_TEAM = new Set(ALL_TEAM_CODES);
 const VALID_SPECIAL = new Set(SPECIAL_CODES);
 const TEAM_COLOR = {}; GROUPS.forEach(g=>g.teams.forEach(t=>{ TEAM_COLOR[t[0]]=g.color; }));
-
-/* ---------- caritas ilustradas (SVG, sin copyright) ---------- */
-const SKIN=["#F4CDA6","#EBB98E","#DCA471","#C2895A","#9B6B43","#724A2E"];
-const HAIR=["#241A12","#3D2A1A","#6B4A2A","#111111","#0E0E0E","#553418","#C9A24B","#7A7A82"];
-function hashCode(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
-function playerAvatar(code){
-  const meta=CODE_TEAM[code];
-  const jersey=(meta&&TEAM_COLOR[meta.code])||"#0067B9";
-  const h=hashCode(code);
-  const skin=SKIN[h%SKIN.length];
-  const hair=HAIR[Math.floor(h/7)%HAIR.length];
-  const sty=Math.floor(h/97)%4;
-  let hairPath;
-  if(sty===0) hairPath='<path d="M28 47 C28 21 72 21 72 47 C66 33 60 30 50 30 C40 30 34 33 28 47 Z" fill="'+hair+'"/>';
-  else if(sty===1) hairPath='<g fill="'+hair+'"><circle cx="34" cy="31" r="9"/><circle cx="50" cy="25" r="11"/><circle cx="66" cy="31" r="9"/><circle cx="29" cy="42" r="7"/><circle cx="71" cy="42" r="7"/></g>';
-  else if(sty===2) hairPath='<path d="M31 44 C31 27 69 27 69 44 C69 38 63 35 50 35 C37 35 31 38 31 44 Z" fill="'+hair+'"/>';
-  else hairPath='<path d="M25 58 C23 25 77 25 75 58 C73 45 70 37 50 37 C30 37 27 45 25 58 Z" fill="'+hair+'"/>';
-  return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">'
-    +'<rect width="100" height="100" rx="14" fill="'+jersey+'22"/>'
-    +'<path d="M14 104 C14 76 30 66 50 66 C70 66 86 76 86 104 Z" fill="'+jersey+'"/>'
-    +'<path d="M41 64 h18 v9 h-18 Z" fill="'+skin+'"/>'
-    +'<circle cx="29" cy="46" r="5" fill="'+skin+'"/><circle cx="71" cy="46" r="5" fill="'+skin+'"/>'
-    +'<circle cx="50" cy="45" r="20" fill="'+skin+'"/>'
-    +hairPath
-    +'<path d="M43 66 L50 73 L57 66 Z" fill="#ffffff" opacity=".92"/>'
-    +'</svg>';
-}
-function showReveal(code){
-  if(state.config.reveal===false) return;
-  const ov=document.getElementById("ovReveal"); if(!ov) return;
-  const ava=document.getElementById("revAva"), nm=document.getElementById("revName"), sub=document.getElementById("revSub");
-  const meta=CODE_TEAM[code]; let jersey="#0067B9";
-  if(meta){ jersey=TEAM_COLOR[meta.code]||"#0067B9"; ava.innerHTML=playerAvatar(code); nm.textContent=meta.flag+" "+meta.name; sub.textContent="Grupo "+meta.group+" · Lámina "+code.slice(meta.code.length); }
-  else if(code==="00"||/^FW\d+$/.test(code)){ ava.innerHTML='<div class="rev-emoji">⭐</div>'; nm.textContent="Especial FIFA"; sub.textContent=displayCode(code); }
-  else { ava.innerHTML='<div class="rev-emoji">✨</div>'; nm.textContent="Lámina extra"; sub.textContent=displayCode(code); }
-  const card=ov.querySelector(".reveal-card"); if(card) card.style.setProperty("--rev",jersey);
-  ov.classList.add("show"); launchConfetti();
-}
+/* nombres de jugadores por código (checklist Panini 2026) */
+const PLAYER={"MEX1":"Escudo","MEX2":"Luis Malagón","MEX3":"Johan Vasquez","MEX4":"Jorge Sánchez","MEX5":"Cesar Montes","MEX6":"Jesus Gallardo","MEX7":"Israel Reyes","MEX8":"Diego Lainez","MEX9":"Carlos Rodriguez","MEX10":"Edson Alvarez","MEX11":"Orbelin Pineda","MEX12":"Marcel Ruiz","MEX13":"Foto del equipo","MEX14":"Érick Sánchez","MEX15":"Hirving Lozano","MEX16":"Santiago Giménez","MEX17":"Raúl Jiménez","MEX18":"Alexis Vega","MEX19":"Roberto Alvarado","MEX20":"Cesar Huerta","RSA1":"Escudo","RSA2":"Ronwen Williams","RSA3":"Sipho Chaine","RSA4":"Aubrey Modiba","RSA5":"Samukele Kabini","RSA6":"Mbekezeli Mbokazi","RSA7":"Khulumani Ndamane","RSA8":"Siyabonga Ngezana","RSA9":"Khuliso Mudau","RSA10":"Nkosinathi Sibisi","RSA11":"Teboho Mokoena","RSA12":"Thalente Mbatha","RSA13":"Foto del equipo","RSA14":"Bathasi Aubaas","RSA15":"Yaya Sithole","RSA16":"Sipho Mbule","RSA17":"Lyle Foster","RSA18":"Iqraam Rayners","RSA19":"Mohau Nkota","RSA20":"Oswin Appollis","KOR1":"Escudo","KOR2":"Hyeon-woo Jo","KOR3":"Seung-Gyu Kim","KOR4":"Min-jae Kim","KOR5":"Yu-min Cho","KOR6":"Young-woo Seol","KOR7":"Han-beom Lee","KOR8":"Tae-seok Lee","KOR9":"Myung-jae Lee","KOR10":"Jae-sung Lee","KOR11":"In-beom Hwang","KOR12":"Kang-in Lee","KOR13":"Foto del equipo","KOR14":"Seung-ho Paik","KOR15":"Jens Castrop","KOR16":"Dongg-yeong Lee","KOR17":"Gue-sung Cho","KOR18":"Heung-min Son","KOR19":"Hee-chan Hwang","KOR20":"Hyeon-Gyu Oh","CZE1":"Escudo","CZE2":"Matej Kovar","CZE3":"Jindrich Stanek","CZE4":"Ladislav Krejci","CZE5":"Vladimir Coufal","CZE6":"Jaroslav Zeleny","CZE7":"Tomas Holes","CZE8":"David Zima","CZE9":"Michal Sadilek","CZE10":"Lukas Provod","CZE11":"Lukas Cerv","CZE12":"Tomas Soucek","CZE13":"Foto del equipo","CZE14":"Pavel Sulc","CZE15":"Matej Vydra","CZE16":"Vasil Kusej","CZE17":"Tomas Chory","CZE18":"Vaclav Cerny","CZE19":"Adam Hlozek","CZE20":"Patrik Schick","CAN1":"Escudo","CAN2":"Dayne St.Clair","CAN3":"Alphonso Davies","CAN4":"Alistair Johnston","CAN5":"Samuel Adekugbe","CAN6":"Riche Larvea","CAN7":"Derek Cornelius","CAN8":"Moïse Bombito","CAN9":"Kamal Miller","CAN10":"Stephen Eustáquio","CAN11":"Ismaël Koné","CAN12":"Jonathan Osorio","CAN13":"Foto del equipo","CAN14":"Jacob Shaffelburg","CAN15":"Mathieu Choinière","CAN16":"Niko Sigur","CAN17":"Tajon Buchanan","CAN18":"Liam Millar","CAN19":"Cyle Larin","CAN20":"Jonathan David","BIH1":"Escudo","BIH2":"Nikola Vasilj","BIH3":"Amer Dedic","BIH4":"Sead Kolasinac","BIH5":"Tarik Muharemovic","BIH6":"Nihad Mujakic","BIH7":"Nikola Katic","BIH8":"Amir Hadziahmetovic","BIH9":"Benjamin Tahirovic","BIH10":"Armin Gigovic","BIH11":"Ivan Sunjic","BIH12":"Ivan Basic","BIH13":"Foto del equipo","BIH14":"Dzenis Burnic","BIH15":"Esmir Bajraktarevic","BIH16":"Amar Memic","BIH17":"Ermedin Demirovic","BIH18":"Edin Dzeko","BIH19":"Samed Bazdar","BIH20":"Haris Tabakovic","QAT1":"Escudo","QAT2":"Meshaal Barsham","QAT3":"Sultan Albrake","QAT4":"Lucas Mendes","QAT5":"Homam Ahmed","QAT6":"Boualem Khoukhi","QAT7":"Pedro Miguel","QAT8":"Tarek Salman","QAT9":"Mohamed Al-Mannai","QAT10":"Karim Boudiaf","QAT11":"Assim Madibo","QAT12":"Ahmed Fatehi","QAT13":"Foto del equipo","QAT14":"Mohammed Waad","QAT15":"Abdulaziz Hatem","QAT16":"Hassan Al-Haydos","QAT17":"Edmilson Junior","QAT18":"Akram Hassan Afif","QAT19":"Ahmed Al Ganehi","QAT20":"Almoez Ali","SUI1":"Escudo","SUI2":"Gregor Kobel","SUI3":"Yvon Mvogo","SUI4":"Manuel Akanji","SUI5":"Ricardo Rodriguez","SUI6":"Nico Elvedi","SUI7":"Aurèle Amenda","SUI8":"Silvan Widmer","SUI9":"Granit Xhaka","SUI10":"Denis Zakaria","SUI11":"Remo Freuler","SUI12":"Fabian Rieder","SUI13":"Foto del equipo","SUI14":"Ardon Jashari","SUI15":"Johan Manzambi","SUI16":"Michel Aebischer","SUI17":"Breel Embolo","SUI18":"Ruben Vargas","SUI19":"Dan Ndoye","SUI20":"Zeki Amdouni","BRA1":"Escudo","BRA2":"Alisson","BRA3":"Bento","BRA4":"Marquinhos","BRA5":"Éder Militão","BRA6":"Gabriel Magalhães","BRA7":"Danilo","BRA8":"Wesley","BRA9":"Lucas Paquetá","BRA10":"Casemiro","BRA11":"Bruno Guimarães","BRA12":"Luiz Henrique","BRA13":"Foto del equipo","BRA14":"Vinicius Júnior","BRA15":"Rodrygo","BRA16":"João Pedro","BRA17":"Matheus Cunha","BRA18":"Gabriel Martinelli","BRA19":"Raphinha","BRA20":"Estévão","MAR1":"Escudo","MAR2":"Yassine Bounou","MAR3":"Munir El Kajoui","MAR4":"Achraf Hakimi","MAR5":"Noussair Mazraoui","MAR6":"Nayef Aguerd","MAR7":"Roman Saiss","MAR8":"Jawad El Yamio","MAR9":"Adam Masina","MAR10":"Sofyan Amrabat","MAR11":"Azzedine Ounahi","MAR12":"Eliesse Ben Seghir","MAR13":"Foto del equipo","MAR14":"Bilal El Khannouss","MAR15":"Ismael Saibari","MAR16":"Youssef En-Nesyri","MAR17":"Abde Ezzalzouli","MAR18":"Soufiane Rahimi","MAR19":"Brahim Diaz","MAR20":"Ayoub El Kaabi","HAI1":"Escudo","HAI2":"Johny Placide","HAI3":"Carlens Arcus","HAI4":"Martin Expérience","HAI5":"Jean-Kevin Duverne","HAI6":"Ricardo Adé","HAI7":"Duke Lacroix","HAI8":"Garven Metusala","HAI9":"Hannes Delcroix","HAI10":"Leverton Pierre","HAI11":"Danley Jean Jacques","HAI12":"Jean-Ricner Bellegarde","HAI13":"Foto del equipo","HAI14":"Christopher Attys","HAI15":"Derrick Etienne Jr","HAI16":"Josue Casimir","HAI17":"Ruben Providence","HAI18":"Duckens Nazon","HAI19":"Louicius Deedson","HAI20":"Frantzdy Pierrot","SCO1":"Escudo","SCO2":"Angus Gunn","SCO3":"Jack Hendry","SCO4":"Kieran Tierney","SCO5":"Aaron Hickey","SCO6":"Andrew Robertson","SCO7":"Scott McKenna","SCO8":"John Souttar","SCO9":"Anthony Ralston","SCO10":"Grant Hanley","SCO11":"Scott McTominay","SCO12":"Billy Gilmour","SCO13":"Foto del equipo","SCO14":"Lewis Ferguson","SCO15":"Ryan Christie","SCO16":"Kenny McLean","SCO17":"John McGinn","SCO18":"Lyndon Dykes","SCO19":"Che Adams","SCO20":"Ben Gannon-Doak","USA1":"Escudo","USA2":"Math Freese","USA3":"Chris Richards","USA4":"Tim Ream","USA5":"Mark McKenzie","USA6":"Alex Freeman","USA7":"Antonee Robinson","USA8":"Tyler Adams","USA9":"Tanner Tessmann","USA10":"Weston McKenny","USA11":"Christian Roldan","USA12":"Timothy Weah","USA13":"Foto del equipo","USA14":"Diego Luna","USA15":"Malik Tillman","USA16":"Christian Pulisic","USA17":"Brenden Aaronson","USA18":"Ricardo Pepi","USA19":"Haji Wright","USA20":"Folarin Balogun","PAR1":"Escudo","PAR2":"Roberto Fernandez","PAR3":"Orlando Gill","PAR4":"Gustavo Gomez","PAR5":"Fabián Balbuena","PAR6":"Juan José Cáceres","PAR7":"Omar Alderete","PAR8":"Junior Alonso","PAR9":"Mathías Villasanti","PAR10":"Diego Gomez","PAR11":"Damián Bobadilla","PAR12":"Andres Cubas","PAR13":"Foto del equipo","PAR14":"Matias Galarza Fonda","PAR15":"Julio Enciso","PAR16":"Alejandro Romero Gamarra","PAR17":"Miguel Almirón","PAR18":"Ramon Sosa","PAR19":"Angel Romero","PAR20":"Antonio Sanabria","AUS1":"Escudo","AUS2":"Mathew Ryan","AUS3":"Joe Gauci","AUS4":"Harry Souttar","AUS5":"Alessandro Circati","AUS6":"Jordan Bos","AUS7":"Aziz Behich","AUS8":"Cameron Burgess","AUS9":"Lewis Miller","AUS10":"Milos Degenek","AUS11":"Jackson Irvine","AUS12":"Riley McGree","AUS13":"Foto del equipo","AUS14":"Aiden O'Neill","AUS15":"Connor Metcalfe","AUS16":"Patrick Yazbek","AUS17":"Craig Goodwin","AUS18":"Kusini Vengi","AUS19":"Nestory Irankunda","AUS20":"Mohamed Touré","TUR1":"Escudo","TUR2":"Ugurcan Cakir","TUR3":"Mert Muldur","TUR4":"Zeki Celik","TUR5":"Abdulkerim Bardakci","TUR6":"Caglar Soyuncu","TUR7":"Merih Demiral","TUR8":"Ferdi Kadioglu","TUR9":"Kaan Ayhan","TUR10":"Ismail Yuksek","TUR11":"Hakan Calhanoglu","TUR12":"Orkun Kokcu","TUR13":"Foto del equipo","TUR14":"Arda Guler","TUR15":"Irfan Can Kahveci","TUR16":"Yunus Akgun","TUR17":"Can Uzun","TUR18":"Baris Alper Yilmaz","TUR19":"Kerem Akturkoglu","TUR20":"Kenan Yildiz","GER1":"Escudo","GER2":"Marc-André ter Stegen","GER3":"Jonathan Tah","GER4":"David Raum","GER5":"Nico Schlotterbeck","GER6":"Antonio Rüdiger","GER7":"Waldemar Anton","GER8":"Ridle Baku","GER9":"Maximilian Mittelstadt","GER10":"Joshua Kimmich","GER11":"Florian Wirtz","GER12":"Felix Nmecha","GER13":"Foto del equipo","GER14":"Leon Goretzka","GER15":"Jamal Musiala","GER16":"Serge Gnabry","GER17":"Kai Havertz","GER18":"Leroy Sane","GER19":"Karim Adeyemi","GER20":"Nick Woltemade","CUW1":"Escudo","CUW2":"Eloy Room","CUW3":"Armando Obispo","CUW4":"Sherel Floranus","CUW5":"Jurien Gaari","CUW6":"Joshua Brenet","CUW7":"Roshon Van Eijma","CUW8":"Shurandy Sambo","CUW9":"Livano Comenencia","CUW10":"Godfried Roemeratoe","CUW11":"Juninho Bacuna","CUW12":"Leandro Bacuna","CUW13":"Foto del equipo","CUW14":"Tahith Chong","CUW15":"Kenji Gorre","CUW16":"Jearl Margaritha","CUW17":"Jurgen Locadia","CUW18":"Jeremy Antonisse","CUW19":"Gervane Kastaneer","CUW20":"Sontje Hansen","CIV1":"Escudo","CIV2":"Yahia Fofana","CIV3":"Ghislain Konan","CIV4":"Wilfried Singo","CIV5":"Odilon Kossounou","CIV6":"Evan Ndicka","CIV7":"Willy Boly","CIV8":"Emmanuel Agbadou","CIV9":"Ousmane Diomande","CIV10":"Franck Kessie","CIV11":"Seko Fofana","CIV12":"Ibrahim Sangare","CIV13":"Foto del equipo","CIV14":"Jean-Philippe Gbamin","CIV15":"Amad Diallo","CIV16":"Sébastien Haller","CIV17":"Simon Adingra","CIV18":"Yan Diomande","CIV19":"Evann Guessand","CIV20":"Oumar Diakite","ECU1":"Escudo","ECU2":"Hernán Galíndez","ECU3":"Gonzalo Valle","ECU4":"Piero Hincapié","ECU5":"Pervis Estupiñán","ECU6":"Willian Pacho","ECU7":"Ángelo Preciado","ECU8":"Joel Ordóñez","ECU9":"Moises Caicedo","ECU10":"Alan Franco","ECU11":"Kendry Paez","ECU12":"Pedro Vite","ECU13":"Foto del equipo","ECU14":"John Veboah","ECU15":"Leonardo Campana","ECU16":"Gonzalo Plata","ECU17":"Nilson Angulo","ECU18":"Alan Minda","ECU19":"Kevin Rodriguez","ECU20":"Enner Valencia","NED1":"Escudo","NED2":"Bart Verbruggen","NED3":"Virgil van Dijk","NED4":"Micky van de Ven","NED5":"Jurrien Timber","NED6":"Denzel Dumfries","NED7":"Nathan Aké","NED8":"Jeremie Frimpong","NED9":"Jan Paul van Hecke","NED10":"Tijjani Reijnders","NED11":"Ryan Gravenberch","NED12":"Teun Koopmeiners","NED13":"Foto del equipo","NED14":"Frenkie de Jong","NED15":"Xavi Simons","NED16":"Justin Kluivert","NED17":"Memphis Depay","NED18":"Donyell Malen","NED19":"Wout Weghorst","NED20":"Cody Gakpo","JAP1":"Escudo","JAP2":"Zion Suzuki","JAP3":"Henry Heroki Mochizuki","JAP4":"Ayumu Seko","JAP5":"Junnosuke Suzuki","JAP6":"Shogo Taniguchi","JAP7":"Tsuyoshi Watanabe","JAP8":"Kaishu Sano","JAP9":"Yuki Soma","JAP10":"Ao Tanaka","JAP11":"Daichi Kamada","JAP12":"Takefusa Kubo","JAP13":"Foto del equipo","JAP14":"Ritsu Doan","JAP15":"Keito Nakamura","JAP16":"Takumi Minamino","JAP17":"Shuto Machino","JAP18":"Junya Ito","JAP19":"Koki Ogawa","JAP20":"Ayase Ueda","SWE1":"Escudo","SWE2":"Victor Johansson","SWE3":"Isak Hien","SWE4":"Gabriel Gudmundsson","SWE5":"Emil Holm","SWE6":"Victor Nilsson Lindelöf","SWE7":"Gustaf Lagerbielke","SWE8":"Lucas Bergvall","SWE9":"Hugo Larsson","SWE10":"Jesper Karlström","SWE11":"Yasin Ayari","SWE12":"Mattias Svanberg","SWE13":"Foto del equipo","SWE14":"Daniel Svensson","SWE15":"Ken Sema","SWE16":"Roony Bardghji","SWE17":"Dejan Kulusevski","SWE18":"Anthony Elanga","SWE19":"Alexander Isak","SWE20":"Viktor Gyökeres","TUN1":"Escudo","TUN2":"Bechir Ben Said","TUN3":"Aymen Dahmen","TUN4":"Yan Valery","TUN5":"Montassar Talbi","TUN6":"Yassine Meriah","TUN7":"Ali Abdi","TUN8":"Dylan Bronn","TUN9":"Ellyes Skhiri","TUN10":"Aissa Laidouni","TUN11":"Ferjani Sassi","TUN12":"Mohamed Ali Ben Romdhane","TUN13":"Foto del equipo","TUN14":"Hannibal Mejbri","TUN15":"Elias Achouri","TUN16":"Elias Saad","TUN17":"Hazem Mastouri","TUN18":"Ismael Gharbi","TUN19":"Sayfallah Ltaief","TUN20":"Naim Sliti","BEL1":"Escudo","BEL2":"Thibaut Courtois","BEL3":"Arthur Theate","BEL4":"Timothy Castagne","BEL5":"Zeno Debast","BEL6":"Brandon Mechele","BEL7":"Maxim De Cuyper","BEL8":"Thomas Meunier","BEL9":"Youri Tielemans","BEL10":"Amadou Onana","BEL11":"Nicolas Raskin","BEL12":"Alexis Saelemaekers","BEL13":"Foto del equipo","BEL14":"Hans Vanaken","BEL15":"Kevin De Bruyne","BEL16":"Jérémy Doku","BEL17":"Charles De Ketelaere","BEL18":"Leandro Trossard","BEL19":"Loïs Openda","BEL20":"Romelu Lukaku","EGY1":"Escudo","EGY2":"Mohamed El Shenawy","EGY3":"Mohamed Hany","EGY4":"Mohamed Hamdy","EGY5":"Yasser Ibrahim","EGY6":"Khaled Sobhi","EGY7":"Ramy Rabia","EGY8":"Hossam Abdelmaguid","EGY9":"Ahmed Fatouh","EGY10":"Marwan Attia","EGY11":"Zizo","EGY12":"Hamdy Fathy","EGY13":"Foto del equipo","EGY14":"Mohamed Lasheen","EGY15":"Emam Ashour","EGY16":"Osama Faisal","EGY17":"Mohamed Salah","EGY18":"Mostafa Mohamed","EGY19":"Trezeguet","EGY20":"Omar Marmoush","IRN1":"Escudo","IRN2":"Alireza Beiranvand","IRN3":"Morteza Pouraliganji","IRN4":"Ehsan Hajsafi","IRN5":"Milad Mohammadi","IRN6":"Shojae Khalilzadeh","IRN7":"Ramin Rezaeian","IRN8":"Hossein Kanaani","IRN9":"Sadegh Moharrami","IRN10":"Saleh Hardani","IRN11":"Saeed Ezatolahi","IRN12":"Saman Ghoddos","IRN13":"Foto del equipo","IRN14":"Omid Noorafkan","IRN15":"Roozbeh Cheshmi","IRN16":"Mohammad Mohebi","IRN17":"Sardar Azmoun","IRN18":"Mehdi Taremi","IRN19":"Alireza Jahanbakhsh","IRN20":"Ali Gholizadeh","NZL1":"Escudo","NZL2":"Max Crocombe Payne","NZL3":"Alex Paulsen","NZL4":"Michael Boxall","NZL5":"Liberato Cacace","NZL6":"Tim Payne","NZL7":"Tyler Bindon","NZL8":"Francis de Vries","NZL9":"Finn Surman","NZL10":"Joe Bell","NZL11":"Sarpreet Singh","NZL12":"Ryan Thomas","NZL13":"Foto del equipo","NZL14":"Matthew Garbett","NZL15":"Marko Stamenić","NZL16":"Ben Old","NZL17":"Chris Wood","NZL18":"Elijah Just","NZL19":"Callum McCowatt","NZL20":"Kosta Barbarouses","ESP1":"Escudo","ESP2":"Unai Simon","ESP3":"Robin Le Normand","ESP4":"Aymeric Laporte","ESP5":"Dean Huijsen","ESP6":"Pedro Porro","ESP7":"Dani Carvajal","ESP8":"Marc Cucurella","ESP9":"Martín Zubimendi","ESP10":"Rodri","ESP11":"Pedri","ESP12":"Fabian Ruiz","ESP13":"Foto del equipo","ESP14":"Mikel Merino","ESP15":"Lamine Yamal","ESP16":"Dani Olmo","ESP17":"Nico Williams","ESP18":"Ferran Torres","ESP19":"Álvaro Morata","ESP20":"Mikel Oyarzabal","CPV1":"Escudo","CPV2":"Vozinha","CPV3":"Logan Costa","CPV4":"Pico","CPV5":"Diney","CPV6":"Steven Moreira","CPV7":"Wagner Pina","CPV8":"Joao Paulo","CPV9":"Yannick Semedo","CPV10":"Kevin Pina","CPV11":"Patrick Andrade","CPV12":"Jamiro Monteiro","CPV13":"Foto del equipo","CPV14":"Deroy Duarte","CPV15":"Garry Rodrigues","CPV16":"Jovane Cabral","CPV17":"Ryan Mendes","CPV18":"Dailon Livramento","CPV19":"Willy Semedo","CPV20":"Bebe","KSA1":"Escudo","KSA2":"Nawaf Alaqidi","KSA3":"Abdulrahman Al-Sanbi","KSA4":"Saud Abdulhamid","KSA5":"Nawaf Bouwashl","KSA6":"Jihad Thakri","KSA7":"Moteb Al-Harbi","KSA8":"Hassan Altambakti","KSA9":"Musab Aljuwayr","KSA10":"Ziyad Aljohani","KSA11":"Abdullah Alkhaibari","KSA12":"Nasser Aldawsari","KSA13":"Foto del equipo","KSA14":"Saleh Abu Alshamat","KSA15":"Marwan Alsahafi","KSA16":"Salem Aldawsari","KSA17":"Abdulrahman Al-Aboud","KSA18":"Feras Akbrikan","KSA19":"Saleh Alshehri","KSA20":"Abdullah Al-Hamdan","URU1":"Escudo","URU2":"Sergio Rochet","URU3":"Santiago Mele","URU4":"Ronald Araujo","URU5":"José María Giménez","URU6":"Sebastian Caceres","URU7":"Mathias Olivera","URU8":"Guillermo Varela","URU9":"Nahitan Nandez","URU10":"Federico Valverde","URU11":"Giorgian De Arrascaeta","URU12":"Rodrigo Bentancur","URU13":"Foto del equipo","URU14":"Manuel Ugarte","URU15":"Nicolás de la Cruz","URU16":"Maxi Araujo","URU17":"Darwin Núñez","URU18":"Federico Viñas","URU19":"Rodrigo Aguirre","URU20":"Facundo Pellistri","FRA1":"Escudo","FRA2":"Mike Maignan","FRA3":"Theo Hernandez","FRA4":"William Saliba","FRA5":"Jules Kounde","FRA6":"Ibrahima Konate","FRA7":"Dayot Upamecano","FRA8":"Lucas Digne","FRA9":"Aurélien Tchouaméni","FRA10":"Eduardo Camavinga","FRA11":"Manu Kone","FRA12":"Adrien Rabiot","FRA13":"Foto del equipo","FRA14":"Michael Olise","FRA15":"Ousmane Dembele","FRA16":"Bradley Barcola","FRA17":"Désiré Doué","FRA18":"Kingsley Coman","FRA19":"Hugo Ekitike","FRA20":"Kylian Mbappe","SEN1":"Escudo","SEN2":"Edouard Mendy","SEN3":"Yehvann Diouf","SEN4":"Moussa Niakhaté","SEN5":"Abdoulaye Seck","SEN6":"Ismail Jakobs","SEN7":"El Hadji Malick Diouf","SEN8":"Kalidou Koulibaly","SEN9":"Idrissa Gana Gueye","SEN10":"Pape Matar Sarr","SEN11":"Pape Gueye","SEN12":"Habib Diarra","SEN13":"Foto del equipo","SEN14":"Lamine Camara","SEN15":"Sadio Mane","SEN16":"Ismaïla Sarr","SEN17":"Boulaye Dia","SEN18":"Iliman Ndiaye","SEN19":"Nicolas Jackson","SEN20":"Krepin Diatta","IRQ1":"Escudo","IRQ2":"Jalal Hassan","IRQ3":"Rebin Sulaka","IRQ4":"Hussein Ali","IRQ5":"Akam Hashem","IRQ6":"Merchas Doski","IRQ7":"Zaid Tahseen","IRQ8":"Manaf Younis","IRQ9":"Zidane Iqbal","IRQ10":"Amir Al-Ammari","IRQ11":"Ibrahim Bayesh","IRQ12":"Ali Jasim","IRQ13":"Foto del equipo","IRQ14":"Youssef Amyn","IRQ15":"Aimar Sher","IRQ16":"Marko Farji","IRQ17":"Osama Rashid","IRQ18":"Ali Al-Hamadi","IRQ19":"Aymen Hussein","IRQ20":"Mohanad Ali","NOR1":"Escudo","NOR2":"Orjan Nyland","NOR3":"Julian Ryerson","NOR4":"Leo Ostigård","NOR5":"Kristoffer Vassbakk Ajer","NOR6":"Marcus Holmgren Pedersen","NOR7":"David Møller Wolfe","NOR8":"Torbjørn Heggem","NOR9":"Morten Thorsby","NOR10":"Martin Ødegaard","NOR11":"Sander Berge","NOR12":"Andreas Schjelderup","NOR13":"Foto del equipo","NOR14":"Patrick Berg","NOR15":"Erling Haaland","NOR16":"Alexander Sørloth","NOR17":"Aron Dønnum","NOR18":"Jorgen Strand Larsen","NOR19":"Antonio Nusa","NOR20":"Oscar Bobb","ARG1":"Escudo","ARG2":"Emiliano Martinez","ARG3":"Nahuel Molina","ARG4":"Cristian Romero","ARG5":"Nicolas Otamendi","ARG6":"Nicolas Tagliafico","ARG7":"Leonardo Balerdi","ARG8":"Enzo Fernandez","ARG9":"Alexis Mac Allister","ARG10":"Rodrigo De Paul","ARG11":"Exequiel Palacios","ARG12":"Leandro Paredes","ARG13":"Foto del equipo","ARG14":"Nico Paz","ARG15":"Franco Mastantuono","ARG16":"Nico Gonzalez","ARG17":"Lionel Messi","ARG18":"Lautaro Martinez","ARG19":"Julian Alvarez","ARG20":"Giuliano Simeone","ALG1":"Escudo","ALG2":"Alexis Guendouz","ALG3":"Ramy Bensebaini","ALG4":"Youcef Atal","ALG5":"Rayan Aït-Nouri","ALG6":"Mohamed Amine Tougai","ALG7":"Aïssa Mandi","ALG8":"Ismael Bennacer","ALG9":"Houssem Aouar","ALG10":"Hicham Boudaoui","ALG11":"Ramiz Zerrouki","ALG12":"Nabil Bentalab","ALG13":"Foto del equipo","ALG14":"Farés Chaibi","ALG15":"Riyad Mahrez","ALG16":"Said Benrahma","ALG17":"Anis Hadj Moussa","ALG18":"Amine Gouiri","ALG19":"Baghdad Bounedjah","ALG20":"Mohammed Amoura","AUT1":"Escudo","AUT2":"Alexander Schlager","AUT3":"Patrick Pentz","AUT4":"David Alaba","AUT5":"Kevin Danso","AUT6":"Philipp Lienhart","AUT7":"Stefan Posch","AUT8":"Phillipp Mwene","AUT9":"Alexander Prass","AUT10":"Xaver Schlager","AUT11":"Marcel Sabitzer","AUT12":"Konrad Laimer","AUT13":"Foto del equipo","AUT14":"Florian Grillitsch","AUT15":"Nicolas Seiwald","AUT16":"Romano Schmid","AUT17":"Patrick Wimmer","AUT18":"Christoph Baumgartner","AUT19":"Michael Gregoritsch","AUT20":"Marko Arnautović","JOR1":"Escudo","JOR2":"Yazeed Abulaila","JOR3":"Ihsan Haddad","JOR4":"Mohammad Abu Hashish","JOR5":"Yazan Al-Arab","JOR6":"Abdallah Nasib","JOR7":"Saleem Obaid","JOR8":"Mohammad Abualnadi","JOR9":"Ibrahim Saadeh","JOR10":"Nizar Al-Rashdan","JOR11":"Noor Al-Rawabdeh","JOR12":"Mohannad Abu Taha","JOR13":"Foto del equipo","JOR14":"Amer Jamous","JOR15":"Musa Al-Taamari","JOR16":"Yazan Al-Naimat","JOR17":"Mahmoud Al-Mardi","JOR18":"Ali Olwan","JOR19":"Mohammad Abu Zrayq","JOR20":"Ibrahim Sabra","POR1":"Escudo","POR2":"Diogo Costa","POR3":"Jose Sa","POR4":"Ruben Dias","POR5":"João Cancelo","POR6":"Diogo Dalot","POR7":"Nuno Mendes","POR8":"Gonçalo Inácio","POR9":"Bernardo Silva","POR10":"Bruno Fernandes","POR11":"Ruben Neves","POR12":"Vitinha","POR13":"Foto del equipo","POR14":"João Neves","POR15":"Cristiano Ronaldo","POR16":"Francisco Trincao","POR17":"João Felix","POR18":"Gonçalo Ramos","POR19":"Pedro Neto","POR20":"Rafael Leão","COD1":"Escudo","COD2":"Lionel Mpasi","COD3":"Aaron Wan-Bissaka","COD4":"Axel Tuanzebe","COD5":"Arthur Masuaku","COD6":"Chancel Mbemba","COD7":"Joris Kayembe","COD8":"Charles Pickel","COD9":"Ngal'ayel Mukau","COD10":"Edo Kayembe","COD11":"Samuel Moutoussamy","COD12":"Noah Sadiki","COD13":"Foto del equipo","COD14":"Théo Bongonda","COD15":"Meschak Elia","COD16":"Yoane Wissa","COD17":"Brian Cipenga","COD18":"Fiston Mayele","COD19":"Cédric Bakambu","COD20":"Nathanaël Mbuku","UZB1":"Escudo","UZB2":"Utkir Yusupov","UZB3":"Farrukh Savfiev","UZB4":"Sherzod Nasrullaev","UZB5":"Umar Eshmurodov","UZB6":"Husniddin Aliqulov","UZB7":"Rustamjon Ashurmatov","UZB8":"Khojiakbar Alijonov","UZB9":"Abdukodir Khusanov","UZB10":"Odiljon Hamrobekov","UZB11":"Otabek Shukurov","UZB12":"Jamshid Iskanderov","UZB13":"Foto del equipo","UZB14":"Azizbek Turgunboev","UZB15":"Khojimat Erkinov","UZB16":"Eldor Shomurodov","UZB17":"Oston Urunov","UZB18":"Jaloliddin Masharipov","UZB19":"Igor Sergeev","UZB20":"Abbosbek Fayzullaev","COL1":"Escudo","COL2":"Camilo Vargas","COL3":"David Ospina","COL4":"Dávinson Sánchez","COL5":"Yerry Mina","COL6":"Daniel Munoz","COL7":"Johan Mojica","COL8":"Jhon Lucumí","COL9":"Santiago Arias","COL10":"Jefferson Lerma","COL11":"Kevin Castaño","COL12":"Richard Rios","COL13":"Foto del equipo","COL14":"James Rodriguez","COL15":"Juan Fernando Quintero","COL16":"Jorge Carrascal","COL17":"Jon Arias","COL18":"Jhon Cordova","COL19":"Luis Suarez","COL20":"Luis Diaz","ENG1":"Escudo","ENG2":"Jordan Pickford","ENG3":"John Stones","ENG4":"Marc Guéhi","ENG5":"Ezri Konsa","ENG6":"Trent Alexander-Arnold","ENG7":"Reece James","ENG8":"Dan Burn","ENG9":"Jordan Henderson","ENG10":"Declan Rice","ENG11":"Jude Bellingham","ENG12":"Cole Palmer","ENG13":"Foto del equipo","ENG14":"Morgan Rogers","ENG15":"Anthony Gordon","ENG16":"Phil Foden","ENG17":"Bukayo Saka","ENG18":"Harry Kane","ENG19":"Marcus Rashford","ENG20":"Ollie Watkins","CRO1":"Escudo","CRO2":"Dominik Livaković","CRO3":"Duje Caleta-Car","CRO4":"Josko Gvardiol","CRO5":"Josip Stanišić","CRO6":"Luka Vušković","CRO7":"Josip Sutalo","CRO8":"Kristijan Jakic","CRO9":"Luka Modrić","CRO10":"Mateo Kovacic","CRO11":"Martin Baturina","CRO12":"Lovro Majer","CRO13":"Foto del equipo","CRO14":"Mario Pasalic","CRO15":"Petar Sucic","CRO16":"Ivan Perišić","CRO17":"Marco Pasalic","CRO18":"Ante Budimir","CRO19":"Andrej Kramarić","CRO20":"Franjo Ivanovic","GHA1":"Escudo","GHA2":"Lawrence Ati Zigi","GHA3":"Tariq Lamptey","GHA4":"Mohammed Salisu","GHA5":"Alidu Seidu","GHA6":"Alexander Djiku","GHA7":"Gideon Mensah","GHA8":"Caleb Yirenkyi","GHA9":"Abdul Issahaku Fatawu","GHA10":"Thomas Partey","GHA11":"Salis Abdul Samed","GHA12":"Kamaldeen Sulemana","GHA13":"Foto del equipo","GHA14":"Mohammed Kudus","GHA15":"Inaki Williams","GHA16":"Jordan Ayew","GHA17":"Andrew Ayew","GHA18":"Joseph Paintsil","GHA19":"Osman Bukari","GHA20":"Antoine Semenyo","PAN1":"Escudo","PAN2":"Orlando Mosquera","PAN3":"Luis Mejia","PAN4":"Fidel Escobar","PAN5":"Andres Andrade","PAN6":"Michael Amir Murillo","PAN7":"Eric Davis","PAN8":"Jose Cordoba","PAN9":"Cesar Blackman","PAN10":"Cristian Martinez","PAN11":"Aníbal Godoy","PAN12":"Adalberto Carrasquilla","PAN13":"Foto del equipo","PAN14":"Édgar Bárcenas","PAN15":"Carlos Harvey","PAN16":"Ismael Díaz","PAN17":"Jose Fajardo","PAN18":"Cecilio Waterman","PAN19":"Jose Luiz Rodriguez","PAN20":"Alberto Quintero"};
+function deburr(s){ try{ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }catch(e){ return String(s).toLowerCase(); } }
+function playerName(code){ return PLAYER[code]||''; }
+const FLAG_ISO={MEX:"mx",RSA:"za",KOR:"kr",CZE:"cz",CAN:"ca",BIH:"ba",QAT:"qa",SUI:"ch",BRA:"br",MAR:"ma",HAI:"ht",SCO:"gb-sct",USA:"us",PAR:"py",AUS:"au",TUR:"tr",GER:"de",CUW:"cw",CIV:"ci",ECU:"ec",NED:"nl",JAP:"jp",SWE:"se",TUN:"tn",BEL:"be",EGY:"eg",IRN:"ir",NZL:"nz",ESP:"es",CPV:"cv",KSA:"sa",URU:"uy",FRA:"fr",SEN:"sn",IRQ:"iq",NOR:"no",ARG:"ar",ALG:"dz",AUT:"at",JOR:"jo",POR:"pt",COD:"cd",UZB:"uz",COL:"co",ENG:"gb-eng",CRO:"hr",GHA:"gh",PAN:"pa"};
+function flagHTML(code, emoji, cls){ const iso=FLAG_ISO[code]; if(!iso) return '<span class="flag">'+(emoji||"")+'</span>'; return '<img class="'+(cls||"flagimg")+'" src="https://flagcdn.com/w40/'+iso+'.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">'; }
 
 /* ---------- state ---------- */
 const KEY="albumMundial2026_v2";
 let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},reveal:true}, r.config||{}); r.counts=r.counts||{}; return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},nick:"",city:"",celebrate:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
 function setCount(c,v){
+  if(cloud.viewOnly) return;
   v=Math.max(0,v|0);
   const t=CODE_TEAM[c];
   const before = t ? teamHave(t.code) : 0;
+  const wasZero = getCount(c)===0;
   if(v===0) delete state.counts[c]; else state.counts[c]=v;
   save();
   if(t){ const after=teamHave(t.code); if(before<20 && after===20) celebrateTeam(t.code, t.name); }
+  if(wasZero && v>=1) maybeCelebrateStar(c);
 }
 function reduceMotion(){ try{ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } }
 function launchConfetti(){
@@ -686,11 +1015,104 @@ function celebrateTeam(code,name){
   }, 80);
 }
 
+/* ---------- ¡Felicidades! cracks ---------- */
+const STAR_FACTS={
+  "POR12":"3º del mundo en el Balón de Oro 2025: el cerebro del PSG en el triplete histórico (Champions, Ligue 1 y Copa de Francia). Mejor mediocampista de la temporada. 🧠",
+  "POR7":"Top 10 del Balón de Oro 2025 y mejor lateral izquierdo del mundo esa temporada; campeón de la Champions con el PSG y MVP de la final de la Nations League con Portugal. 🛡️",
+  "FRA17":"Figura de la final de Champions 2025 con un doblete ante el Inter; subcampeón del Trofeo Kopa al mejor joven y campeón del triplete con el PSG a los 20 años. ✨",
+  "POR14":"Joya del PSG campeón de Europa: 19º en el Balón de Oro 2025 y 3º en el Trofeo Kopa al mejor joven del mundo, con apenas 21 años. 🌟",
+  "FRA15":"Balón de Oro 2025 y Mejor Jugador de la Champions. Lideró el triplete histórico del PSG (su 1ª Champions, Ligue 1 y Copa de Francia) con 35 goles. ⚡🇫🇷",
+  "ARG17":"8 Balones de Oro (récord histórico), campeón del Mundial 2022, 4 Champions League y máximo goleador en la historia del Barcelona (~670 goles). El GOAT. 🐐",
+  "POR15":"5 Balones de Oro, máximo goleador de la historia del fútbol (+900 goles oficiales), 5 Champions League y campeón de la Eurocopa 2016. 🚀",
+  "FRA20":"Campeón del mundo 2018 y hat-trick en la final de 2022; máximo goleador histórico del PSG (~256) y varias veces Bota de Oro. ⚡",
+  "NOR15":"Récord de goles en una temporada de Premier League (36) y triplete (Liga, Copa y Champions) con el City en 2023. Una máquina. 🤖",
+  "BRA14":"Premio The Best de la FIFA 2024, campeón de la Champions 2024 (marcó en la final) y de LaLiga con el Real Madrid. 🇧🇷",
+  "ESP15":"Goleador más joven en la historia de la Eurocopa (16 años), Trofeo Kopa al mejor joven y subcampeón del Balón de Oro 2025. 🤯",
+  "ESP10":"¡Balón de Oro 2024! Campeón y mejor jugador de la Eurocopa 2024 y campeón de la Champions 2023 con el City. 🏆",
+  "MAR4":"6º en el Balón de Oro 2025 (récord para Marruecos), campeón de la Champions con el PSG y semifinalista del Mundial 2022. ¡11 goles siendo lateral! 🚀",
+  "EGY17":"Varias veces Bota de Oro de la Premier, campeón de la Champions 2019 y de la Premier; máximo goleador africano en la historia de la liga inglesa. 👑",
+  "CRO9":"Balón de Oro 2018 (cortó la racha de Messi y Cristiano), 6 Champions League con el Real Madrid y finalista del Mundial 2018. 👑",
+  "BEL15":"Dos veces Jugador del Año de la Premier League, campeón de la Champions del triplete con el City y rey de las asistencias. 🎩",
+  "COL14":"Bota de Oro (máximo goleador) del Mundial 2014 y mejor jugador de la Copa América 2024. El 10 mágico de Colombia. 🎩",
+  "ENG18":"Máximo goleador histórico de la selección de Inglaterra y del Tottenham; Bota de Oro del Mundial 2018 y goleador de la Bundesliga con el Bayern. 🎯",
+  "NED3":"Mejor defensa del mundo (2º en el Balón de Oro 2019), campeón de la Champions 2019 y de la Premier con el Liverpool. 🧱",
+  "ESP11":"Dos veces Trofeo Kopa al mejor joven del mundo y campeón de LaLiga con el Barça. El cerebro del equipo. 🎯",
+  "ENG16":"Jugador del Año de la Premier League 2023-24 y campeón del triplete con el City. 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "ENG17":"Estrella del Arsenal y de Inglaterra, finalista de dos Eurocopas; imparable por la banda derecha. 🚀",
+  "GER15":"Joya del Bayern, regateador letal y goleador; varias veces campeón de la Bundesliga siendo muy joven. ✨",
+  "GER11":"Cerebro del Leverkusen que salió campeón INVICTO de la Bundesliga 2024; fichó por el Liverpool por +100 M€. 🧠",
+  "ENG12":"8º en el Balón de Oro 2025; explotó en el Chelsea y fue figura del Mundial de Clubes (doblete en la final). ❄️",
+  "URU10":"Motor del Real Madrid, campeón de Champions y LaLiga; pulmón infinito y golazos de larga distancia. 🚂",
+  "ARG18":"Capocannoniere (goleador) de la Serie A con el Inter y campeón del mundo 2022 con Argentina. 🐂",
+  "ARG19":"Campeón del mundo 2022 y del triplete con el City; killer del área, hoy estrella del Atlético. 🦊",
+  "NOR10":"Capitán del Arsenal; crack creativo con una zurda mágica que casi lleva a los Gunners al título. 🎩",
+  "POR9":"Mago del City: múltiple campeón de la Premier y campeón de la Champions del triplete 2023. 🪄",
+  "POR10":"Capitán del Manchester United y de Portugal; rey de las asistencias y goles desde el mediocampo, máximo goleador del United varias temporadas. 🅰️",
+  "BRA15":"Especialista en noches mágicas de Champions; campeón de Europa 2024 y de LaLiga con el Real Madrid. 🌟",
+  "GER10":"Capitán del Bayern y de Alemania; multicampeón de la Bundesliga y campeón de la Champions 2020. ⚙️",
+  "ARG9":"Campeón del mundo 2022 y campeón de la Premier League con el Liverpool; mediocampista todoterreno. 🏆",
+  "ARG8":"Mejor Jugador Joven del Mundial 2022, campeón del mundo y del Mundial de Clubes 2025 con el Chelsea. 🌟",
+  "CRO4":"Central-crack del City: rápido, fuerte y goleador; campeón de la Premier y figura del Mundial 2022. 🧱",
+  "POR20":"Extremo explosivo, campeón de la Serie A con el Milan (MVP de la liga); pura velocidad y desborde. ⚡",
+  "SWE19":"Delantero letal; brilló en el Newcastle y fichó por el Liverpool en un traspaso récord. 🎯",
+  "FRA4":"Muralla del Arsenal y de Francia; uno de los mejores centrales del mundo. 🧱",
+  "URU11":"Mejor jugador de la Copa Libertadores con Flamengo; el 10 mágico de Uruguay. 🏆",
+  "SEN16":"Extremo explosivo de Senegal; goles decisivos en Inglaterra y figura de su selección. ⚡",
+  "JAP20":"Goleador de la Eredivisie (liga de Países Bajos) con +25 goles en una temporada. 👟",
+  "KOR18":"Bota de Oro de la Premier 2021-22, capitán de Corea y leyenda del Tottenham con +170 goles. 🇰🇷",
+  "BEL2":"Mejor portero del mundo (Premio Yashin), héroe de la final de Champions 2022 y campeón con el Real Madrid. 🧤",
+  "ENG10":"Pulmón del Arsenal y de Inglaterra; fichaje récord británico, lo gana todo en el mediocampo. 💪",
+  "ARG2":"El 'Dibu': héroe en los penales del Mundial 2022, dos veces mejor portero del mundo (Guante de Oro) y bicampeón de América. 🧤",
+  "ENG11":"Figura del Real Madrid: campeón de la Champions y de LaLiga, decisivo en su primera temporada con goles clave. ⭐"
+};
+const STAR_PROB="📦 Dato: una lámina puntual sale en ~1 de cada 140 sobres (hay 980 distintas y cada sobre trae 7). ¡Por eso se celebra!";
+const EXTRA_PROB="🤯 Rareza nivel dios: las Extra Stickers (foil) salen ~1 cada 100 sobres.";
+let _starQueue=[], _starShowing=false;
+function maybeCelebrateStar(code){
+  if(!state.config.celebrate) return;
+  let d=null;
+  if(STAR_FACTS[code]) d={kind:"star",code};
+  else if(code[0]==="X") d={kind:"extra",code};
+  if(!d) return;
+  _starQueue.push(d);
+  if(!_starShowing) showNextStar();
+}
+function showNextStar(){
+  const ov=document.getElementById("ovStar"); if(!ov){ _starShowing=false; _starQueue=[]; return; }
+  if(!_starQueue.length){ _starShowing=false; return; }
+  _starShowing=true;
+  const d=_starQueue.shift();
+  let name,sub,fact,prob;
+  if(d.kind==="extra"){
+    const m=d.code.match(/X(\d+)([A-Z])/);
+    name=(m && state.config.extraNames["p"+m[1]]) || "Extra Sticker";
+    const col=EXTRA_COLORS.find(c=>m && c[0]===m[2]);
+    sub="✨ Foil de leyenda"+(col?" · "+col[1]:"");
+    fact="¡Una de las láminas más difíciles de todo el álbum!"; prob=EXTRA_PROB;
+  } else {
+    name=playerName(d.code)||d.code;
+    const t=CODE_TEAM[d.code], pos=playerPos(d.code);
+    sub=(t?(t.flag+" "+t.name):"")+(pos?" · "+pos:"");
+    fact=STAR_FACTS[d.code]||""; prob=STAR_PROB;
+  }
+  document.getElementById("starName").textContent=name;
+  document.getElementById("starTeam").textContent=sub;
+  const tierEl=document.getElementById("starTier");
+  if(tierEl){ const tk=(d.kind!=="extra")&&CRACK_TIER[d.code]; const tier=tk&&TIERS.find(t=>t.key===tk); if(tier){ tierEl.textContent=tier.icon+" Tier "+tier.name; tierEl.style.background=tier.color; tierEl.style.display="inline-block"; } else tierEl.style.display="none"; }
+  const valEl=document.getElementById("starValue");
+  if(valEl){ const v=(d.kind==="extra")?"":playerValue(d.code); valEl.textContent=v; valEl.style.display=v?"block":"none"; }
+  document.getElementById("starFact").textContent=fact;
+  document.getElementById("starProb").textContent=prob;
+  launchConfetti();
+  ov.classList.add("show");
+}
+function closeStar(){ if(!_starShowing) return; _starShowing=false; const ov=document.getElementById("ovStar"); if(ov) ov.classList.remove("show"); setTimeout(showNextStar,260); }
+
 /* ---------- code parsing ---------- */
 function normalize(raw){
   let s=raw.toUpperCase().replace(/[^A-Z0-9]/g,""); if(!s) return null;
   if(s==="00") return state.config.specials?"00":null;
-  let m=s.match(/^FW(\d{1,2})$/); if(m){ const c="FW"+parseInt(m[1],10); return (state.config.specials&&VALID_SPECIAL.has(c))?c:null; }
+  let m=s.match(/^FWC?(\d{1,2})$/); if(m){ const c="FWC"+parseInt(m[1],10); return (state.config.specials&&VALID_SPECIAL.has(c))?c:null; }
   m=s.match(/^([A-Z]{3})0*(\d{1,2})$/); if(m){ const c=m[1]+parseInt(m[2],10); return VALID_TEAM.has(c)?c:null; }
   return null;
 }
@@ -699,62 +1121,230 @@ function findCodes(text){
   const push=c=>{ if(c&&!seen.has(c)){ seen.add(c); out.push(c); } };
   let m; const reTeam=/([A-Z]{3})\s*[-–—]?\s*0*(\d{1,2})/g;
   while((m=reTeam.exec(up))){ const c=m[1]+parseInt(m[2],10); if(VALID_TEAM.has(c)) push(c); }
-  const reFW=/F\s*W\s*[-–—]?\s*0*(\d{1,2})/g;
-  while((m=reFW.exec(up))){ const c="FW"+parseInt(m[1],10); if(state.config.specials&&VALID_SPECIAL.has(c)) push(c); }
+  const reFW=/F\s*W\s*C?\s*[-–—]?\s*0*(\d{1,2})/g;
+  while((m=reFW.exec(up))){ const c="FWC"+parseInt(m[1],10); if(state.config.specials&&VALID_SPECIAL.has(c)) push(c); }
   return out;
 }
 
 /* ---------- rendering ---------- */
 const main=document.getElementById("main");
-let currentFilter="all", searchTerm="", sortMode="group";
+let currentFilter="all", searchTerm="", sortMode="group", clubCountry="all";
 function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
-function paintCell(d,code,label){
+function buildCell(code,label,opts){
+  opts=opts||{};
   const n=getCount(code),st=cellState(code);
-  const isTeam=!!CODE_TEAM[code], hidden=d.classList.contains("hide");
-  d.className="cell"+(st===1?" have":st===2?" dup":"")+((st>=1&&isTeam)?" face":"")+(hidden?" hide":"");
-  d.innerHTML="";
-  if(st>=1 && isTeam){
-    d.style.setProperty("--jersey", TEAM_COLOR[CODE_TEAM[code].code]||"#0067B9");
-    d.insertAdjacentHTML("beforeend", playerAvatar(code));
-    const num=document.createElement("span"); num.className="cnum"; num.textContent=label; d.appendChild(num);
-  } else { d.textContent=label; }
+  const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.textContent=label;
+  const _pn=playerName(code); if(_pn) d.title=_pn;
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
-}
-function buildCell(code,label){
-  const d=document.createElement("div"); d.dataset.code=code; d.dataset.label=label;
-  paintCell(d,code,label);
+  if(opts.viewer){ d.addEventListener("click",()=>openEditor(code)); return d; }
   let lp=false, lpTimer=null;
+  const quickEdit=(delta)=>{ const cur=getCount(code); setCount(code, Math.max(0,cur+delta)); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); const m=getCount(code); toast(delta>0 ? (displayCode(code)+(m>1?" · repetida ×"+m:" ✓ agregada")) : (m>0?(displayCode(code)+" −1 (×"+m+")"):(displayCode(code)+" quitada"))); };
   d.addEventListener("touchstart",()=>{ lp=false; lpTimer=setTimeout(()=>{ lp=true; openEditor(code); },450); },{passive:true});
   d.addEventListener("touchend",()=>clearTimeout(lpTimer));
   d.addEventListener("touchmove",()=>clearTimeout(lpTimer));
-  d.addEventListener("contextmenu",e=>{ e.preventDefault(); openEditor(code); });
+  // click derecho: simple = editor · doble = −1 (atajo)
+  d.addEventListener("contextmenu",e=>{ e.preventDefault();
+    if(d._ctxT){ clearTimeout(d._ctxT); d._ctxT=null; quickEdit(-1); return; }
+    d._ctxT=setTimeout(()=>{ d._ctxT=null; openEditor(code); }, 260);
+  });
+  // click izquierdo: simple = marcar/desmarcar (o editor si ya es repetida) · doble = +1 (atajo)
   d.addEventListener("click",()=>{
     if(lp){ lp=false; return; }                 // fue mantener-apretado: ya abrió el editor
-    const cur=getCount(code);
-    if(cur>=2){ openEditor(code); return; }      // repetidas: abre el editor para no borrarlas sin querer
-    setCount(code, cur===0?1:0);                 // toca para marcar / desmarcar
-    refreshCellInDom(code); updateStats();
-    if(cur===0) showReveal(code);                // ¡desbloqueaste! muestra la carita
-    if(currentFilter!=="all") render();
+    if(d._clkT){ clearTimeout(d._clkT); d._clkT=null; quickEdit(1); return; }  // doble click: +1
+    d._clkT=setTimeout(()=>{ d._clkT=null;
+      const cur=getCount(code);
+      if(cur>=2){ openEditor(code); return; }    // repetidas: abre el editor para no borrarlas sin querer
+      setCount(code, cur===0?1:0);               // toca para marcar / desmarcar
+      refreshCellInDom(code); updateStats();
+      if(currentFilter!=="all") render();
+    }, 260);
   });
   return d;
 }
 function makeTeam(code,name,flag,term){
-  const matchTeam=!term||name.toLowerCase().includes(term)||code.toLowerCase().includes(term);
+  const dterm = term ? deburr(term) : "";
+  const teamHit = !dterm || deburr(name).includes(dterm) || code.toLowerCase().includes(dterm);
+  let playerHit=false;
+  if(dterm && !teamHit){ for(let i=1;i<=20;i++){ const pn=PLAYER[code+i]; if(pn && deburr(pn).includes(dterm)){ playerHit=true; break; } } }
+  const matchTeam = !term || teamHit || playerHit;
   const accent=TEAM_COLOR[code]||"#0067B9";
   const team=document.createElement("div"); team.className="team"; team.style.setProperty("--accent",accent);
   let have=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) have++;
   const pct=Math.round(have/20*100);
   const th=document.createElement("div"); th.className="team-h";
-  th.innerHTML='<span class="flag">'+flag+'</span><div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  th.innerHTML=flagHTML(code, flag)+'<div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
   team.appendChild(th);
   const cells=document.createElement("div"); cells.className="cells"; let vis=0;
-  for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i)); const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
+  for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i));
+    const isHit = dterm && !teamHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm);
+    if(isHit) cell.classList.add("hit");
+    const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
   team.appendChild(cells); if(vis===0) team.classList.add("hide");
   return team;
 }
+/* Álbum por club: jugadores del álbum agrupados por club (plantillas 2025-26). Solo lectura. */
+const CLUB_COUNTRIES=[
+ {key:"ENG", name:"Inglaterra", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+ {key:"ESP", name:"España", flag:"🇪🇸"},
+ {key:"ITA", name:"Italia", flag:"🇮🇹"},
+ {key:"GER", name:"Alemania", flag:"🇩🇪"},
+ {key:"FRA", name:"Francia", flag:"🇫🇷"},
+ {key:"POR", name:"Portugal", flag:"🇵🇹"},
+ {key:"NED", name:"Países Bajos", flag:"🇳🇱"},
+ {key:"SUR", name:"Sudamérica", flag:"🌎"},
+ {key:"SAU", name:"Arabia Saudita", flag:"🇸🇦"}
+];
+const CLUBS=[
+ {name:"Real Madrid", country:"ESP", color:"#1D3461", codes:["FRA20","BRA14","BRA15","ENG11","FRA10","FRA9","BRA5","URU10","BEL2","GER6","ESP7","ESP5","TUR14","ENG6","ARG15"]},
+ {name:"FC Barcelona", country:"ESP", color:"#A50044", codes:["ESP15","ESP11","BRA19","ESP18","ESP16","URU4","NED14","FRA5"]},
+ {name:"Atlético de Madrid", country:"ESP", color:"#CB3524", codes:["ARG19","ARG20","ESP3","ARG3","NOR16"]},
+ {name:"Athletic Club", country:"ESP", color:"#EE2523", codes:["ESP17","GHA15"]},
+ {name:"Real Sociedad", country:"ESP", color:"#0067B1", codes:["ESP20","JAP12"]},
+ {name:"Villarreal", country:"ESP", color:"#005187", codes:["GHA10","SEN11"]},
+ {name:"Manchester City", country:"ENG", color:"#6CABDD", codes:["NOR15","ENG16","ESP10","POR9","POR4","BEL16","CRO4","EGY20","NED10","ALG5"]},
+ {name:"Arsenal", country:"ENG", color:"#EF0107", codes:["ENG17","ENG10","NOR10","BRA6","BRA18","FRA4","NED5","GER17","SWE20","ESP9"]},
+ {name:"Liverpool", country:"ENG", color:"#C8102E", codes:["EGY17","NED3","NED20","ARG9","NED11","FRA6","GER11","FRA19","SWE19","NED8","SCO6"]},
+ {name:"Chelsea", country:"ENG", color:"#034694", codes:["ENG12","ARG8","ESP8","ECU9","ENG7","BRA16","POR19","BRA20"]},
+ {name:"Tottenham", country:"ENG", color:"#132257", codes:["ARG4","URU12","NED4","SEN10","SWE8","SWE17","NED15","GHA14"]},
+ {name:"Aston Villa", country:"ENG", color:"#670E36", codes:["ARG2","ENG5","FRA8","BEL9","BEL10","ENG14","ENG20"]},
+ {name:"Brighton", country:"ENG", color:"#0057B8", codes:["NED2","NED9","BEL7","SWE11","PAR10","PAR15"]},
+ {name:"Manchester United", country:"ENG", color:"#DA291C", codes:["POR10","POR6","BRA10","BRA17","CIV15"]},
+ {name:"Crystal Palace", country:"ENG", color:"#1B458F", codes:["ENG4","USA3","JAP11","SEN16"]},
+ {name:"West Ham", country:"ENG", color:"#7A263A", codes:["BRA9","CZE12","MEX10","COD3"]},
+ {name:"Newcastle", country:"ENG", color:"#101010", codes:["BRA11","ENG15","ENG8"]},
+ {name:"Inter", country:"ITA", color:"#0068A8", codes:["ARG18","TUR11","NED6","CRO15"]},
+ {name:"Juventus", country:"ITA", color:"#000000", codes:["TUR20","USA10","NED12","CAN20"]},
+ {name:"Napoli", country:"ITA", color:"#12A0D7", codes:["BEL15","SCO11","BEL20","SCO12"]},
+ {name:"AC Milan", country:"ITA", color:"#FB090B", codes:["USA16","FRA2","POR20"]},
+ {name:"Roma", country:"ITA", color:"#8E1F2F", codes:["CIV6","FRA11","BRA8"]},
+ {name:"Atalanta", country:"ITA", color:"#1D71B8", codes:["BEL17","CRO14","BIH4"]},
+ {name:"Bayern Múnich", country:"GER", color:"#DC052D", codes:["GER10","GER15","GER14","GER16","ENG18","FRA7","FRA14","AUT12","KOR4","COL20","GER3"]},
+ {name:"RB Leipzig", country:"GER", color:"#DD0741", codes:["GER4","AUT10","AUT15","AUT18","NOR19"]},
+ {name:"Borussia Dortmund", country:"GER", color:"#111111", codes:["SUI2","GER5","GER7","GER12","GER19"]},
+ {name:"Eintracht Frankfurt", country:"GER", color:"#E1000F", codes:["SWE9","TUR17","JAP14"]},
+ {name:"PSG", country:"FRA", color:"#004170", codes:["POR12","POR7","POR14","FRA17","FRA16","FRA15","MAR4","ESP12","POR18","BRA4","ECU6"]},
+ {name:"Mónaco", country:"FRA", color:"#CE1126", codes:["SUI10","JAP16","SEN14","MAR12","USA20"]},
+ {name:"Marsella", country:"FRA", color:"#0092D0", codes:["ARG7","ALG18"]},
+ {name:"Benfica", country:"POR", color:"#E20E0E", codes:["ARG5","TUR12","TUR19","NOR12","COL12"]},
+ {name:"Sporting CP", country:"POR", color:"#1A7A4C", codes:["POR8","CIV9","POR16","URU16","BEL5"]},
+ {name:"FC Porto", country:"POR", color:"#0046A8", codes:["POR2","CAN10"]},
+ {name:"PSV", country:"NED", color:"#ED1C24", codes:["MAR15","CRO16","USA18","CUW3"]},
+ {name:"Feyenoord", country:"NED", color:"#C8102E", codes:["ALG17","JAP20"]},
+ {name:"Flamengo", country:"SUR", color:"#C52613", codes:["URU11","URU15","URU8","BRA7"]},
+ {name:"Boca Juniors", country:"SUR", color:"#0A2472", codes:["ARG12"]},
+ {name:"Al-Hilal", country:"SAU", color:"#1B458F", codes:["FRA3","POR5","POR11","SEN8","MAR2","KSA16"]},
+ {name:"Al-Nassr", country:"SAU", color:"#1A3A6B", codes:["POR15","POR17","FRA18","SEN15","BRA3"]}
+];
+/* sigla + posición por jugador (posiciones aproximadas) */
+const CLUB_ABBR={"Real Madrid": "RMA", "FC Barcelona": "BAR", "Atlético de Madrid": "ATM", "Athletic Club": "ATH", "Real Sociedad": "RSO", "Villarreal": "VIL", "Manchester City": "MCI", "Arsenal": "ARS", "Liverpool": "LIV", "Chelsea": "CHE", "Tottenham": "TOT", "Aston Villa": "AVL", "Brighton": "BHA", "Manchester United": "MUN", "Crystal Palace": "CRY", "West Ham": "WHU", "Newcastle": "NEW", "Inter": "INT", "Juventus": "JUV", "Napoli": "NAP", "AC Milan": "MIL", "Roma": "ROM", "Atalanta": "ATA", "Bayern Múnich": "BAY", "RB Leipzig": "RBL", "Borussia Dortmund": "DOR", "Eintracht Frankfurt": "SGE", "PSG": "PSG", "Mónaco": "ASM", "Marsella": "OM", "Benfica": "SLB", "Sporting CP": "SCP", "FC Porto": "FCP", "PSV": "PSV", "Feyenoord": "FEY", "Flamengo": "FLA", "Boca Juniors": "BOC", "Al-Hilal": "HIL", "Al-Nassr": "NAS"};
+const POS={"FRA20": "Delantero", "BRA14": "Delantero", "BRA15": "Delantero", "ENG11": "Mediocampista", "FRA10": "Mediocampista", "FRA9": "Mediocampista", "BRA5": "Defensa", "URU10": "Mediocampista", "BEL2": "Portero", "GER6": "Defensa", "ESP7": "Defensa", "ESP5": "Defensa", "TUR14": "Mediocampista", "ENG6": "Defensa", "ARG15": "Delantero", "ESP15": "Delantero", "ESP11": "Mediocampista", "BRA19": "Delantero", "ESP18": "Delantero", "ESP16": "Mediocampista", "URU4": "Defensa", "NED14": "Mediocampista", "FRA5": "Defensa", "ARG19": "Delantero", "ARG20": "Delantero", "ESP3": "Defensa", "ARG3": "Defensa", "NOR16": "Delantero", "ESP17": "Delantero", "GHA15": "Delantero", "ESP20": "Delantero", "JAP12": "Delantero", "GHA10": "Mediocampista", "SEN11": "Mediocampista", "NOR15": "Delantero", "ENG16": "Mediocampista", "ESP10": "Mediocampista", "POR9": "Mediocampista", "POR4": "Defensa", "BEL16": "Delantero", "CRO4": "Defensa", "EGY20": "Delantero", "NED10": "Mediocampista", "ALG5": "Defensa", "ENG17": "Delantero", "ENG10": "Mediocampista", "NOR10": "Mediocampista", "BRA6": "Defensa", "BRA18": "Delantero", "FRA4": "Defensa", "NED5": "Defensa", "GER17": "Delantero", "SWE20": "Delantero", "ESP9": "Mediocampista", "EGY17": "Delantero", "NED3": "Defensa", "NED20": "Delantero", "ARG9": "Mediocampista", "NED11": "Mediocampista", "FRA6": "Defensa", "GER11": "Mediocampista", "FRA19": "Delantero", "SWE19": "Delantero", "NED8": "Defensa", "SCO6": "Defensa", "ENG12": "Mediocampista", "ARG8": "Mediocampista", "ESP8": "Defensa", "ECU9": "Mediocampista", "ENG7": "Defensa", "BRA16": "Delantero", "POR19": "Delantero", "BRA20": "Delantero", "ARG4": "Defensa", "URU12": "Mediocampista", "NED4": "Defensa", "SEN10": "Mediocampista", "SWE8": "Mediocampista", "SWE17": "Mediocampista", "NED15": "Mediocampista", "GHA14": "Delantero", "ARG2": "Portero", "ENG5": "Defensa", "FRA8": "Defensa", "BEL9": "Mediocampista", "BEL10": "Mediocampista", "ENG14": "Mediocampista", "ENG20": "Delantero", "NED2": "Portero", "NED9": "Defensa", "BEL7": "Defensa", "SWE11": "Mediocampista", "PAR10": "Mediocampista", "PAR15": "Delantero", "POR10": "Mediocampista", "POR6": "Defensa", "BRA10": "Mediocampista", "BRA17": "Delantero", "CIV15": "Delantero", "ENG4": "Defensa", "USA3": "Defensa", "JAP11": "Mediocampista", "SEN16": "Delantero", "BRA9": "Mediocampista", "CZE12": "Mediocampista", "MEX10": "Mediocampista", "COD3": "Defensa", "BRA11": "Mediocampista", "ENG15": "Delantero", "ENG8": "Defensa", "ARG18": "Delantero", "TUR11": "Mediocampista", "NED6": "Defensa", "CRO15": "Mediocampista", "TUR20": "Delantero", "USA10": "Mediocampista", "NED12": "Mediocampista", "CAN20": "Delantero", "BEL15": "Mediocampista", "SCO11": "Mediocampista", "BEL20": "Delantero", "SCO12": "Mediocampista", "USA16": "Delantero", "FRA2": "Portero", "POR20": "Delantero", "CIV6": "Defensa", "FRA11": "Mediocampista", "BRA8": "Defensa", "BEL17": "Delantero", "CRO14": "Mediocampista", "BIH4": "Defensa", "GER10": "Mediocampista", "GER15": "Mediocampista", "GER14": "Mediocampista", "GER16": "Delantero", "ENG18": "Delantero", "FRA7": "Defensa", "FRA14": "Delantero", "AUT12": "Defensa", "KOR4": "Defensa", "COL20": "Delantero", "GER3": "Defensa", "GER4": "Defensa", "AUT10": "Mediocampista", "AUT15": "Mediocampista", "AUT18": "Mediocampista", "NOR19": "Delantero", "SUI2": "Portero", "GER5": "Defensa", "GER7": "Defensa", "GER12": "Mediocampista", "GER19": "Delantero", "SWE9": "Mediocampista", "TUR17": "Mediocampista", "JAP14": "Delantero", "POR12": "Mediocampista", "POR7": "Defensa", "POR14": "Mediocampista", "FRA17": "Delantero", "FRA16": "Delantero", "FRA15": "Delantero", "MAR4": "Defensa", "ESP12": "Mediocampista", "POR18": "Delantero", "BRA4": "Defensa", "ECU6": "Defensa", "SUI10": "Mediocampista", "JAP16": "Delantero", "SEN14": "Mediocampista", "MAR12": "Delantero", "USA20": "Delantero", "ARG7": "Defensa", "ALG18": "Delantero", "ARG5": "Defensa", "TUR12": "Mediocampista", "TUR19": "Delantero", "NOR12": "Delantero", "COL12": "Mediocampista", "POR8": "Defensa", "CIV9": "Defensa", "POR16": "Delantero", "URU16": "Defensa", "BEL5": "Defensa", "POR2": "Portero", "CAN10": "Mediocampista", "MAR15": "Mediocampista", "CRO16": "Delantero", "USA18": "Delantero", "CUW3": "Defensa", "ALG17": "Delantero", "JAP20": "Delantero", "URU11": "Mediocampista", "URU15": "Mediocampista", "URU8": "Defensa", "BRA7": "Defensa", "ARG12": "Mediocampista", "FRA3": "Defensa", "POR5": "Defensa", "POR11": "Mediocampista", "SEN8": "Defensa", "MAR2": "Portero", "KSA16": "Delantero", "POR15": "Delantero", "POR17": "Delantero", "FRA18": "Delantero", "SEN15": "Delantero", "BRA3": "Portero"};
+const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool": "5°", "Chelsea": "10°", "Tottenham": "17°", "Aston Villa": "4° · 🏆 Europa League", "Brighton": "8°", "Manchester United": "3°", "Crystal Palace": "15° · 🏆 Conference", "West Ham": "⬇️ Descendió", "Newcastle": "12°", "Real Madrid": "2°", "FC Barcelona": "🏆 Campeón", "Atlético de Madrid": "4°", "Athletic Club": "12°", "Real Sociedad": "10° · 🏆 Copa del Rey", "Villarreal": "3°", "Inter": "🏆 Campeón", "Juventus": "Europa League", "Napoli": "Champions League", "AC Milan": "Europa League", "Roma": "Champions League", "Atalanta": "Conference League", "Bayern Múnich": "🏆 Campeón", "RB Leipzig": "Champions League", "Borussia Dortmund": "Champions League", "Eintracht Frankfurt": "Bundesliga", "PSG": "🏆 Campeón · 🏆 Champions", "Mónaco": "Conference League", "Marsella": "5°", "Benfica": "3°", "Sporting CP": "2°", "FC Porto": "🏆 Campeón", "PSV": "🏆 Campeón", "Feyenoord": "2°", "Al-Hilal": "2° (invicto)", "Al-Nassr": "🏆 Campeón", "Flamengo": "🏆 Campeón Libertadores", "Boca Juniors": "Liga Profesional"};
+function playerPos(code){ return POS[code]||''; }
+const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
+function playerStat(code){ return PLAYER_STATS[code]||''; }
+const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 180 M€","ENG11":"≈ 180 M€","NOR15":"≈ 180 M€","BRA14":"≈ 170 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","URU10":"≈ 130 M€","ESP10":"≈ 120 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","ENG12":"≈ 110 M€","ENG16":"≈ 100 M€","POR12":"≈ 90 M€","FRA17":"≈ 90 M€","POR14":"≈ 90 M€","FRA15":"≈ 90 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","NOR10":"≈ 90 M€","BRA15":"≈ 90 M€","POR7":"≈ 80 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","MAR4":"≈ 75 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 65 M€","GER10":"≈ 50 M€","POR10":"≈ 45 M€","POR9":"≈ 45 M€","EGY17":"≈ 45 M€","NED3":"≈ 35 M€","SEN16":"≈ 30 M€","BEL15":"≈ 28 M€","ARG2":"≈ 25 M€","BEL2":"≈ 25 M€","KOR18":"≈ 25 M€","JAP20":"≈ 20 M€","ARG17":"≈ 18 M€","URU11":"≈ 15 M€","POR15":"≈ 12 M€","CRO9":"≈ 4 M€","COL14":"≈ 3 M€"};
+function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
+
+/* ---------- tiers de cracks ---------- */
+const TIERS=[
+  {key:"goat", name:"GOAT", icon:"🐐", color:"#16181D", sub:"Los 2 más grandes"},
+  {key:"diamante", name:"Diamante", icon:"💎", color:"#2EC5E0", sub:"Fuera de serie"},
+  {key:"oro", name:"Oro", icon:"🥇", color:"#F2A20C", sub:"Élite mundial"},
+  {key:"plata", name:"Plata", icon:"🥈", color:"#9AA7B4", sub:"Grandes figuras"},
+  {key:"bronce", name:"Bronce", icon:"🥉", color:"#C77B3B", sub:"Buenos cracks"}
+];
+const CRACK_TIER={
+  "ARG17":"goat","POR15":"goat",
+  "FRA20":"diamante","NOR15":"diamante","ESP15":"diamante","BRA14":"diamante","FRA15":"diamante","POR12":"diamante",
+  "ESP10":"oro","MAR4":"oro","EGY17":"oro","CRO9":"oro","BEL15":"oro","ENG18":"oro","NED3":"oro","KOR18":"oro","ESP11":"oro","ARG18":"oro","POR7":"oro",
+  "ENG11":"plata","ENG16":"plata","ENG17":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG19":"plata","NOR10":"plata","ENG10":"plata","BRA15":"plata","BEL2":"plata","COL14":"plata","FRA17":"plata","POR14":"plata",
+  "POR9":"bronce","POR10":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","FRA4":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce","ARG2":"bronce"
+};
+function buildCrackCard(code, tier){
+  const got=getCount(code)>0, meta=CODE_TEAM[code];
+  const card=document.createElement("div"); card.className="crack-card"+(got?" got":" locked"); card.style.setProperty("--tc",tier.color); card.dataset.code=code;
+  const nm=playerName(code)||code;
+  card.innerHTML='<div class="crack-flag">'+(meta?flagHTML(meta.code,meta.flag,"crackflag"):'<span class="flag">⭐</span>')+'</div>'
+    +'<div class="crack-nm">'+escHTML(nm)+'</div>'
+    +'<div class="crack-state">'+(got?'✓ conseguido':'🔒 te falta')+'</div>';
+  card.addEventListener("click",()=>openEditor(code));
+  return card;
+}
+function openCracks(){
+  const all=Object.keys(STAR_FACTS);
+  const got=all.filter(c=>getCount(c)>0).length;
+  document.getElementById("cracksSum").innerHTML='Llevas <b>'+got+'</b> de <b>'+all.length+'</b> cracks 🔥';
+  const body=document.getElementById("cracksBody"); body.innerHTML="";
+  TIERS.forEach(t=>{
+    const codes=all.filter(c=>CRACK_TIER[c]===t.key);
+    if(!codes.length) return;
+    codes.sort((a,b)=>{ const ga=getCount(a)>0?0:1, gb=getCount(b)>0?0:1; if(ga!==gb) return ga-gb; return (playerName(a)||a).localeCompare(playerName(b)||b,"es"); });
+    const gt=codes.filter(c=>getCount(c)>0).length;
+    const sec=document.createElement("div"); sec.className="tier-sec";
+    const stars=t.key==="goat" ? "👑" : "★".repeat({diamante:5,oro:4,plata:3,bronce:2}[t.key]||0);
+    sec.innerHTML='<div class="tier-h" style="--tc:'+t.color+'"><span class="tier-ic">'+t.icon+'</span><span class="tier-nm">'+t.name+'</span><span class="tier-stars">'+stars+'</span><span class="tier-sub">'+t.sub+'</span><span class="tier-ct">'+gt+'/'+codes.length+'</span></div>';
+    const grid=document.createElement("div"); grid.className="crack-grid";
+    codes.forEach(c=>grid.appendChild(buildCrackCard(c,t)));
+    sec.appendChild(grid); body.appendChild(sec);
+  });
+  document.getElementById("ovCracks").classList.add("show");
+}
+function makeClub(club, term){
+  const dterm = term ? deburr(term) : "";
+  const nameHit = !dterm || deburr(club.name).includes(dterm);
+  let playerHit=false;
+  if(dterm && !nameHit){ for(const c of club.codes){ const pn=PLAYER[c]; if(pn && deburr(pn).includes(dterm)){ playerHit=true; break; } } }
+  const matchClub = !term || nameHit || playerHit;
+  const card=document.createElement("div"); card.className="team"; card.style.setProperty("--accent", club.color||"#0067B9");
+  let have=0; club.codes.forEach(c=>{ if(getCount(c)>0) have++; });
+  const tot=club.codes.length; const pct=Math.round(have/tot*100);
+  const th=document.createElement("div"); th.className="team-h";
+  th.innerHTML='<span class="flag" style="background:'+(club.color||"#0067B9")+';color:#fff;border-radius:9px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;letter-spacing:-.03em;font-family:var(--font-disp)">'+(CLUB_ABBR[club.name]||club.name.charAt(0))+'</span><div class="team-name"><div class="weare">Club</div><div class="nm">'+club.name+'</div><div class="cd">'+(STANDING[club.name]?('<span class="cstand'+(STANDING[club.name].indexOf("🏆")>-1||STANDING[club.name].indexOf("⬇")>-1?' gold':'')+'">'+STANDING[club.name]+'</span> · '):'')+tot+' jug.</div></div><div class="tprog '+(have===tot?'full':'')+'"><div class="fr">'+have+'/'+tot+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  card.appendChild(th);
+  const cells=document.createElement("div"); cells.className="cells"; let vis=0;
+  club.codes.forEach(c=>{ const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c;
+    const cell=buildCell(c, num, {viewer:true});
+    const isHit = dterm && !nameHit && PLAYER[c] && deburr(PLAYER[c]).includes(dterm);
+    if(isHit) cell.classList.add("hit");
+    const show=matchClub&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
+  card.appendChild(cells); if(vis===0) card.classList.add("hide");
+  th.insertAdjacentHTML("beforeend",'<span class="rchev" aria-hidden="true">\u203a</span>');
+  th.style.cursor="pointer"; th.setAttribute("role","button");
+  th.addEventListener("click",()=>openSquad(club));
+  return card;
+}
 function render(){
-  main.innerHTML=""; const term=searchTerm.trim().toLowerCase();
+  main.innerHTML=""; main.classList.toggle("ov-compact", sortMode==="overview"); const term=searchTerm.trim().toLowerCase();
+  if(sortMode==="clubs"){
+    const present=CLUB_COUNTRIES.filter(co=>CLUBS.some(c=>c.country===co.key));
+    if(clubCountry!=="all" && !present.some(co=>co.key===clubCountry)) clubCountry="all";
+    const bar=document.createElement("div"); bar.className="filters clubnav";
+    const mk=(key,label)=>{ const b=document.createElement("button"); b.type="button"; b.className="fbtn"+(clubCountry===key?" active":""); b.innerHTML=label; b.onclick=()=>{ clubCountry=key; render(); }; return b; };
+    bar.appendChild(mk("all","🌐 Todos"));
+    present.forEach(co=>{ const cnt=CLUBS.filter(c=>c.country===co.key).length; bar.appendChild(mk(co.key, co.flag+" "+co.name+' <span class="b">'+cnt+'</span>')); });
+    main.appendChild(bar);
+    let anyAll=false;
+    present.forEach(co=>{
+      if(clubCountry!=="all" && co.key!==clubCountry) return;
+      const clubs=CLUBS.filter(c=>c.country===co.key).slice().sort((a,b)=>b.codes.length-a.codes.length || a.name.localeCompare(b.name,"es"));
+      const gWrap=document.createElement("div"); gWrap.className="grp";
+      const gh=document.createElement("div"); gh.className="grp-h";
+      gh.innerHTML='<span class="tag" style="background:linear-gradient(90deg,#0067B9,#00802B)">'+co.flag+' '+co.name+'</span><span class="line"></span>';
+      gWrap.appendChild(gh);
+      let any=false;
+      clubs.forEach(club=>{ const card=makeClub(club, term); if(!card.classList.contains("hide")) any=true; gWrap.appendChild(card); });
+      if(!any) gWrap.classList.add("hide"); else anyAll=true;
+      main.appendChild(gWrap);
+    });
+    if(!anyAll){
+      const es=document.createElement("div"); es.className="empty";
+      const t=term?"Ningún club coincide":"Sin clubes que mostrar";
+      const s=term?"Borra el texto del buscador para ver todos los clubes.":(currentFilter==="miss"?"¡No te falta ninguna de estos clubes! 🎉":currentFilter==="dup"?"No tienes repetidas de estos clubes.":"");
+      es.innerHTML='<div class="empty-ico">🏟️</div><div class="empty-t">'+t+'</div>'+(s?'<div class="empty-s">'+s+'</div>':"");
+      main.appendChild(es);
+    }
+    updateStats(); return;
+  }
   if(sortMode==="alpha"){
     const flat=[]; GROUPS.forEach(g=>g.teams.forEach(t=>flat.push(t)));
     flat.sort((a,b)=>a[1].localeCompare(b[1],"es"));
@@ -775,15 +1365,33 @@ function render(){
     });
   }
   if(state.config.specials){
-    const matchS=!term||"especiales fifa fw 00".includes(term);
     const gWrap=document.createElement("div"); gWrap.className="grp";
     gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#ffb020,#ff8a00)">Especiales</span><span class="line"></span></div>';
-    const team=document.createElement("div"); team.className="team"; let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
+    const team=document.createElement("div"); team.className="team"; team.style.setProperty("--accent","#F2A20C");
+    let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
     const pct=Math.round(have/SPECIAL_CODES.length*100);
-    team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FW1–FW19</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
-    const cells=document.createElement("div"); cells.className="cells"; let vis=0;
-    SPECIAL_CODES.forEach(c=>{ const cell=buildCell(c,c==="00"?"00":c.replace("FW","")); const show=matchS&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
-    team.appendChild(cells); if(vis===0){ team.classList.add("hide"); if(term) gWrap.classList.add("hide"); } gWrap.appendChild(team); main.appendChild(gWrap);
+    team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FWC1–FWC19 · repartidas por el álbum</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
+    const list=document.createElement("div"); list.className="squad-list spec-list"; let vis=0;
+    SPECIAL_CODES.forEach(c=>{
+      const nm=SPECIAL_NAMES[c]||c;
+      const match=!term||nm.toLowerCase().includes(term)||c.toLowerCase().includes(term)||"especiales fifa fwc 00".includes(term);
+      if(!(match&&passFilter(c))) return;
+      vis++;
+      const s=cellState(c), n=getCount(c);
+      const numLabel=c==="00"?"00":c.replace("FWC","");
+      const pg=(state.config.specialPages&&state.config.specialPages[c])||"";
+      const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
+      row.innerHTML='<span class="snum">'+numLabel+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
+        +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span><span class="scode">'+c+'</span></span>'
+        +'<span class="sright"><span class="pgic">📄</span><span class="specpage" contenteditable="true" spellcheck="false">'+escHTML(pg)+'</span></span>';
+      const pgEl=row.querySelector(".specpage");
+      pgEl.addEventListener("click",e=>e.stopPropagation());
+      pgEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); pgEl.blur(); } });
+      pgEl.addEventListener("blur",()=>{ const v=(pgEl.textContent||"").replace(/[^0-9]/g,"").slice(0,3); pgEl.textContent=v; if(!state.config.specialPages) state.config.specialPages={}; if(v) state.config.specialPages[c]=v; else delete state.config.specialPages[c]; save(); });
+      row.addEventListener("click",()=>openEditor(c));
+      list.appendChild(row);
+    });
+    team.appendChild(list); if(vis===0){ team.classList.add("hide"); if(term) gWrap.classList.add("hide"); } gWrap.appendChild(team); main.appendChild(gWrap);
   }
   if(state.config.extras){
     const matchE=!term||"extra stickers foil leyendas oro plata bronce morado".includes(term);
@@ -806,7 +1414,7 @@ function render(){
   if(!main.querySelector(".grp:not(.hide)")){
     const es=document.createElement("div"); es.className="empty";
     let t,s;
-    if(term){ t="Nada coincide con tu búsqueda"; s="Borra el texto del buscador 🔎 de arriba para ver todo el álbum de nuevo."; }
+    if(term){ t="Nada coincide con tu búsqueda"; s="Borra el texto del buscador de arriba para ver todo el álbum de nuevo."; }
     else if(currentFilter==="dup"){ t="Sin repetidas todavía"; s="Cuando tengas láminas repetidas van a aparecer acá."; }
     else if(currentFilter==="have"){ t="Aún no marcas láminas"; s="Anota un código arriba (ej: ARG5) para empezar a llenar tu álbum."; }
     else if(currentFilter==="miss"){ t="¡No te falta ninguna! 🎉"; s="Completaste todo lo que se está mostrando."; }
@@ -831,15 +1439,21 @@ function updateStats(){
   const pct=total?tengo/total:0, circ=157.1;
   const rf=document.getElementById("ringFill"); rf.style.strokeDashoffset=(circ*(1-pct)).toFixed(1);
   document.getElementById("ringTxt").textContent=Math.round(pct*100)+"%";
+  const _mp=document.getElementById("miniPct"); if(_mp) _mp.textContent=Math.round(pct*100)+"%";
+  document.getElementById("ringSvg").setAttribute("aria-label","Progreso del álbum: "+Math.round(pct*100)+"%");
 }
 
 /* ---------- editor ---------- */
 let editCode=null; const ovEdit=document.getElementById("ovEdit");
 function openEditor(code){
-  editCode=code; const meta=CODE_TEAM[code]; let who="Especial FIFA";
-  if(meta) who=meta.flag+" "+meta.name+" · Grupo "+meta.group;
+  editCode=code; const meta=CODE_TEAM[code]; let who=SPECIAL_NAMES[code]?("⭐ "+SPECIAL_NAMES[code]):"Especial FIFA";
+  if(meta) who=flagHTML(meta.code, meta.flag, "flaginline")+meta.name+" · Grupo "+meta.group;
   else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
-  document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").textContent=who;
+  document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
+  const pn=playerName(code); const ep=document.getElementById("edPlayer"); ep.textContent=pn; ep.style.display=pn?"block":"none";
+  const ps=playerPos(code); const epz=document.getElementById("edPos"); epz.textContent=ps; epz.style.display=ps?"inline-block":"none";
+  const sv=playerStat(code); const esr=document.getElementById("edStatRo"); esr.textContent=sv; esr.style.display=sv?"block":"none";
+  const mv=playerValue(code); const evz=document.getElementById("edValue"); evz.textContent=mv; evz.style.display=mv?"block":"none";
   refreshEditor(); ovEdit.classList.add("show");
 }
 function displayCode(code){
@@ -857,9 +1471,13 @@ document.getElementById("edMinus").onclick=()=>{ setCount(editCode,getCount(edit
 document.getElementById("edRemove").onclick=()=>{ setCount(editCode,0); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
 document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show"); if(currentFilter!=="all") render(); };
 function refreshCellInDom(code){
+  updateSquadRow(code);
   const cell=main.querySelector('.cell[data-code="'+cssEsc(code)+'"]'); if(!cell) return;
-  paintCell(cell,code,cell.dataset.label);
-  const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl);
+  const n=getCount(code),st=cellState(code); cell.classList.remove("have","dup");
+  if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
+  const old=cell.querySelector(".badge"); if(old) old.remove();
+  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); cell.appendChild(b); }
+  const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl); updateRosterRow(code);
 }
 function refreshTeamProgress(teamEl){
   const cells=[...teamEl.querySelectorAll(".cell")]; let have=0; cells.forEach(c=>{ if(getCount(c.dataset.code)>0) have++; });
@@ -867,6 +1485,37 @@ function refreshTeamProgress(teamEl){
   if(fr) fr.textContent=have+"/"+tot; if(bar) bar.style.width=(have/tot*100)+"%"; if(tp) tp.classList.toggle("full",have===tot);
 }
 function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
+function escHTML(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+function updateRosterRow(code){ const row=main.querySelector('.rrow[data-code="'+cssEsc(code)+'"]'); if(!row) return; const s=cellState(code); row.classList.remove("have","dup"); if(s===1) row.classList.add("have"); else if(s===2) row.classList.add("dup"); }
+
+/* ---------- nómina del club en ventana ---------- */
+let _squadClub=null;
+function squadSubText(club){ let have=0; club.codes.forEach(c=>{ if(getCount(c)>0) have++; }); return (STANDING[club.name]?STANDING[club.name]+" · ":"")+have+"/"+club.codes.length+" láminas"; }
+function buildSquadRow(c){
+  const meta=CODE_TEAM[c]; const num=meta?c.slice(meta.code.length):c; const s=cellState(c), n=getCount(c);
+  const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
+  const nm=playerName(c)||c, pos=playerPos(c), sv=playerStat(c), mv=MARKET_VALUE[c];
+  let right=""; if(pos) right+='<span class="spos">'+pos+'</span>'; if(mv) right+='<span class="sval">💰 '+mv+'</span>';
+  row.innerHTML='<span class="snum">'+num+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
+    +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span>'+(sv?'<span class="sstat">'+escHTML(sv)+'</span>':'')+'</span>'
+    +'<span class="sright">'+right+'</span>';
+  row.addEventListener("click",()=>openEditor(c));
+  return row;
+}
+function openSquad(club){
+  _squadClub=club;
+  document.getElementById("squadTitle").textContent=club.name;
+  document.getElementById("squadSub").textContent=squadSubText(club);
+  const list=document.getElementById("squadList"); list.innerHTML="";
+  club.codes.forEach(c=>list.appendChild(buildSquadRow(c)));
+  document.getElementById("ovSquad").classList.add("show");
+}
+function updateSquadRow(code){
+  const row=document.querySelector('#squadList .srow[data-code="'+cssEsc(code)+'"]'); if(!row) return;
+  const s=cellState(code), n=getCount(code); row.classList.remove("have","dup"); if(s===1) row.classList.add("have"); else if(s===2) row.classList.add("dup");
+  const numEl=row.querySelector(".snum"); if(numEl){ const old=numEl.querySelector(".sdup"); if(old) old.remove(); if(n>1){ const b=document.createElement("span"); b.className="sdup"; b.textContent="+"+(n-1); numEl.appendChild(b); } }
+  if(_squadClub){ const sub=document.getElementById("squadSub"); if(sub) sub.textContent=squadSubText(_squadClub); }
+}
 
 /* ---------- recién agregadas (sesión) ---------- */
 let recent=[];
@@ -889,9 +1538,7 @@ function renderRecent(){
 /* ---------- quick add ---------- */
 function addByCode(raw,silent){
   const c=normalize(raw); if(!c){ if(!silent) toast("Código no válido ✗"); return false; }
-  const was=getCount(c);
-  setCount(c,was+1); refreshCellInDom(c); updateStats(); pushRecent(c); const n=getCount(c);
-  if(!silent && was===0) showReveal(c);
+  setCount(c,getCount(c)+1); refreshCellInDom(c); updateStats(); pushRecent(c); const n=getCount(c);
   toast(displayCode(c)+(n===1?" ✓ registrada":" · repetida ×"+n)); return true;
 }
 const qa=document.getElementById("quickAdd");
@@ -907,7 +1554,8 @@ qa.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doQu
 document.getElementById("filters").addEventListener("click",e=>{ const b=e.target.closest(".fbtn"); if(!b) return;
   document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active")); b.classList.add("active"); currentFilter=b.dataset.f; render(); });
 let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
-document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; render(); });
+function updateSearchPlaceholder(){ const s=document.getElementById("search"); if(!s) return; s.placeholder = sortMode==="clubs" ? "Busca club o jugador (ej. Real Madrid, Mbappé)…" : "Busca selección o jugador (ej. Argentina, Messi)…"; }
+document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; updateSearchPlaceholder(); render(); });
 
 /* ---------- OCR refinado: worker + preprocesado + corrección ---------- */
 let ocrWorker=null, ocrWorkerTried=false;
@@ -1004,10 +1652,10 @@ function aiPrompt(){
   const teamCodes=GROUPS.map(g=>g.teams.map(t=>t[0]).join(", ")).join(", ");
   return "Estas son fotos de figuritas (láminas) del álbum Panini de la Copa del Mundo FIFA 2026. "
     +"Cada lámina lleva un código impreso: 3 letras del equipo seguidas de un número del 1 al 20 (ejemplos: ARG5, BRA20, MEX1), "
-    +"o un código especial: 00, o FW1 hasta FW19. "
+    +"o un código especial: 00, o FWC1 hasta FWC19. "
     +"Los códigos de equipo válidos (3 letras) son exactamente estos: "+teamCodes+". "
     +"Mira las imágenes con mucha atención y devuelve SOLO un arreglo JSON con los códigos que puedas leer con claridad, en MAYÚSCULAS y sin espacios. "
-    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FW3\"]. "
+    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FWC3\"]. "
     +"Si no logras leer ninguno, responde []. No agregues texto, comentarios ni explicaciones: solo el arreglo JSON.";
 }
 function fileToScaledBase64(file, maxDim, q){
@@ -1125,24 +1773,25 @@ document.getElementById("manualBtn").onclick=()=>{ if(addByCode(manualCode.value
 manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(addByCode(manualCode.value,false)) manualCode.value=""; }});
 
 /* ---------- settings ---------- */
-const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras"),tgReveal=document.getElementById("tgReveal");
-document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; tgReveal.checked=state.config.reveal!==false; ovSet.classList.add("show"); };
+const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
+document.getElementById("btnSet").onclick=()=>{ tgSpecials.checked=state.config.specials; tgExtras.checked=state.config.extras; const tc=document.getElementById("tgCelebrate"); if(tc) tc.checked=state.config.celebrate; if(typeof showAdminUI==="function") showAdminUI(); ovSet.classList.add("show"); };
 tgSpecials.onchange=()=>{ state.config.specials=tgSpecials.checked; save(); render(); };
 tgExtras.onchange=()=>{ state.config.extras=tgExtras.checked; save(); render(); };
-tgReveal.onchange=()=>{ state.config.reveal=tgReveal.checked; save(); };
+(function(){ const tc=document.getElementById("tgCelebrate"); if(tc) tc.onchange=()=>{ state.config.celebrate=tc.checked; save(); }; })();
+(function(){ const sb=document.getElementById("starClose"), ov=document.getElementById("ovStar"); if(sb) sb.onclick=closeStar; if(ov) ov.addEventListener("click",e=>{ if(e.target===ov) closeStar(); }); })();
 document.getElementById("btnExport").onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="album-mundial-2026-respaldo.json"; a.click(); URL.revokeObjectURL(a.href); toast("Respaldo descargado ⬇️"); };
 
 /* ----- Exportar a Excel (.xlsx) ----- */
 function ensureXLSX(cb){
   if(typeof XLSX!=="undefined"){ cb(); return; }
   const s=document.createElement("script");
-  s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+  s.src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js";
   s.onload=cb; s.onerror=()=>toast("No se pudo cargar Excel (¿sin conexión?) ✗");
   document.head.appendChild(s);
 }
 function codeLabel(c){
   if(CODE_TEAM[c]){ const t=CODE_TEAM[c]; return t.name+" "+c.slice(t.code.length); }
-  if(c==="00"||/^FW\d+$/.test(c)) return "Especial "+c;
+  if(c==="00"||/^FWC\d+$/.test(c)) return "Especial: "+(SPECIAL_NAMES[c]||c)+" ("+c+")";
   const m=c.match(/^X(\d+)([OPBM])$/); if(m){ const pn=state.config.extraNames["p"+m[1]]||("Jugador "+m[1]); const col={O:"Oro",P:"Plata",B:"Bronce",M:"Morado"}[m[2]]; return "Extra: "+pn+" ("+col+")"; }
   return c;
 }
@@ -1154,46 +1803,84 @@ function buildAlbumWorkbook(){
   const now=new Date();
   const wb=XLSX.utils.book_new();
 
+  const FONT="Arial";
+  const thin=c=>{ const s={style:"thin",color:{rgb:c}}; return {top:s,bottom:s,left:s,right:s}; };
+  const setS=(ws,r,c,s)=>{ const ref=XLSX.utils.encode_cell({r:r,c:c}); if(!ws[ref]) ws[ref]={t:"s",v:""}; ws[ref].s=s; };
+  const hdr={ font:{name:FONT,bold:true,sz:11,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"1A1A22"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("3A3A45") };
+
   // Resumen
   const wsR=XLSX.utils.aoa_to_sheet([
-    ["MI ÁLBUM — Mundial 2026"],
+    ["MI ÁLBUM — Mundial 2026",""],
     ["Exportado", now.toLocaleString()],
-    [],
+    ["",""],
     ["Tengo", tengo],["Faltan", faltan],["Repetidas", repe],["Total", total],
     ["Completado", pct+"%"],["Equipos completos", full+" / 48"]
   ]);
-  wsR["!cols"]=[{wch:20},{wch:26}];
+  wsR["!cols"]=[{wch:22},{wch:26}];
+  wsR["!merges"]=[{s:{r:0,c:0},e:{r:0,c:1}}];
+  wsR["!rows"]=[{hpt:30}];
+  setS(wsR,0,0,{ font:{name:FONT,bold:true,sz:16,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"0067B9"}}, alignment:{horizontal:"center",vertical:"center"} });
+  setS(wsR,0,1,{ fill:{patternType:"solid",fgColor:{rgb:"0067B9"}} });
+  setS(wsR,1,0,{ font:{name:FONT,bold:true,color:{rgb:"6B6B78"}} });
+  const sc=["1B7A35","1A1A22","B97700","1A1A22","0067B9","1A1A22"];
+  for(let i=0;i<6;i++){ const r=3+i;
+    setS(wsR,r,0,{ font:{name:FONT,bold:true,sz:11,color:{rgb:"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb:"F3F2EF"}} });
+    setS(wsR,r,1,{ font:{name:FONT,bold:true,sz:12,color:{rgb:sc[i]}} });
+  }
   XLSX.utils.book_append_sheet(wb, wsR, "Resumen");
 
-  // Por equipo (matriz equipos × 1..20)
+  // Por equipo (matriz estilo álbum: grupo fusionado + colores)
   const head=["Grupo","Código","Equipo"]; for(let i=1;i<=20;i++) head.push(i); head.push("Tengo","Repetidas");
   const matrix=[head];
-  GROUPS.forEach(g=>g.teams.forEach(t=>{
-    const row=[g.id,t[0],t[1]]; let th=0,tr=0;
-    for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n); if(n>=1)th++; if(n>=2)tr+=n-1; }
+  GROUPS.forEach(g=>g.teams.forEach((t,ti)=>{
+    const row=[ti===0?("Grupo "+g.id):"", t[0], t[2]+" "+t[1]]; let th=0,tr=0;
+    for(let i=1;i<=20;i++){ const n=getCount(t[0]+i); row.push(n>0?n:""); if(n>=1)th++; if(n>=2)tr+=n-1; }
     row.push(th,tr); matrix.push(row);
   }));
   const wsM=XLSX.utils.aoa_to_sheet(matrix);
-  wsM["!cols"]=[{wch:6},{wch:8},{wch:20}].concat(Array(20).fill({wch:4})).concat([{wch:7},{wch:10}]);
+  wsM["!cols"]=[{wch:8},{wch:7},{wch:20}].concat(Array(20).fill({wch:4.5})).concat([{wch:7},{wch:11}]);
+  for(let c=0;c<head.length;c++) setS(wsM,0,c,hdr);
+  const merges=[];
+  GROUPS.forEach((g,gi)=>{
+    const r0=1+gi*4;
+    merges.push({s:{r:r0,c:0},e:{r:r0+3,c:0}});
+    setS(wsM,r0,0,{ font:{name:FONT,bold:true,sz:11,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:g.color.replace("#","")}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") });
+    for(let ti=0;ti<4;ti++){
+      const r=r0+ti, code=g.teams[ti][0], th=teamHave(code);
+      setS(wsM,r,1,{ font:{name:FONT,sz:9,color:{rgb:"9A9AA6"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+      setS(wsM,r,2,{ font:{name:FONT,bold:true,sz:10,color:{rgb:"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb:"FAFAF8"}}, alignment:{horizontal:"left",vertical:"center"}, border:thin("ECEAE6") });
+      for(let i=1;i<=20;i++){ const n=getCount(code+i), c=2+i; let s;
+        if(n>=2) s={ font:{name:FONT,bold:true,sz:10,color:{rgb:"4A3500"}}, fill:{patternType:"solid",fgColor:{rgb:"F2A20C"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") };
+        else if(n>=1) s={ font:{name:FONT,bold:true,sz:10,color:{rgb:"FFFFFF"}}, fill:{patternType:"solid",fgColor:{rgb:"2E9E4A"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("FFFFFF") };
+        else s={ fill:{patternType:"solid",fgColor:{rgb:"F5F5F4"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("E6E4E0") };
+        setS(wsM,r,c,s);
+      }
+      setS(wsM,r,23,{ font:{name:FONT,bold:true,sz:10,color:{rgb: th===20?"1B7A35":"1A1A22"}}, fill:{patternType:"solid",fgColor:{rgb: th===20?"D9F2DF":"F3F2EF"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+      setS(wsM,r,24,{ font:{name:FONT,sz:10,color:{rgb:"B97700"}}, alignment:{horizontal:"center",vertical:"center"}, border:thin("ECEAE6") });
+    }
+  });
+  wsM["!merges"]=merges;
   XLSX.utils.book_append_sheet(wb, wsM, "Por equipo");
 
-  // Detalle (una fila por lámina)
+  // Detalle
   const det=[["Código","Equipo","Grupo","Número","Tengo","Cantidad","Repetidas"]];
   GROUPS.forEach(g=>g.teams.forEach(t=>{
-    for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
+    for(let i=1;i<=20;i++){ const c=t[0]+i,n=getCount(c); det.push([c,t[2]+" "+t[1],g.id,i,n>=1?"Sí":"No",n,n>=2?n-1:0]); }
   }));
   if(state.config.specials) SPECIAL_CODES.forEach(c=>{ const n=getCount(c); det.push([c,"Especiales FIFA","ESP",c,n>=1?"Sí":"No",n,n>=2?n-1:0]); });
   if(state.config.extras) for(let p=1;p<=EXTRA_COUNT;p++){ const pn=state.config.extraNames["p"+p]||("Jugador "+p); EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0],n=getCount(c); det.push([c,"Extra: "+pn,"EXTRA",a[1],n>=1?"Sí":"No",n,n>=2?n-1:0]); }); }
   const wsD=XLSX.utils.aoa_to_sheet(det);
   wsD["!cols"]=[{wch:8},{wch:22},{wch:7},{wch:8},{wch:7},{wch:9},{wch:10}];
+  for(let c=0;c<7;c++) setS(wsD,0,c,hdr);
   XLSX.utils.book_append_sheet(wb, wsD, "Detalle");
 
-  // Repetidas (para cambio)
+  // Repetidas
   const rep=[["Código","Equipo","Repetidas"]];
   codes.forEach(c=>{ const n=getCount(c); if(n>=2) rep.push([c, codeLabel(c), n-1]); });
   if(rep.length===1) rep.push(["—","(sin repetidas aún)",""]);
   const wsRep=XLSX.utils.aoa_to_sheet(rep);
   wsRep["!cols"]=[{wch:8},{wch:26},{wch:10}];
+  for(let c=0;c<3;c++) setS(wsRep,0,c,hdr);
   XLSX.utils.book_append_sheet(wb, wsRep, "Repetidas");
 
   return wb;
@@ -1231,6 +1918,86 @@ document.getElementById("driveAuto").onchange=(e)=>{ const c=driveCfg(); c.auto=
 document.getElementById("driveChange").onclick=()=>{ document.getElementById("driveSetup").style.display="block"; document.getElementById("driveConnected").style.display="none"; };
 document.getElementById("driveDisconnect").onclick=()=>{ if(!confirm("¿Desconectar Drive? (no borra el archivo en tu Drive)")) return; saveDriveCfg({clientId:"",fileId:"",auto:false}); driveTok=null; driveTokExp=0; openDrive(); toast("Drive desconectado"); };
 document.getElementById("btnExcel").onclick=()=>{ toast("Generando Excel…"); ensureXLSX(exportExcel); };
+
+/* ===== Modo admin: descargar TODOS los álbumes ===== */
+const ADMIN_EMAIL="lucasparedes.soc@gmail.com";
+function isAdmin(){ return !!(cloud.user && (cloud.user.email||"").toLowerCase()===ADMIN_EMAIL); }
+function showAdminUI(){ const box=document.getElementById("adminBox"); if(box) box.style.display=isAdmin()?"block":"none"; }
+async function adminFetchAll(){
+  if(!cloud.ready || !cloud.user || !cloud.db) throw new Error("Inicia sesión en la nube primero (⚙️ → Nube)");
+  const users=new Map();
+  try{ const snap=await cloud.db.collection("leaderboard").get(); snap.forEach(d=>{ const x=d.data()||{}; users.set(d.id,{uid:d.id, nick:x.nick||"", city:x.city||""}); }); }catch(e){}
+  try{ const asnap=await cloud.db.collection("albums").get(); asnap.forEach(d=>{ if(!users.has(d.id)) users.set(d.id,{uid:d.id, nick:"", city:""}); }); }catch(e){}
+  if(!users.size) throw new Error("No hay álbumes en la nube todavía");
+  const out=[];
+  for(const u of users.values()){
+    try{ const doc=await cloud.db.collection("albums").doc(u.uid).get(); const data=doc.exists?(doc.data()||{}):{};
+      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), city:(u.city||data.city||""), counts:(data.counts||{}), extraNames:(data.extraNames||{}), specialPages:(data.specialPages||{}), updatedAt:(data.updatedAt||0)}); }
+    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), city:(u.city||""), counts:{}, extraNames:{}, specialPages:{}, updatedAt:0}); }
+  }
+  return out;
+}
+function userStats(counts){
+  let tengo=0,repe=0; const total=ALL_TEAM_CODES.length+SPECIAL_CODES.length;
+  ALL_TEAM_CODES.forEach(c=>{ const n=counts[c]||0; if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  SPECIAL_CODES.forEach(c=>{ const n=counts[c]||0; if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  let full=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ let h=0; for(let i=1;i<=20;i++) if((counts[t[0]+i]||0)>0) h++; if(h===20)full++; }));
+  return {tengo, repe, total, faltan:total-tengo, pct: total?Math.round(tengo/total*100):0, full};
+}
+function buildAdminWorkbook(users){
+  users=users.slice().sort((a,b)=> userStats(b.counts).tengo - userStats(a.counts).tengo);
+  const wb=XLSX.utils.book_new();
+  const head=["#","Nick","Ciudad","Tengo","Faltan","Repetidas","%","Equipos (de 48)","Actualizado"];
+  const rows=[["MUNDIAL 2026 — TODOS LOS ÁLBUMES (admin)"],["Generado", new Date().toLocaleString()],[],head];
+  users.forEach((u,i)=>{ const s=userStats(u.counts); rows.push([i+1,u.nick,u.city,s.tengo,s.faltan,s.repe,s.pct+"%",s.full+"/48", u.updatedAt?new Date(u.updatedAt).toLocaleString():""]); });
+  const wsR=XLSX.utils.aoa_to_sheet(rows); wsR["!cols"]=[{wch:4},{wch:18},{wch:16},{wch:7},{wch:7},{wch:10},{wch:6},{wch:14},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsR,"Resumen");
+  const th=["Nick"]; GROUPS.forEach(g=>g.teams.forEach(t=>th.push(t[0]))); th.push("Esp.");
+  const tm=[th];
+  users.forEach(u=>{ const row=[u.nick]; GROUPS.forEach(g=>g.teams.forEach(t=>{ let h=0; for(let i=1;i<=20;i++) if((u.counts[t[0]+i]||0)>0) h++; row.push(h); })); let sh=0; SPECIAL_CODES.forEach(c=>{ if((u.counts[c]||0)>0)sh++; }); row.push(sh); tm.push(row); });
+  const wsT=XLSX.utils.aoa_to_sheet(tm); wsT["!cols"]=[{wch:18}].concat(Array(48).fill({wch:5})).concat([{wch:5}]);
+  XLSX.utils.book_append_sheet(wb,wsT,"Por equipo");
+  const rep=[["Nick","Código","Jugador/Lámina","Repetidas"]];
+  users.forEach(u=>{ Object.keys(u.counts).forEach(c=>{ const n=u.counts[c]; if(n>=2) rep.push([u.nick,c,codeLabel(c),n-1]); }); });
+  if(rep.length===1) rep.push(["—","","(nadie tiene repetidas aún)",""]);
+  const wsRep=XLSX.utils.aoa_to_sheet(rep); wsRep["!cols"]=[{wch:18},{wch:8},{wch:26},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,wsRep,"Repetidas");
+  // Detalle COMPLETO (cada lámina que tiene cada persona) — para respaldo/restauración
+  const det=[["Nick","Código","Jugador/Lámina","Cantidad","Repetidas"]];
+  users.forEach(u=>{
+    const keys=Object.keys(u.counts).filter(c=>(u.counts[c]||0)>0).sort();
+    keys.forEach(c=>{ const n=u.counts[c]; det.push([u.nick,c,codeLabel(c),n,n>=2?n-1:0]); });
+  });
+  if(det.length===1) det.push(["—","","(nadie tiene láminas aún)","",""]);
+  const wsD=XLSX.utils.aoa_to_sheet(det); wsD["!cols"]=[{wch:18},{wch:8},{wch:28},{wch:9},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,wsD,"Detalle");
+  return wb;
+}
+async function adminDownloadAll(){
+  const msg=document.getElementById("adminMsg");
+  if(msg) msg.textContent="Descargando… (puede tardar unos segundos)";
+  try{
+    if(typeof XLSX==="undefined") await new Promise(r=>ensureXLSX(r));
+    const users=await adminFetchAll();
+    const wb=buildAdminWorkbook(users);
+    XLSX.writeFile(wb, "AdminMundial2026_TODOS_"+new Date().toISOString().slice(0,10)+".xlsx");
+    if(msg) msg.textContent="Listo ✓ — "+users.length+" álbum(es) descargados.";
+    toast("Descargados "+users.length+" álbumes ✓");
+  }catch(e){ const m=(e&&e.message)?e.message:"error"; if(msg) msg.textContent="No se pudo: "+m; toast("Admin: "+m); }
+}
+async function adminDownloadJSON(){
+  const msg=document.getElementById("adminMsg");
+  if(msg) msg.textContent="Descargando JSON…";
+  try{
+    const users=await adminFetchAll();
+    const blob=new Blob([JSON.stringify({generado:new Date().toISOString(), total:users.length, albumes:users},null,2)],{type:"application/json"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="AdminMundial2026_TODOS.json"; a.click(); URL.revokeObjectURL(a.href);
+    if(msg) msg.textContent="Listo ✓ — "+users.length+" álbum(es) en JSON.";
+    toast("JSON descargado ✓");
+  }catch(e){ const m=(e&&e.message)?e.message:"error"; if(msg) msg.textContent="No se pudo: "+m; toast("Admin: "+m); }
+}
+document.getElementById("btnAdminXlsx").onclick=adminDownloadAll;
+document.getElementById("btnAdminJson").onclick=adminDownloadJSON;
 
 /* ----- Importar desde Excel (ida y vuelta) ----- */
 function parseWorkbookToCounts(wb){
@@ -1316,6 +2083,149 @@ document.getElementById("tradeCopy").onclick=()=>{ const ta=document.getElementB
   else { ta.removeAttribute("readonly"); ta.select(); try{ document.execCommand("copy"); toast("Lista copiada ✓"); }catch(e){ toast("Selecciónala y copia manual"); } ta.setAttribute("readonly",""); } };
 document.getElementById("btnTrade").onclick=()=>{ ovSet.classList.remove("show"); tradeMode="miss"; const seg=document.getElementById("tradeSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0)); renderTrade(); ovTrade.classList.add("show"); };
 
+/* ---------- HUB: Datos + Valores (beta) ---------- */
+function lxMostLeastTeam(){
+  let best=null, worst=null;
+  GROUPS.forEach(g=>g.teams.forEach(t=>{ const h=teamHave(t[0]);
+    if(best===null || h>best.h) best={name:t[1], h};
+    if(worst===null || h<worst.h) worst={name:t[1], h};
+  }));
+  return {best, worst};
+}
+function lxBestGroup(){
+  let best=null;
+  GROUPS.forEach(g=>{ let h=0; g.teams.forEach(t=>h+=teamHave(t[0])); const pct=Math.round(h/80*100);
+    if(best===null || pct>best.pct) best={id:g.id, pct};
+  });
+  return best;
+}
+function fillPersonal(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let completos=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ if(teamHave(t[0])===20) completos++; }));
+  let html='<div class="lx-grid">'
+    +'<div class="lx-stat" style="--a:var(--c-green)"><div class="lx-n">'+pct+'%</div><div class="lx-l">Completado</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-blue)"><div class="lx-n">'+faltan+'</div><div class="lx-l">Te faltan</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-amber)"><div class="lx-n">'+repe+'</div><div class="lx-l">Para cambio</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-pink)"><div class="lx-n">'+completos+'/48</div><div class="lx-l">Equipos listos</div></div>'
+    +'</div>';
+  if(tengo===0){
+    html+='<div class="lx-fact"><span class="lx-ic">👀</span><div class="lx-tx">Aún no marcas láminas. Anota algunas (ej. <b>ARG5</b>) y vuelve para ver tus números.</div></div>';
+  } else {
+    const ml=lxMostLeastTeam(), bg=lxBestGroup();
+    html+='<div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">Tu equipo más completo: <b>'+ml.best.name+'</b> ('+ml.best.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">🎯</span><div class="lx-tx">El que más te falta: <b>'+ml.worst.name+'</b> ('+ml.worst.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">📈</span><div class="lx-tx">Tu grupo más avanzado: <b>Grupo '+bg.id+'</b> ('+bg.pct+'%).</div></div>';
+    if(faltan>0){ const y=(7*faltan/total).toFixed(1); html+='<div class="lx-fact"><span class="lx-ic">📦</span><div class="lx-tx">Por ahora, de cada sobre de 7 te caerían ~<b>'+y+'</b> láminas nuevas.</div></div>'; }
+    else { html+='<div class="lx-fact"><span class="lx-ic">🎉</span><div class="lx-tx"><b>¡Completaste el álbum!</b> Eres de los pocos que lo logran. Crack.</div></div>'; }
+  }
+  document.getElementById("lxPersonal").innerHTML=html;
+}
+/* progreso: gráficos simples */
+function renderProgreso(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let html='<div class="pg-overall"><div class="pg-bignum">'+pct+'%</div>'
+    +'<div class="pg-sub"><b style="color:var(--ok-d)">'+tengo+'</b> tengo · <b>'+faltan+'</b> faltan · <b style="color:var(--dup-d)">'+repe+'</b> repetidas</div>'
+    +'<div class="pg-track pg-big"><i style="width:'+pct+'%"></i></div></div>';
+  html+='<h3 class="lx-h" style="margin-top:16px"><span class="lx-dot" style="background:var(--c-blue)"></span> Avance por grupo</h3>';
+  GROUPS.forEach(g=>{ let h=0; g.teams.forEach(t=>h+=teamHave(t[0])); const gp=Math.round(h/80*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:'+g.color+'"></i>Grupo '+g.id+'</span>'
+      +'<div class="pg-track"><i style="width:'+gp+'%; background:'+g.color+'"></i></div>'
+      +'<span class="pg-pct">'+gp+'%</span></div>';
+  });
+  if(state.config.specials){ let h=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0)h++; }); const sp=Math.round(h/SPECIAL_CODES.length*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:var(--c-amber)"></i>Especiales</span>'
+      +'<div class="pg-track"><i style="width:'+sp+'%; background:var(--c-amber)"></i></div><span class="pg-pct">'+sp+'%</span></div>';
+  }
+  html+='<div class="lx-src" style="margin-top:10px">Cada barra muestra cuánto llevas de ese grupo (de 80 láminas).</div>';
+  document.getElementById("pgBody").innerHTML=html;
+}
+/* ranking / leaderboard */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function leaderStats(){ const codes=allActiveCodes(); const total=codes.length; let tengo=0; codes.forEach(c=>{ if(getCount(c)>0)tengo++; }); return { tengo, total, pct: total?Math.round(tengo/total*100):0 }; }
+function pushLeaderboard(){
+  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return Promise.resolve(false);
+  const nick=(state.config.nick||"").trim().slice(0,20);
+  if(!nick) return Promise.resolve(false); // sin nick: NO escribe ni borra (así no se borra solo)
+  const city=(state.config.city||"").trim().slice(0,24);
+  const s=leaderStats();
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).set({ nick:nick, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).then(()=>true);
+}
+function leaveLeaderboard(){
+  if(!cloud.ready||!cloud.user||!cloud.db) return Promise.resolve();
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).delete().catch(()=>{});
+}
+function renderRanking(){
+  const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
+  const cityIn=document.getElementById("rkCity"); if(cityIn) cityIn.value=state.config.city||"";
+  const list=document.getElementById("rkList");
+  if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) para entrar al ranking 🙌</div>'; return; }
+  list.innerHTML='<div class="rk-empty">Cargando…</div>';
+  Promise.resolve(pushLeaderboard()).catch(()=>null).then(()=> cloud.db.collection("leaderboard").get() ).then(snap=>{
+    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
+    rows.sort((a,b)=> (b.pct-a.pct) || (b.tengo-a.tengo));
+    if(!rows.length){ list.innerHTML='<div class="rk-empty">Nadie se ha puesto nick todavía.<br>¡Sé el primero! 🥇</div>'; return; }
+    const me=cloud.user.uid;
+    list.innerHTML=rows.map((r,i)=>{ const pos=i+1; const top=pos<=3?(" top"+pos):""; const mine=r.uid===me?" me":"";
+      const place=r.city?("📍 "+esc(r.city)+" · "):"";
+      const posLabel = pos===1 ? '👑' : pos===2 ? '🥈' : pos===3 ? '🥉' : pos;
+      return '<div class="rk-row'+top+mine+'" data-uid="'+esc(r.uid)+'"><div class="rk-pos">'+posLabel+'</div>'
+        +'<div class="rk-mid"><div class="rk-nm">'+esc(r.nick)+(mine?' <span class="rk-meta">(tú)</span>':'')+'</div>'
+        +'<div class="rk-bar"><i style="width:'+r.pct+'%"></i></div>'
+        +'<div class="rk-meta">'+place+r.tengo+'/'+r.total+' láminas</div></div>'
+        +'<div class="rk-pct">'+r.pct+'%</div><div class="rk-go">›</div></div>';
+    }).join("");
+  }).catch(e=>{ const denied=e&&e.code==="permission-denied"; list.innerHTML='<div class="rk-empty">'+(denied?'Falta pegar las reglas de Firebase pal ranking 🔒<br><span class="rk-meta">Revisa la sección «leaderboard» de las reglas.</span>':'No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span>')+'</div>'; });
+}
+function viewPersonAlbum(uid){
+  document.getElementById("ovLujito").classList.remove("show");
+  sortMode="overview";
+  const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="overview")); }
+  goToAlbum(uid);
+  try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); }
+}
+/* tabs */
+function hubShow(t){
+  document.getElementById("hubProgreso").style.display = t==="progreso"?"block":"none";
+  document.getElementById("hubDatos").style.display = t==="datos"?"block":"none";
+  document.getElementById("hubRanking").style.display = t==="ranking"?"block":"none";
+  [...document.getElementById("hubSeg").children].forEach(x=>x.classList.toggle("active", x.dataset.h===t));
+  if(t==="progreso") renderProgreso();
+  if(t==="ranking") renderRanking();
+}
+document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; hubShow(b.dataset.h); });
+function openHub(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="Datos";
+  hubShow("progreso");
+  document.getElementById("ovLujito").classList.add("show");
+}
+function openRankingTop(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="none";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="🏆 Ranking";
+  hubShow("ranking");
+  document.getElementById("ovLujito").classList.add("show");
+}
+document.getElementById("btnHub").onclick=openHub;
+document.getElementById("btnRankingTop").onclick=openRankingTop;
+document.getElementById("btnCracks").onclick=openCracks;
+/* Mini-barra fija: aparece al bajar y mantiene los botones a mano */
+document.getElementById("mbCracks").onclick=openCracks;
+document.getElementById("mbRanking").onclick=openRankingTop;
+document.getElementById("mbHub").onclick=openHub;
+document.getElementById("mbSet").onclick=()=>document.getElementById("btnSet").click();
+(function(){
+  let ticking=false;
+  function onScroll(){ document.body.classList.toggle("scrolled", (window.scrollY||window.pageYOffset||0)>150); }
+  window.addEventListener("scroll",function(){ if(!ticking){ requestAnimationFrame(function(){ onScroll(); ticking=false; }); ticking=true; } }, {passive:true});
+  onScroll();
+})();
+
 /* ---------- overlays close ---------- */
 document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
 
@@ -1346,28 +2256,43 @@ function initCloud(){
 function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
 
 function onAuthChange(u){
-  if(u){ document.body.classList.add("authed"); subscribeAlbum(); }
-  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } }
+  if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
+  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
   updateCloudUI();
+  if(typeof showAdminUI==="function") showAdminUI();
 }
+function applyViewOnly(){ document.body.classList.toggle("viewonly", !!cloud.viewOnly); }
 function subscribeAlbum(){
   if(!cloud.user||!cloud.db) return; if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; }
   cloud.albumId=currentAlbumId();
+  cloud.viewOnly = !!(cloud.user && cloud.albumId && cloud.albumId !== cloud.user.uid);
+  applyViewOnly();
   const ref=cloud.db.collection("albums").doc(cloud.albumId);
   cloud.unsub=ref.onSnapshot(doc=>{
-    if(!doc.exists){ pushCloud(true); return; }
+    if(!doc.exists){
+      if(cloud.viewOnly){ toast("No encontré ese álbum 🤔 — revisa el código"); return; }
+      pushCloud(true); return;
+    }
     const data=doc.data()||{};
     cloud.applyingRemote=true;
-    if(data.counts && typeof data.counts==="object") state.counts=data.counts;
+    state.counts = (data.counts && typeof data.counts==="object") ? data.counts : {};
     if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
+    if(data.specialPages && typeof data.specialPages==="object") state.config.specialPages=data.specialPages;
+    if(!cloud.viewOnly){ if(typeof data.nick==="string") state.config.nick=data.nick; if(typeof data.city==="string") state.config.city=data.city; }
     try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
     render(); cloud.applyingRemote=false;
   }, err=>{ toast("Nube: "+(err.code||"error de lectura")); });
 }
-function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
+function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote||cloud.viewOnly) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
 function pushCloud(seed){
-  if(!cloud.ready||!cloud.user||!cloud.db) return; const id=currentAlbumId(); if(!id) return;
-  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, updatedAt:Date.now() },{merge:true}).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return; const id=currentAlbumId(); if(!id) return;
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, specialPages:state.config.specialPages||{}, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  pushLeaderboard();
+}
+function goToAlbum(code){
+  state.config.sharedCode = code || "";
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  subscribeAlbum(); updateCloudUI();
 }
 
 function openCloud(){ updateCloudUI(); ovCloud.classList.add("show"); }
@@ -1381,8 +2306,9 @@ function updateCloudUI(){
     setup.style.display="none"; auth.style.display="none"; usr.style.display="block";
     const email=cloud.user.email||"cuenta"; document.getElementById("userEmail").textContent=email;
     document.getElementById("userAv").textContent=(email[0]||"?").toUpperCase();
-    document.getElementById("myAlbumCode").textContent=currentAlbumId();
+    document.getElementById("myAlbumCode").textContent=cloud.user.uid;
     document.getElementById("joinCode").value=state.config.sharedCode||"";
+    const st=document.getElementById("syncTip"); if(st) st.textContent = cloud.viewOnly ? "👁️ Estás viendo un álbum compartido (solo lectura)." : "Sincronizado ✓ — los cambios se guardan solos.";
     pill.classList.add("on"); pillTxt.innerHTML='<b>'+email+'</b> · sincronizado';
   } else {
     setup.style.display="none"; auth.style.display="block"; usr.style.display="none";
@@ -1404,7 +2330,7 @@ document.getElementById("segLogin").onclick=()=>{ authMode="login"; document.get
 document.getElementById("segSignup").onclick=()=>{ authMode="signup"; document.getElementById("segSignup").classList.add("active"); document.getElementById("segLogin").classList.remove("active"); document.getElementById("authGo").textContent="Crear cuenta"; document.getElementById("authErr").textContent=""; };
 document.getElementById("authGo").onclick=async()=>{
   if(!cloud.ready && !initCloud()){ document.getElementById("authErr").textContent="Configura Firebase primero."; return; }
-  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr");
+  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr"); err.style.color="";
   if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
   err.textContent="Conectando…";
   try{
@@ -1424,7 +2350,7 @@ function agSet(m){ agMode=m; document.getElementById("agLogin").classList.toggle
 document.getElementById("agLogin").onclick=()=>agSet("login");
 document.getElementById("agSignup").onclick=()=>agSet("signup");
 document.getElementById("agGo").onclick=async()=>{
-  const err=document.getElementById("agErr");
+  const err=document.getElementById("agErr"); err.style.color="";
   if(!cloud.ready && !initCloud()){ err.textContent="Necesitas conexión a internet para entrar."; return; }
   const email=document.getElementById("agEmail").value.trim(), pass=document.getElementById("agPass").value;
   if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
@@ -1439,13 +2365,55 @@ document.getElementById("agGo").onclick=async()=>{
   }
 };
 document.getElementById("agPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("agGo").click(); });
+
+/* ----- Recuperar / crear nueva contraseña ----- */
+function sendPasswordReset(email, errEl, withToast){
+  if(!cloud.ready && !initCloud()){ errEl.style.color=""; errEl.textContent="Necesitas conexión a internet."; return; }
+  email=(email||"").trim();
+  if(!email || !/.+@.+\..+/.test(email)){ errEl.style.color=""; errEl.textContent="Escribe tu correo arriba y vuelve a tocar."; return; }
+  errEl.style.color=""; errEl.textContent="Enviando correo…";
+  cloud.auth.sendPasswordResetEmail(email).then(()=>{
+    errEl.style.color="var(--ok-d)";
+    errEl.textContent="✓ Te mandamos un correo para crear una contraseña nueva. Revisa tu bandeja (y la carpeta de spam).";
+    if(withToast) toast("Correo de recuperación enviado 📧");
+  }).catch(e=>{
+    errEl.style.color="";
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No hay ninguna cuenta con ese correo.","auth/missing-email":"Escribe tu correo primero.","auth/network-request-failed":"Sin conexión.","auth/too-many-requests":"Demasiados intentos, espera un poco e intenta de nuevo."};
+    errEl.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  });
+}
+document.getElementById("agForgot").onclick=()=>sendPasswordReset(document.getElementById("agEmail").value, document.getElementById("agErr"), false);
+document.getElementById("authForgot").onclick=()=>sendPasswordReset(document.getElementById("authEmail").value, document.getElementById("authErr"), true);
+document.getElementById("changePw").onclick=()=>{ if(cloud.user) sendPasswordReset(cloud.user.email, document.getElementById("cpwMsg"), true); };
 document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
 document.getElementById("joinGo").onclick=()=>{
   const v=document.getElementById("joinCode").value.trim();
-  state.config.sharedCode = v||""; save();
-  subscribeAlbum(); updateCloudUI();
-  toast(v?"Usando álbum compartido ✓":"Volviste a tu álbum");
+  goToAlbum(v);
+  toast(v?"Viendo álbum compartido 👁️ (solo lectura)":"Volviste a tu álbum ✓");
 };
+function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="group")); } goToAlbum(""); updateCloudUI(); toast("¡Volviste a tu álbum! ✓"); }
+document.getElementById("viewBack").onclick=backToMyAlbum;
+document.getElementById("viewBackFab").onclick=backToMyAlbum;
+document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); if(document.body.classList.contains("viewonly")) backToMyAlbum(); else { try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); } } };
+document.getElementById("hTitle").onclick=()=>{ if(document.body.classList.contains("viewonly")) backToMyAlbum(); };
+document.getElementById("rkSave").onclick=()=>{
+  const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
+  const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
+  state.config.nick=v; state.config.city=c;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  scheduleCloudWrite(); // guarda nick/ciudad también en tu álbum (te sigue entre aparatos)
+  if(!v){ leaveLeaderboard().then(renderRanking); toast("Saliste del ranking"); return; }
+  toast("Guardando…");
+  pushLeaderboard().then(()=>{ toast("Nick guardado ✓"); renderRanking(); })
+    .catch(e=>{ toast(e&&e.code==="permission-denied" ? "Falta pegar las reglas de Firebase 🔒" : "No se pudo guardar el nick ✗"); renderRanking(); });
+};
+document.getElementById("rkRefresh").onclick=renderRanking;
+document.getElementById("rkList").addEventListener("click",e=>{
+  const row=e.target.closest(".rk-row"); if(!row) return;
+  const uid=row.dataset.uid; if(!uid||!cloud.user) return;
+  if(uid===cloud.user.uid){ document.getElementById("ovLujito").classList.remove("show"); return; }
+  viewPersonAlbum(uid);
+});
 
 /* ---------- go ---------- */
 /* Anti-autollenado de Chrome/Edge: los campos parten "readonly" para que el
@@ -1455,35 +2423,73 @@ document.getElementById("joinGo").onclick=()=>{
   var unlock=function(){ el.removeAttribute("readonly"); };
   ["focus","pointerdown","mousedown","touchstart","keydown"].forEach(function(ev){ el.addEventListener(ev,unlock); });
 });
-/* Banda geométrica "We Are 26" (cuartos de círculo en colores oficiales) */
-function buildGeoBand(){
-  const band=document.getElementById("geoband"); if(!band) return;
-  const cols=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
-  const corners=["100% 0 0 0","0 100% 0 0","0 0 100% 0","0 0 0 100%","100% 100% 0 0","0 0 100% 100%","0 0 0 0","0 0 0 0","999px 999px 999px 999px"];
-  band.innerHTML="";
-  let prev=-1;
-  for(let i=0;i<14;i++){
-    const d=document.createElement("i");
-    let c; do{ c=Math.floor(Math.random()*cols.length); }while(c===prev); prev=c;
-    d.style.background=cols[c];
-    d.style.borderRadius=corners[Math.floor(Math.random()*corners.length)];
-    band.appendChild(d);
+/* Olas de color que fluyen (We Are 26, versión orgánica) */
+const WAVE_COLS=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
+function waveRnd(a,b){ return a+Math.random()*(b-a); }
+function wavePickColors(n){ const out=[]; let prev=-1; for(let i=0;i<n;i++){ let c; do{ c=Math.floor(Math.random()*WAVE_COLS.length); }while(c===prev); prev=c; out.push(WAVE_COLS[c]); } return out; }
+function waveSvg(vertical, count, viewW, viewH){
+  const main = vertical ? viewW : viewH, cross = vertical ? viewH : viewW;
+  const step = main/count, wob = step*0.34;
+  const P = (m,cr)=> vertical ? (m.toFixed(1)+","+cr.toFixed(1)) : (cr.toFixed(1)+","+m.toFixed(1));
+  function boundary(k){ const base=k*step;
+    if(k===0) return [0,0,0,0];
+    if(k===count) return [main,main,main,main];
+    return [base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob)];
   }
+  const B=[]; for(let k=0;k<=count;k++) B.push(boundary(k));
+  const cols=wavePickColors(count);
+  const fwd = a => "C "+P(a[1],cross/3)+" "+P(a[2],2*cross/3)+" "+P(a[3],cross);
+  const rev = a => "C "+P(a[2],2*cross/3)+" "+P(a[1],cross/3)+" "+P(a[0],0);
+  let paths="";
+  for(let k=0;k<count;k++){ const t=B[k], b=B[k+1];
+    paths+='<path d="M '+P(t[0],0)+" "+fwd(t)+" L "+P(b[3],cross)+" "+rev(b)+' Z" fill="'+cols[k]+'"/>';
+  }
+  return '<svg preserveAspectRatio="none" viewBox="0 0 '+viewW+' '+viewH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">'+paths+'</svg>';
 }
-function buildRails(){
-  const cols=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
-  const corners=["100% 0 0 0","0 100% 0 0","0 0 100% 0","0 0 0 100%","100% 100% 0 0","0 0 100% 100%","0 0 0 0","0 0 0 0","999px 999px 999px 999px"];
-  ["railL","railR"].forEach(id=>{
-    const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(!pat) return;
-    pat.innerHTML=""; let prev=-1;
-    for(let i=0;i<16;i++){ const d=document.createElement("i");
-      let c; do{ c=Math.floor(Math.random()*cols.length); }while(c===prev); prev=c;
-      d.style.background=cols[c]; d.style.borderRadius=corners[Math.floor(Math.random()*corners.length)]; pat.appendChild(d); }
-  });
+function buildGeoBand(){ const band=document.getElementById("geoband"); if(band) band.innerHTML=waveSvg(true, 14, 1200, 80); }
+function buildRails(){ ["railL","railR"].forEach(id=>{ const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(pat) pat.innerHTML=waveSvg(false, 16, 100, 800); }); }
+const ICONS={
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>'
+  ,repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>'
+  ,sheet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>'
+  ,cloudUp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"/></svg>'
+  ,braces:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg>'
+  ,trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>'
+  ,key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>'
+  ,logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>'
+  ,unplug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 5 3-3"/><path d="m2 22 3-3"/><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z"/><path d="M7.5 13.5 10 11"/><path d="M10.5 16.5 13 14"/><path d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z"/></svg>'
+  ,camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>'
+  ,image:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'
+  ,search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+};
+function applyIcons(){
+  const set=(id,svg)=>{ const e=document.getElementById(id); if(e) e.innerHTML=svg; };
+  set("btnCracks",ICONS.star); set("mbCracks",ICONS.star);
+  set("btnRankingTop",ICONS.trophy); set("mbRanking",ICONS.trophy);
+  set("btnHub",ICONS.chart); set("mbHub",ICONS.chart);
+  set("btnSet",ICONS.gear); set("mbSet",ICONS.gear);
+  const cp=document.querySelector("#cloudPill .ic"); if(cp) cp.innerHTML=ICONS.cloud;
+  const setBtn=(id,svg)=>{ const e=document.getElementById(id); if(e) e.insertAdjacentHTML("afterbegin", svg); };
+  setBtn("changePw",ICONS.key); setBtn("cfgEdit",ICONS.gear); setBtn("signOut",ICONS.logout);
+  setBtn("driveChange",ICONS.gear); setBtn("driveDisconnect",ICONS.unplug);
+  setBtn("btnCloud2",ICONS.cloud); setBtn("btnTrade",ICONS.repeat);
+  setBtn("btnExcel",ICONS.sheet); setBtn("btnExcelImport",ICONS.sheet);
+  setBtn("btnDrive",ICONS.cloudUp); setBtn("btnExport",ICONS.braces); setBtn("btnImport",ICONS.braces);
+  setBtn("btnAdminXlsx",ICONS.sheet); setBtn("btnAdminJson",ICONS.braces);
+  setBtn("btnReset",ICONS.trash);
+  const sc=document.querySelector('[for="scanCam"] .ic'); if(sc) sc.innerHTML=ICONS.camera;
+  const sg=document.querySelector('[for="scanGal"] .ic'); if(sg) sg.innerHTML=ICONS.image;
+  const si=document.getElementById("searchIco"); if(si) si.innerHTML=ICONS.search;
 }
 buildGeoBand();
 buildRails();
+applyIcons();
 render();
+updateSearchPlaceholder();
 initCloud();
 updateCloudUI();
 
