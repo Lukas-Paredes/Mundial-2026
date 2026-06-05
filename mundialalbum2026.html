@@ -186,9 +186,9 @@
   .fab svg{width:22px; height:22px;}
 
   /* MODALS */
-  .ov{position:fixed; inset:0; z-index:50; background:rgba(26,26,34,.45); backdrop-filter:blur(5px); display:none; align-items:flex-end; justify-content:center;}
+  .ov{position:fixed; inset:0; z-index:50; background:rgba(26,26,34,.45); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; padding:18px;}
   .ov.show{display:flex;}
-  .sheet{width:100%; max-width:520px; background:var(--surface); border-radius:28px 28px 0 0; padding:20px 18px calc(22px + env(safe-area-inset-bottom)); max-height:92vh; overflow-y:auto; box-shadow:0 -10px 50px rgba(26,26,34,.22); animation:up .26s cubic-bezier(.2,.7,.2,1);}
+  .sheet{width:100%; max-width:520px; background:var(--surface); border-radius:24px; padding:22px 20px 24px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(26,26,34,.30); animation:popin .2s cubic-bezier(.2,.7,.2,1);}
   @keyframes up{from{transform:translateY(48px); opacity:.4;} to{transform:translateY(0); opacity:1;}}
   .sheet-h{display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;}
   .sheet-h h2{font-size:26px;}
@@ -877,7 +877,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.7</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.9</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1204,6 +1204,13 @@ function sfxTeam(){      // ✅ equipo completo: carrera ascendente alegre (dist
   _brass(261.63,0.36,0.42,0.09);
 }
 function sfxStar(){ sfxTier("oro"); }   // compatibilidad
+function playClipOrSynth(code, tier){
+  if(!soundOn()) return;
+  let fell=false; const fallback=()=>{ if(fell) return; fell=true; sfxTier(tier, code); };
+  let a; try{ a=new Audio("audio/"+encodeURIComponent(code)+".mp3"); }catch(e){ fallback(); return; }
+  a.volume=0.95; a.addEventListener("error", fallback, {once:true});
+  const pr=a.play(); if(pr && pr.catch) pr.catch(fallback);
+}
 ["pointerdown","touchstart","keydown"].forEach(ev=>window.addEventListener(ev,()=>{ try{audioCtx();}catch(e){} },{once:true,passive:true}));
 
 function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true,sound:true,packPrice:1400,packSize:7}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
@@ -1375,7 +1382,7 @@ function showNextStar(){
   else if(d.code==="ARG17") fact="¡Encara Messi, encara Messi…! 🇦🇷 — "+fact;
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
-  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; sfxTier((d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"), d.code);
+  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; playClipOrSynth(d.code, (d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"));
   launchConfetti();
   ov.classList.add("show");
 }
