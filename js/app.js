@@ -279,6 +279,33 @@ const STAR_FACTS={
 };
 const STAR_PROB="📦 Dato: una lámina puntual sale en ~1 de cada 140 sobres (hay 980 distintas y cada sobre trae 7). ¡Por eso se celebra!";
 const EXTRA_PROB="🤯 Rareza nivel dios: las Extra Stickers (foil) salen ~1 cada 100 sobres.";
+const CAREER={
+  "ARG17":{ accent:"#1E6FB8",
+    stats:[ {i:"🏆",n:"8",l:"Balones de Oro"}, {i:"⚽",n:"+900",l:"Goles"}, {i:"🌟",n:"4",l:"Champions"}, {i:"🌍",n:"2022",l:"Mundial"} ],
+    balones:8, goles:900, meta:1000, record:"8 Balones de Oro · récord absoluto" },
+  "POR15":{ accent:"#D8232A",
+    stats:[ {i:"🏆",n:"5",l:"Balones de Oro"}, {i:"⚽",n:"+970",l:"Goles"}, {i:"🌟",n:"5",l:"Champions"}, {i:"🏅",n:"2016",l:"Euro"} ],
+    balones:5, goles:970, meta:1000, record:"Máximo goleador de la historia" }
+};
+function careerHTML(c){
+  var stats=c.stats.map(function(s){ return '<div class="cr-stat"><div class="cr-ico">'+s.i+'</div><div class="cr-num">'+s.n+'</div><div class="cr-lab">'+s.l+'</div></div>'; }).join("");
+  var balls="🏆".repeat(c.balones);
+  var pct=Math.round(c.goles/c.meta*100);
+  return '<div class="cr-head">📊 Su carrera · lo que el álbum no te cuenta</div>'+
+    '<div class="cr-grid">'+stats+'</div>'+
+    '<div class="cr-block"><div class="cr-row"><span class="cr-row-l">🏆 Balones de Oro</span><span class="cr-row-r">'+c.balones+'</span></div><div class="cr-balls">'+balls+'</div></div>'+
+    '<div class="cr-block"><div class="cr-row"><span class="cr-row-l">⚽ Camino a los 1.000 goles</span><span class="cr-row-r">'+c.goles+'</span></div><div class="cr-bar"><div class="cr-bar-fill" style="width:'+pct+'%"></div></div><div class="cr-foot">'+c.goles+' de 1.000 · '+pct+'%</div></div>'+
+    '<div class="cr-record">🐐 '+c.record+'</div>';
+}
+function renderCareerPanel(d){
+  var el=document.getElementById("starCareer");
+  var fc=document.getElementById("starFact");
+  if(!el && fc){ el=document.createElement("div"); el.id="starCareer"; el.className="star-career"; fc.parentNode.insertBefore(el, fc); }
+  if(!el) return;
+  var c=(d.kind!=="extra") && CAREER[d.code];
+  if(c){ el.style.setProperty("--cr-accent", c.accent); el.innerHTML=careerHTML(c); el.style.display="block"; }
+  else { el.innerHTML=""; el.style.display="none"; }
+}
 let _starQueue=[], _starShowing=false;
 function maybeCelebrateStar(code){
   if(!state.config.celebrate) return;
@@ -317,6 +344,7 @@ function showNextStar(){
   else if(d.code==="ARG17") fact="¡Encara Messi, encara Messi…! 🇦🇷 — "+fact;
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
+  renderCareerPanel(d);
   const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; playClipOrSynth(d.code, (d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"));
   launchConfetti();
   ov.classList.add("show");
@@ -792,221 +820,6 @@ document.getElementById("filters").addEventListener("click",e=>{ const b=e.targe
 let searchTimer; document.getElementById("search").addEventListener("input",e=>{ searchTerm=e.target.value; clearTimeout(searchTimer); searchTimer=setTimeout(render,140); });
 function updateSearchPlaceholder(){ const s=document.getElementById("search"); if(!s) return; s.placeholder = sortMode==="clubs" ? "Busca club o jugador (ej. Real Madrid, Mbappé)…" : "Busca selección o jugador (ej. Argentina, Messi)…"; }
 document.getElementById("sortSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove("active")); b.classList.add("active"); sortMode=b.dataset.s; updateSearchPlaceholder(); render(); });
-
-/* ---------- OCR refinado: worker + preprocesado + corrección ---------- */
-let ocrWorker=null, ocrWorkerTried=false;
-async function getWorker(){
-  if(ocrWorker) return ocrWorker;
-  if(ocrWorkerTried) return null; ocrWorkerTried=true;
-  try{ const w=await Tesseract.createWorker("eng"); await w.setParameters({ tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ", preserve_interword_spaces:"1" }); ocrWorker=w; return w; }
-  catch(e){ return null; }
-}
-async function ocrImage(src, psm){
-  const w=await getWorker();
-  if(w){ try{ await w.setParameters({ tessedit_pageseg_mode:String(psm) }); const r=await w.recognize(src); return (r&&r.data&&r.data.text)||""; }catch(e){} }
-  try{ const r=await Tesseract.recognize(src,"eng",{ tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 " }); return (r&&r.data&&r.data.text)||""; }catch(e){ return ""; }
-}
-function loadImg(file){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=()=>rej(new Error("img")); img.src=URL.createObjectURL(file); }); }
-function preprocess(img, region, scale, opts){
-  opts=opts||{};
-  const r=region||{sx:0,sy:0,sw:1,sh:1}; scale=scale||2;
-  const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
-  const sw=iw*r.sw, sh=ih*r.sh, sx=iw*r.sx, sy=ih*r.sy;
-  let cw=Math.round(sw*scale), ch=Math.round(sh*scale); const MAX=2200;
-  if(cw>MAX){ const k=MAX/cw; cw=Math.round(cw*k); ch=Math.round(ch*k); }
-  if(ch>MAX){ const k=MAX/ch; cw=Math.round(cw*k); ch=Math.round(ch*k); }
-  cw=Math.max(1,cw); ch=Math.max(1,ch);
-  const cvs=document.createElement("canvas"); cvs.width=cw; cvs.height=ch;
-  const ctx=cvs.getContext("2d"); ctx.drawImage(img, sx,sy,sw,sh, 0,0,cw,ch);
-  try{ const id=ctx.getImageData(0,0,cw,ch), d=id.data, C=opts.contrast||1.8, I=128*(1-C), inv=!!opts.invert;
-    for(let i=0;i<d.length;i+=4){ let g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]; if(inv) g=255-g; g=g*C+I; g=g<0?0:g>255?255:g; d[i]=d[i+1]=d[i+2]=g; }
-    ctx.putImageData(id,0,0);
-  }catch(e){}
-  return cvs;
-}
-async function scanImage(file, thorough, onProgress){
-  const img=await loadImg(file); const found=new Set();
-  const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
-  const portrait = ih>=iw;
-  let cols,rows;
-  if(thorough){ cols = portrait?2:3; rows = portrait?3:2; } else { cols=2; rows=2; }
-  const passes=[]; const ov=0.12, tw=1/cols, th=1/rows;
-  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
-    const sx=Math.max(0,c*tw-ov*tw), sy=Math.max(0,r*th-ov*th);
-    const ex=Math.min(1,(c+1)*tw+ov*tw), ey=Math.min(1,(r+1)*th+ov*th);
-    passes.push({region:{sx,sy,sw:ex-sx,sh:ey-sy}, invert:false});
-  }
-  passes.push({region:null, invert:false});
-  if(thorough) passes.push({region:null, invert:true});
-  try{
-    for(let v=0; v<passes.length; v++){
-      const reg=passes[v].region;
-      const longPx = reg ? Math.max(iw*reg.sw, ih*reg.sh) : Math.max(iw,ih);
-      const scale = reg ? Math.min(4, Math.max(1.6, 1500/Math.max(1,longPx))) : 2;
-      const txt=await ocrImage(preprocess(img, reg, scale, {invert:passes[v].invert}), 11);
-      [...findCodes(txt), ...fuzzyCodes(txt)].forEach(c=>found.add(c));
-      if(onProgress) onProgress((v+1)/passes.length);
-    }
-  } finally { try{ URL.revokeObjectURL(img.src); }catch(e){} }
-  return [...found];
-}
-function fuzzyCodes(text){
-  const up=(text||"").toUpperCase(); const out=new Set();
-  const toL={ "0":"O","1":"I","5":"S","8":"B","2":"Z","6":"G" };
-  const toD={ "O":"0","Q":"0","I":"1","L":"1","S":"5","B":"8","Z":"2","G":"6" };
-  const toks=up.match(/[A-Z0-9]{4,6}/g)||[];
-  toks.forEach(tok=>{ for(const pl of [3,2]){ if(tok.length<pl+1||tok.length>pl+2) continue;
-    let preSubs=0, numSubs=0, realDigits=0;
-    const pre=tok.slice(0,pl).split("").map(c=>{ if(/[0-9]/.test(c)){ preSubs++; return toL[c]||c; } return c; }).join("");
-    const num=tok.slice(pl).split("").map(c=>{ if(/[A-Z]/.test(c)){ numSubs++; return toD[c]||""; } realDigits++; return c; }).join("");
-    if(preSubs>1 || numSubs>1 || realDigits<1) continue;
-    if(!/^[A-Z]{2,3}$/.test(pre)||!/^\d{1,2}$/.test(num)) continue;
-    const code=pre+parseInt(num,10);
-    if(VALID_TEAM.has(code)||(state.config.specials&&VALID_SPECIAL.has(code))) out.add(code);
-  }});
-  return [...out];
-}
-
-/* ---------- LECTOR CON IA (Gemini) ---------- */
-const AI_KEY_STORE="albumAiCfg_v1";
-const AI_MODELS=["gemini-2.0-flash","gemini-1.5-flash"];
-let aiCfg=(function(){ try{ return JSON.parse(localStorage.getItem(AI_KEY_STORE))||{}; }catch(e){ return {}; } })();
-function aiEnabled(){ return !!(aiCfg && aiCfg.key); }
-function saveAiCfg(){ try{ localStorage.setItem(AI_KEY_STORE, JSON.stringify(aiCfg)); }catch(e){} }
-function renderAiBar(){
-  const bar=document.getElementById("aiBar"), setup=document.getElementById("aiSetup");
-  if(aiEnabled()){
-    bar.innerHTML='<span class="ai-on">🤖 Lector con IA activado</span><button class="ai-link" id="aiRemove">quitar</button>';
-    setup.style.display="none";
-    const rm=document.getElementById("aiRemove"); if(rm) rm.onclick=()=>{ aiCfg={}; saveAiCfg(); renderAiBar(); toast("Lector con IA desactivado"); };
-  } else {
-    bar.innerHTML='<button class="ai-cta" id="aiToggle">🤖 Activar lector con IA — gratis y mucho mejor</button>';
-    const tg=document.getElementById("aiToggle"); if(tg) tg.onclick=()=>{ setup.style.display = setup.style.display==="none"?"block":"none"; };
-  }
-}
-function aiPrompt(){
-  const teamCodes=GROUPS.map(g=>g.teams.map(t=>t[0]).join(", ")).join(", ");
-  return "Estas son fotos de figuritas (láminas) del álbum Panini de la Copa del Mundo FIFA 2026. "
-    +"Cada lámina lleva un código impreso: 3 letras del equipo seguidas de un número del 1 al 20 (ejemplos: ARG5, BRA20, MEX1), "
-    +"o un código especial: 00, o FWC1 hasta FWC19. "
-    +"Los códigos de equipo válidos (3 letras) son exactamente estos: "+teamCodes+". "
-    +"Mira las imágenes con mucha atención y devuelve SOLO un arreglo JSON con los códigos que puedas leer con claridad, en MAYÚSCULAS y sin espacios. "
-    +"Ejemplo de respuesta válida: [\"ARG5\",\"BRA12\",\"FWC3\"]. "
-    +"Si no logras leer ninguno, responde []. No agregues texto, comentarios ni explicaciones: solo el arreglo JSON.";
-}
-function fileToScaledBase64(file, maxDim, q){
-  return new Promise((resolve,reject)=>{
-    loadImg(file).then(img=>{
-      const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
-      let w=iw,h=ih,m=Math.max(w,h);
-      if(m>maxDim){ const k=maxDim/m; w=Math.round(w*k); h=Math.round(h*k); }
-      const cvs=document.createElement("canvas"); cvs.width=Math.max(1,w); cvs.height=Math.max(1,h);
-      cvs.getContext("2d").drawImage(img,0,0,cvs.width,cvs.height);
-      try{ URL.revokeObjectURL(img.src); }catch(e){}
-      try{ resolve(cvs.toDataURL("image/jpeg", q||0.72).split(",")[1]); }catch(e){ reject(e); }
-    }).catch(reject);
-  });
-}
-async function aiGenerate(parts){
-  const body={ contents:[{parts:parts}], generationConfig:{temperature:0} };
-  let lastErr="Error desconocido";
-  for(const model of AI_MODELS){
-    const url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+encodeURIComponent(aiCfg.key);
-    let res;
-    try{ res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }
-    catch(e){ lastErr="Sin conexión a internet"; continue; }
-    if(res.ok){ const data=await res.json(); const cand=(data.candidates||[])[0]; const p=cand&&cand.content&&cand.content.parts; return p?p.map(x=>x.text||"").join(""):""; }
-    let em="Error "+res.status; try{ const ej=await res.json(); if(ej&&ej.error&&ej.error.message) em=ej.error.message; }catch(_){}
-    lastErr=em;
-    if(res.status===404){ continue; }
-    if(res.status===400 && /API key not valid|API_KEY_INVALID/i.test(em)){ throw new Error("La clave no es válida. Toca 'quitar' y pega una nueva."); }
-    if(res.status===429){ throw new Error("La IA llegó a su límite gratis por ahora. Espera un poco e intenta de nuevo."); }
-    throw new Error(em);
-  }
-  throw new Error(lastErr);
-}
-function parseAiCodes(text){
-  let t=(text||"").trim().replace(/```json/gi,"").replace(/```/g,"").trim();
-  let arr=null;
-  try{ arr=JSON.parse(t); }catch(e){ const m=t.match(/\[[\s\S]*\]/); if(m){ try{ arr=JSON.parse(m[0]); }catch(_){ } } }
-  const out=[];
-  if(Array.isArray(arr)){ arr.forEach(x=>{ const c=normalize(String(x)); if(c) out.push(c); }); }
-  else { findCodes(t).forEach(c=>out.push(c)); }
-  return [...new Set(out)];
-}
-async function aiScan(files, onProgress){
-  const out=new Set(); const CHUNK=5; const chunks=[];
-  for(let i=0;i<files.length;i+=CHUNK) chunks.push(files.slice(i,i+CHUNK));
-  let done=0;
-  for(const chunk of chunks){
-    const parts=[{text:aiPrompt()}];
-    for(const f of chunk){ const b64=await fileToScaledBase64(f,1280,0.72); parts.push({inline_data:{mime_type:"image/jpeg",data:b64}}); }
-    const txt=await aiGenerate(parts);
-    parseAiCodes(txt).forEach(c=>out.add(c));
-    done+=chunk.length; if(onProgress) onProgress(done/files.length);
-  }
-  return [...out];
-}
-
-/* ---------- scan ---------- */
-const ovScan=document.getElementById("ovScan"),scanCam=document.getElementById("scanCam"),scanGal=document.getElementById("scanGal"),scanStatus=document.getElementById("scanStatus");
-const scanProg=document.getElementById("scanProg"),scanProgBar=document.getElementById("scanProgBar"),foundWrap=document.getElementById("foundWrap"),foundList=document.getElementById("foundList");
-document.getElementById("fab").onclick=()=>{ resetScan(); ovScan.classList.add("show"); };
-function resetScan(){ scanStatus.textContent=""; scanProg.style.display="none"; scanProgBar.style.width="0"; foundWrap.style.display="none"; foundList.innerHTML=""; document.getElementById("manualCode").value=""; scanCam.value=""; scanGal.value=""; const ai=document.getElementById("aiSetup"); if(ai) ai.style.display="none"; const ke=document.getElementById("aiErr"); if(ke) ke.textContent=""; renderAiBar(); }
-async function handleScanFiles(fileList){
-  const files=[...fileList]; if(!files.length) return;
-  foundWrap.style.display="none"; foundList.innerHTML="";
-  scanProg.style.display="block"; scanProgBar.style.width="0";
-  const all=new Set();
-  if(aiEnabled()){
-    scanStatus.textContent = files.length>1 ? ("🤖 Leyendo "+files.length+" fotos con IA…") : "🤖 Leyendo la foto con IA…";
-    try{ (await aiScan(files, frac=>{ scanProgBar.style.width=Math.round(frac*100)+"%"; })).forEach(c=>all.add(c)); }
-    catch(err){ scanProg.style.display="none"; scanStatus.textContent="La IA no pudo leer: "+((err&&err.message)?err.message:"error")+" — o escribe el código abajo."; return; }
-  } else {
-    if(typeof Tesseract==="undefined"){ scanStatus.textContent="El lector básico aún no carga (necesita internet la 1ª vez). Activa el lector con IA arriba, o escribe el código abajo."; scanProg.style.display="none"; return; }
-    const thorough = files.length===1;
-    for(let i=0;i<files.length;i++){
-      scanStatus.textContent = files.length>1 ? ("Leyendo foto "+(i+1)+" de "+files.length+"…") : "Analizando la foto por zonas (busca todas las láminas)…";
-      try{ (await scanImage(files[i], thorough, frac=>{ scanProgBar.style.width=Math.round((i+frac)/files.length*100)+"%"; })).forEach(c=>all.add(c)); }catch(err){}
-    }
-  }
-  scanProgBar.style.width="100%"; scanProg.style.display="none";
-  const codes=[...all];
-  if(codes.length){
-    scanStatus.textContent = files.length>1
-      ? ("Encontré "+codes.length+" código(s) en "+files.length+" fotos. Revisa y toca para registrar:")
-      : ("Encontré "+codes.length+" código(s). Confirma cuáles registrar:");
-    foundWrap.style.display="block";
-    if(codes.length>1){
-      const allBtn=document.createElement("button");
-      allBtn.className="btn btn-grn"; allBtn.style.width="100%"; allBtn.style.marginBottom="10px";
-      allBtn.textContent="✓ Registrar todas ("+codes.length+")";
-      allBtn.onclick=()=>{ codes.forEach(c=>{ setCount(c,getCount(c)+1); refreshCellInDom(c); pushRecent(c); }); updateStats(); allBtn.textContent="✓ Registradas"; allBtn.disabled=true; [...foundList.querySelectorAll(".pill")].forEach(p=>{ if(!p.classList.contains("added")){ p.classList.add("added"); const pl=p.querySelector(".plus"); if(pl) pl.textContent="✓"; } }); toast(codes.length+" láminas registradas ✓"); };
-      foundList.appendChild(allBtn);
-    }
-    codes.forEach(c=>foundList.appendChild(makePill(c)));
-  } else {
-    scanStatus.textContent = files.length>1 ? "No reconocí códigos en esas fotos 😕. Prueba con fotos más nítidas del código, o escríbelos abajo." : "No reconocí ningún código 😕. Prueba otra foto más nítida o escríbelo abajo.";
-  }
-}
-scanCam.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanCam.value=""; });
-scanGal.addEventListener("change",e=>{ handleScanFiles(e.target.files); scanGal.value=""; });
-document.getElementById("aiSave").onclick=()=>{
-  const inp=document.getElementById("aiKeyInput"), err=document.getElementById("aiErr");
-  const v=(inp.value||"").trim();
-  if(v.length<20){ err.textContent="Pega la clave completa (empieza con AIza…)."; return; }
-  aiCfg={key:v}; saveAiCfg(); err.textContent=""; inp.value=""; renderAiBar(); toast("Lector con IA activado 🤖");
-};
-function makePill(code){
-  const p=document.createElement("button"); p.className="pill";
-  const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
-  const lab=document.createElement("span"); lab.textContent=" "+displayCode(code); p.appendChild(plus); p.appendChild(lab);
-  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); pushRecent(code); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); if(n===1) sfxPop(); toast((n===1?(hype()+" 👍🗿 "+displayCode(code)+" ✓"):(displayCode(code)+" · repetida ×"+n))); });
-  return p;
-}
-const manualCode=document.getElementById("manualCode");
-document.getElementById("manualBtn").onclick=()=>{ if(addByCode(manualCode.value,false)) manualCode.value=""; };
-manualCode.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(addByCode(manualCode.value,false)) manualCode.value=""; }});
 
 /* ---------- settings ---------- */
 const ovSet=document.getElementById("ovSet"),tgSpecials=document.getElementById("tgSpecials"),tgExtras=document.getElementById("tgExtras");
@@ -1689,7 +1502,7 @@ document.getElementById("rkList").addEventListener("click",e=>{
 /* ---------- go ---------- */
 /* Anti-autollenado de Chrome/Edge: los campos parten "readonly" para que el
    navegador NO inyecte el correo/clave guardados; al tocarlos se desbloquean. */
-["quickAdd","search","manualCode","joinCode","aiKeyInput"].forEach(function(id){
+["quickAdd","search","joinCode"].forEach(function(id){
   var el=document.getElementById(id); if(!el) return;
   var unlock=function(){ el.removeAttribute("readonly"); };
   ["focus","pointerdown","mousedown","touchstart","keydown"].forEach(function(ev){ el.addEventListener(ev,unlock); });
@@ -1752,8 +1565,6 @@ function applyIcons(){
   setBtn("btnDrive",ICONS.cloudUp); setBtn("btnExport",ICONS.braces); setBtn("btnImport",ICONS.braces);
   setBtn("btnAdminXlsx",ICONS.sheet); setBtn("btnAdminJson",ICONS.braces);
   setBtn("btnReset",ICONS.trash);
-  const sc=document.querySelector('[for="scanCam"] .ic'); if(sc) sc.innerHTML=ICONS.camera;
-  const sg=document.querySelector('[for="scanGal"] .ic'); if(sg) sg.innerHTML=ICONS.image;
   const si=document.getElementById("searchIco"); if(si) si.innerHTML=ICONS.search;
 }
 buildGeoBand();
