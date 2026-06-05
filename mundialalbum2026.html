@@ -16,7 +16,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <link rel="stylesheet" href="css/estilos.css?v=11" />
 </head>
 <body>
@@ -126,13 +125,6 @@
 
 <main id="main"></main>
 
-<button class="fab" id="fab">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-  </svg>
-  Escanear
-</button>
-
 <!-- CRACKS (galería con tiers) -->
 <div class="ov" id="ovCracks"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">⭐ Mis cracks</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
@@ -155,36 +147,6 @@
   <div class="ed-code"><div class="big" id="edCode">—</div><div class="ed-player" id="edPlayer"></div><span class="ed-pos" id="edPos"></span><div class="ed-stat-ro" id="edStatRo"></div><div class="ed-value" id="edValue"></div><div class="who" id="edWho">—</div><div class="st s0" id="edSt">No la tengo</div></div>
   <div class="stepper"><button id="edMinus">−</button><div class="cnt" id="edCnt">0</div><button id="edPlus">+</button></div>
   <div class="ed-actions"><button class="btn btn-red" id="edRemove">Quitar</button><button class="btn btn-grn" id="edDone">Listo</button></div>
-</div></div>
-
-<!-- SCAN -->
-<div class="ov" id="ovScan"><div class="sheet">
-  <div class="sheet-h"><h2 class="disp">Escanear <span class="alfa-tag">alfa</span></h2><button class="x" data-close>✕</button></div>
-  <div class="aibar" id="aiBar"></div>
-  <div class="aisetup" id="aiSetup" style="display:none">
-    <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin:0 0 8px">Saca una llave gratis de la IA de Google (3 pasos) y el lector va a leer las fotos muchísimo mejor:</p>
-    <ol class="steps">
-      <li>Entra a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> con tu cuenta de Google.</li>
-      <li>Toca <b>"Create API key"</b> (Crear clave). Es gratis.</li>
-      <li>Copia la clave (empieza con <span class="mono">AIza…</span>) y pégala aquí abajo.</li>
-    </ol>
-    <div class="field"><label>Pega tu clave de Gemini</label>
-      <input id="aiKeyInput" type="text" placeholder="AIza..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
-    <div class="err" id="aiErr"></div>
-    <button class="btn btn-blue" style="width:100%;margin-top:8px" id="aiSave">Guardar clave y activar IA</button>
-    <div class="tip">La clave queda solo en tu navegador, en este equipo. Nadie más la ve.</div>
-  </div>
-  <div class="scan-opts">
-    <label class="drop" for="scanCam"><div class="ic">📷</div><div class="t">Tomar foto</div><div class="s">Usa la cámara y apunta al código (ej. ARG 5)</div></label>
-    <label class="drop" for="scanGal"><div class="ic">🖼️</div><div class="t">Elegir de la galería</div><div class="s">Sube varias fotos a la vez y las marca todas</div></label>
-  </div>
-  <input id="scanCam" type="file" accept="image/*" capture="environment" hidden />
-  <input id="scanGal" type="file" accept="image/*" multiple hidden />
-  <div class="prog" id="scanProg"><i id="scanProgBar"></i></div>
-  <div class="scan-status" id="scanStatus"></div>
-  <div class="found-wrap" id="foundWrap" style="display:none"><h3>Códigos detectados — toca para registrar</h3><div class="found" id="foundList"></div></div>
-  <div class="manual"><input id="manualCode" type="text" name="album-manual" placeholder="O escribe el código…" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/><button id="manualBtn">Agregar</button></div>
-  <div class="exp-note">🧪 <b>Función experimental (alfa).</b> El lector todavía está en pruebas: puede fallar o equivocarse de número. Siempre revisa y confirma tú antes de registrar — y si no la pilla, escribe el código a mano. 💪</div>
 </div></div>
 
 <!-- CLOUD -->
@@ -420,4 +382,3 @@
 <script src="js/app.js?v=11"></script>
 </body>
 </html>
-
