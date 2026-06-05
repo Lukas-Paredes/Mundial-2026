@@ -160,12 +160,16 @@
   .full .bar i{background:linear-gradient(90deg,var(--c-green),var(--ok-d)) !important;}
 
   .cells{display:grid; grid-template-columns:repeat(5,1fr); gap:8px;}
-  .cell{position:relative; aspect-ratio:1/1; border-radius:14px; border:2px dashed var(--line2); background:var(--surface2); color:var(--mut2); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:14px; font-weight:700; cursor:pointer; user-select:none; transition:transform .1s, background .18s, border-color .18s, color .18s, box-shadow .18s;}
+  .cell{position:relative; min-height:62px; border-radius:14px; border:2px dashed var(--line2); background:var(--surface2); color:var(--mut2); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:14px; font-weight:700; cursor:pointer; user-select:none; transition:transform .1s, background .18s, border-color .18s, color .18s, box-shadow .18s;}
   .cell:not(.have):not(.dup):hover{border-color:var(--c-blue); color:var(--ink2);}
   .cell:active{transform:scale(.9);}
   .cell.have{background:linear-gradient(155deg,#19a94a,var(--ok-d)); color:#fff; border-style:solid; border-color:transparent; box-shadow:inset 0 2px 0 rgba(255,255,255,.35), 0 4px 12px rgba(0,128,43,.30);}
   .cell.dup{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent; box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 4px 12px rgba(242,162,12,.34);}
   .cell .badge{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:10px; font-weight:800; min-width:19px; height:19px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid var(--surface); box-shadow:0 2px 6px rgba(224,50,42,.4);}
+  .cell.info{flex-direction:column; gap:1px; padding:4px 3px; line-height:1.05;}
+  .cell.info .cnum{font-family:var(--font-mono); font-weight:800; font-size:14px;}
+  .cell.info .cname{font-family:var(--font-ui); font-weight:700; font-size:8.5px; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:.97;}
+  .cell.info .cpos{font-family:var(--font-ui); font-weight:800; font-size:7px; letter-spacing:.05em; opacity:.82;}
   .cell.hide, .team.hide, .grp.hide{display:none;}
   .cell.hit{outline:3px solid var(--c-pink); outline-offset:2px; z-index:2;}
   .clubnav{margin:0 0 14px; flex-wrap:wrap; overflow:visible;}
@@ -472,7 +476,10 @@
     .grp-h{grid-column:1 / -1;}
     .team{padding:18px 18px 19px;}
     .cells{gap:9px;}
-    .cell{font-size:15px; border-radius:15px;}
+    .cell{font-size:15px; border-radius:15px; min-height:72px;}
+    .cell.info .cnum{font-size:16px;}
+    .cell.info .cname{font-size:10px;}
+    .cell.info .cpos{font-size:8px;}
     .team-name .nm{font-size:21px;}
     .flag{font-size:30px; width:36px;}
   }
@@ -503,7 +510,8 @@
   main.ov-compact .tprog .bar{display:none;}
   main.ov-compact .tprog .fr{font-size:10px;}
   main.ov-compact .cells{grid-template-columns:repeat(20,1fr); gap:2px;}
-  main.ov-compact .cell{aspect-ratio:1/1; border-radius:3px; border-width:1px; font-size:0; pointer-events:none; cursor:default;}
+  main.ov-compact .cell{aspect-ratio:1/1; min-height:0; border-radius:3px; border-width:1px; font-size:0; pointer-events:none; cursor:default; padding:0;}
+  main.ov-compact .cell .cnum, main.ov-compact .cell .cname, main.ov-compact .cell .cpos{display:none;}
   main.ov-compact .cell .badge{display:none;}
   main.ov-compact .cell.have, main.ov-compact .cell.dup{box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
   @media (min-width:880px){
@@ -862,7 +870,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.6</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.8</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -942,7 +950,7 @@
   <div class="star-value" id="starValue"></div>
   <div class="star-fact" id="starFact">—</div>
   <div class="star-prob" id="starProb">—</div>
-  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Genial! 🙌</button>
+  <button class="btn btn-grn" id="starClose" style="margin-top:16px">¡Genial! 👍🗿</button>
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
@@ -1044,7 +1052,7 @@ function celebrateTeam(code,name){
     const names=_celebrateQueue.splice(0);
     launchConfetti();
     const t=document.getElementById("toast"); if(!t) return;
-    t.textContent = names.length===1 ? ("¡Completaste "+names[0]+"! 🎉") : ("¡Completaste "+names.length+" equipos! 🎉");
+    t.textContent = names.length===1 ? ("¡Completaste "+names[0]+"! 👍🗿") : ("¡Completaste "+names.length+" equipos! 👍🗿");
     t.classList.add("show","party");
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>{ t.classList.remove("show"); setTimeout(()=>t.classList.remove("party"),260); }, 2800);
@@ -1139,6 +1147,7 @@ function showNextStar(){
   if(valEl){ const v=(d.kind==="extra")?"":playerValue(d.code); valEl.textContent=v; valEl.style.display=v?"block":"none"; }
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
+  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿";
   launchConfetti();
   ov.classList.add("show");
 }
@@ -1166,12 +1175,27 @@ function findCodes(text){
 const main=document.getElementById("main");
 let currentFilter="all", searchTerm="", sortMode="group", clubCountry="all";
 function cellState(c){ const n=getCount(c); return n===0?0:(n===1?1:2); }
+function shortName(code){ const nm=playerName(code); if(!nm) return ""; if(nm==="Foto del equipo") return "Plantel"; const p=nm.trim().split(/\s+/); return p.length>1?p[p.length-1]:nm; }
+function posAbbr(code){ const po=playerPos(code); if(!po) return ""; const m={"Portero":"POR","Arquero":"POR","Defensa":"DEF","Lateral":"LAT","Mediocampista":"MED","Volante":"MED","Centrocampista":"MED","Delantero":"DEL","Extremo":"EXT"}; return m[po]||po.slice(0,3).toUpperCase(); }
+function cellContent(d,code,label){
+  const st=cellState(code), isTeam=!!CODE_TEAM[code]; d.innerHTML="";
+  if(st>=1 && isTeam){
+    d.classList.add("info");
+    const nm=shortName(code), po=posAbbr(code);
+    let h='<span class="cnum">'+label+'</span>';
+    if(nm) h+='<span class="cname">'+escHTML(nm)+'</span>';
+    if(po) h+='<span class="cpos">'+po+'</span>';
+    d.innerHTML=h;
+  } else { d.classList.remove("info"); d.textContent=label; }
+  const nn=getCount(code);
+  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(nn-1); d.appendChild(b); }
+}
 function buildCell(code,label,opts){
   opts=opts||{};
   const n=getCount(code),st=cellState(code);
-  const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.textContent=label;
+  const d=document.createElement("div"); d.className="cell"+(st===1?" have":st===2?" dup":""); d.dataset.code=code; d.dataset.label=label;
   const _pn=playerName(code); if(_pn) d.title=_pn;
-  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
+  cellContent(d,code,label);
   if(opts.viewer){ d.addEventListener("click",()=>openEditor(code)); return d; }
   let lp=false, lpTimer=null;
   const quickEdit=(delta)=>{ const cur=getCount(code); setCount(code, Math.max(0,cur+delta)); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); const m=getCount(code); toast(delta>0 ? (m>1?(displayCode(code)+" · repetida ×"+m):(hype()+" 👍🗿 "+displayCode(code)+" ✓")) : (m>0?(displayCode(code)+" −1 (×"+m+")"):(displayCode(code)+" quitada"))); };
@@ -1515,10 +1539,9 @@ document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show");
 function refreshCellInDom(code){
   updateSquadRow(code);
   const cell=main.querySelector('.cell[data-code="'+cssEsc(code)+'"]'); if(!cell) return;
-  const n=getCount(code),st=cellState(code); cell.classList.remove("have","dup");
+  const st=cellState(code); cell.classList.remove("have","dup");
   if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
-  const old=cell.querySelector(".badge"); if(old) old.remove();
-  if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); cell.appendChild(b); }
+  cellContent(cell, code, cell.dataset.label||cell.textContent);
   const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl); updateRosterRow(code);
 }
 function refreshTeamProgress(teamEl){
