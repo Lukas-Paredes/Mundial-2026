@@ -143,6 +143,9 @@
   .team-name .cd-pg{color:var(--c-blue); font-weight:800; font-family:var(--font-ui);}
   .team-h.tappable{cursor:pointer;}
   .team-h.tappable .nm:after{content:" ⓘ"; font-size:11px; color:var(--mut2); font-weight:700; vertical-align:middle;}
+  #ovTeam{align-items:center;}
+  #ovTeam .sheet{border-radius:24px; max-width:440px; width:calc(100% - 32px); margin:0 auto; max-height:86vh; animation:popin .2s cubic-bezier(.2,.7,.2,1);}
+  @keyframes popin{from{transform:scale(.94); opacity:0;} to{transform:scale(1); opacity:1;}}
 
   .team{position:relative; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:15px 15px 16px; margin-bottom:13px; box-shadow:var(--shadow); overflow:hidden;}
   .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
@@ -874,7 +877,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.5</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.6</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1013,18 +1016,18 @@ const TEAM_INFO = {
  BIH:{conf:"UEFA",clas:"Repechaje europeo (ganó en penales)",dato:"Dejó fuera a Italia en la final del repechaje."},
  QAT:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue anfitrión en 2022; esta vez clasificó en la cancha."},
  SUI:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
- BRA:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"5 veces campeón del mundo, el único con 5 estrellas."},
+ BRA:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"5 veces campeón del mundo, el único con 5 estrellas.",tab:{g:8,e:4,p:6,gf:24,gc:17,pts:28,pos:"5º en Sudamérica"}},
  MAR:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Primer país en clasificar a este Mundial (5-0 a Níger). Semifinalista en 2022."},
  HAI:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"Vuelve a un Mundial después de 1974."},
  SCO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Escocia regresa a una Copa del Mundo."},
  USA:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Organiza su primer Mundial masculino desde 1994."},
- PAR:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su cupo con un 0-0 ante Ecuador… ¡y declararon feriado nacional!"},
+ PAR:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su cupo con un 0-0 ante Ecuador… ¡y declararon feriado nacional!",tab:{g:7,e:7,p:4,gf:14,gc:10,pts:28,pos:"6º en Sudamérica"}},
  AUS:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
  TUR:{conf:"UEFA",clas:"Repechaje europeo",dato:"Venció a Kosovo en la final del repechaje."},
  GER:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"4 veces campeón del mundo."},
  CUW:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"¡Debutante! Curazao, uno de los territorios más pequeños en llegar a un Mundial."},
  CIV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
- ECU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:""},
+ ECU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Mejor defensa de Sudamérica (solo 5 goles en contra), pese a partir con −3 puntos de sanción.",tab:{g:8,e:8,p:2,gf:14,gc:5,pts:29,pos:"2º en Sudamérica"}},
  NED:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"3 veces subcampeón del mundo."},
  JAP:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue el primer país del mundo en clasificar (marzo 2025)."},
  SWE:{conf:"UEFA",clas:"Repechaje europeo",dato:"Clasificó con un 3-2 sobre Polonia."},
@@ -1036,19 +1039,19 @@ const TEAM_INFO = {
  ESP:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Campeón de Europa vigente; una de las favoritas."},
  CPV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"¡Debutante! Cabo Verde, uno de los países más pequeños en un Mundial."},
  KSA:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
- URU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"2 veces campeón del mundo (1930 y 1950)."},
+ URU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"2 veces campeón del mundo (1930 y 1950).",tab:{g:7,e:7,p:4,gf:22,gc:12,pts:28,pos:"4º en Sudamérica"}},
  FRA:{conf:"UEFA",clas:"Ganó su grupo europeo (5 triunfos y 1 empate)",fig:"Kylian Mbappé",dato:"Subcampeón en 2022; una de las grandes favoritas."},
  SEN:{conf:"África (CAF)",clas:"Ganó su grupo africano (invicto)",dato:"Invicto en su grupo, solo 3 goles en contra."},
  IRQ:{conf:"Asia (AFC)",clas:"Repechaje intercontinental",dato:"Eliminó a Bolivia 2-1 el 31 de marzo para clasificar."},
- NOR:{conf:"UEFA",clas:"Ganó el Grupo I: 8 victorias en 8 partidos",fig:"Erling Haaland",dato:"37 goles a favor; goleó 11-1 a Moldavia. Vuelve a un Mundial tras casi 30 años."},
- ARG:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",fig:"Lionel Messi",dato:"Campeón del mundo vigente (2022)."},
+ NOR:{conf:"UEFA",clas:"Ganó el Grupo I: 8 victorias en 8 partidos",fig:"Erling Haaland",dato:"Goleó 11-1 a Moldavia. Haaland fue el máximo goleador de TODA la clasificación mundial (16 goles). Vuelve a un Mundial tras casi 30 años."},
+ ARG:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",fig:"Lionel Messi",dato:"Campeón del mundo vigente (2022). Messi fue el goleador de las Eliminatorias (8 goles).",tab:{g:12,e:2,p:4,gf:31,gc:10,pts:38,pos:"1º en Sudamérica"}},
  ALG:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
  AUT:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
  JOR:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Jordania llega por primera vez a un Mundial."},
  POR:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Cristiano Ronaldo",dato:"Con Cristiano Ronaldo, en lo que sería su último Mundial."},
  COD:{conf:"África (CAF)",clas:"Repechaje intercontinental (fue 2º de grupo)",dato:"Quedó 2º detrás de Senegal y ganó el repechaje."},
  UZB:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Uzbekistán llega por primera vez."},
- COL:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su clasificación con triunfo en la recta final."},
+ COL:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su clasificación con triunfo en la recta final.",tab:{g:7,e:7,p:4,gf:28,gc:18,pts:28,pos:"3º en Sudamérica"}},
  ENG:{conf:"UEFA",clas:"Ganó su grupo europeo (campaña perfecta)",fig:"Harry Kane",dato:"Dominó su grupo; una de las favoritas al título."},
  CRO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Luka Modrić",dato:"Subcampeón en 2018 y semifinalista en 2022."},
  GHA:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
@@ -1216,10 +1219,22 @@ function openTeamInfo(code){
   let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px">';
   if(info.conf) html+='<span style="background:var(--surface2);border:1px solid var(--line2);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ink2)">'+info.conf+'</span>';
   html+='<span style="background:rgba(0,128,43,.12);border:1px solid rgba(0,128,43,.3);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ok-d)">📒 '+have+'/20 en tu álbum</span></div>';
+  if(info.tab){
+    const t=info.tab, pj=t.g+t.e+t.p, hd="padding:7px 0", cd="padding:9px 0";
+    html+='<div style="font-size:11px;color:var(--mut);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:2px 0 7px">Su clasificación'+(t.pos?' · '+t.pos:'')+(t.pts!=null?' · '+t.pts+' pts':'')+'</div>';
+    html+='<div style="border:1px solid var(--line2);border-radius:12px;overflow:hidden;margin-bottom:14px">';
+    html+='<div style="display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface2);font-size:10px;font-weight:800;color:var(--mut);text-transform:uppercase;text-align:center"><div style="'+hd+'">PJ</div><div style="'+hd+'">G</div><div style="'+hd+'">E</div><div style="'+hd+'">P</div><div style="'+hd+'">GF</div><div style="'+hd+'">GC</div></div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(6,1fr);font-weight:800;font-size:15px;text-align:center;color:var(--ink)"><div style="'+cd+'">'+pj+'</div><div style="'+cd+'">'+t.g+'</div><div style="'+cd+'">'+t.e+'</div><div style="'+cd+'">'+t.p+'</div><div style="'+cd+';color:var(--ok-d)">'+t.gf+'</div><div style="'+cd+';color:var(--red)">'+t.gc+'</div></div>';
+    html+='</div>';
+  } else if(info.clas && info.clas.indexOf("Anfitrión")>=0){
+    html+='<div style="font-size:12.5px;color:var(--mut);margin:2px 0 14px">Clasificó como anfitrión — no jugó eliminatorias. ✈️</div>';
+  } else if(info.clas){
+    html+='<div style="font-size:12.5px;color:var(--mut2);margin:2px 0 14px">📊 Tabla de su clasificación en camino.</div>';
+  }
   if(info.clas) html+=row("Cómo clasificó", info.clas);
   if(info.fig) html+=row("Figura", info.fig);
   if(info.dato) html+='<div style="margin-top:14px;background:var(--surface2);border:1px solid var(--line);border-left:4px solid '+acc+';border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--ink2);line-height:1.5"><b style="color:'+acc+'">Dato:</b> '+info.dato+'</div>';
-  if(!info.clas && !info.fig && !info.dato) html+='<div class="tip" style="text-align:left">Ficha de este equipo en camino. 🔜</div>';
+  if(!info.clas && !info.fig && !info.dato && !info.tab) html+='<div class="tip" style="text-align:left">Ficha de este equipo en camino. 🔜</div>';
   document.getElementById("tiBody").innerHTML=html;
   document.getElementById("ovTeam").classList.add("show");
 }
