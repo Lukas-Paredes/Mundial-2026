@@ -862,7 +862,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.4</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 8.6</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1034,6 +1034,9 @@ function launchConfetti(){
   }
 }
 let _celebrateTimer=null, _celebrateQueue=[];
+const HYPE=["¡Genial!","¡Bkn!","¡Enhorabuena!","¡De pana!"];
+let _hypeI=Math.floor(Math.random()*HYPE.length);
+function hype(){ return HYPE[(_hypeI++)%HYPE.length]; }
 function celebrateTeam(code,name){
   _celebrateQueue.push(name);
   clearTimeout(_celebrateTimer);
@@ -1171,7 +1174,7 @@ function buildCell(code,label,opts){
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(n-1); d.appendChild(b); }
   if(opts.viewer){ d.addEventListener("click",()=>openEditor(code)); return d; }
   let lp=false, lpTimer=null;
-  const quickEdit=(delta)=>{ const cur=getCount(code); setCount(code, Math.max(0,cur+delta)); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); const m=getCount(code); toast(delta>0 ? (displayCode(code)+(m>1?" · repetida ×"+m:" ✓ agregada")) : (m>0?(displayCode(code)+" −1 (×"+m+")"):(displayCode(code)+" quitada"))); };
+  const quickEdit=(delta)=>{ const cur=getCount(code); setCount(code, Math.max(0,cur+delta)); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); const m=getCount(code); toast(delta>0 ? (m>1?(displayCode(code)+" · repetida ×"+m):(hype()+" 👍🗿 "+displayCode(code)+" ✓")) : (m>0?(displayCode(code)+" −1 (×"+m+")"):(displayCode(code)+" quitada"))); };
   d.addEventListener("touchstart",()=>{ lp=false; lpTimer=setTimeout(()=>{ lp=true; openEditor(code); },450); },{passive:true});
   d.addEventListener("touchend",()=>clearTimeout(lpTimer));
   d.addEventListener("touchmove",()=>clearTimeout(lpTimer));
@@ -1578,7 +1581,7 @@ function renderRecent(){
 function addByCode(raw,silent){
   const c=normalize(raw); if(!c){ if(!silent) toast("Código no válido ✗"); return false; }
   setCount(c,getCount(c)+1); refreshCellInDom(c); updateStats(); pushRecent(c); const n=getCount(c);
-  toast(displayCode(c)+(n===1?" ✓ registrada":" · repetida ×"+n)); return true;
+  toast((n===1?(hype()+" 👍🗿 "+displayCode(c)+" ✓"):(displayCode(c)+" · repetida ×"+n))); return true;
 }
 const qa=document.getElementById("quickAdd");
 function doQuickAdd(){
@@ -1804,7 +1807,7 @@ function makePill(code){
   const p=document.createElement("button"); p.className="pill";
   const plus=document.createElement("span"); plus.className="plus"; plus.textContent="+";
   const lab=document.createElement("span"); lab.textContent=" "+displayCode(code); p.appendChild(plus); p.appendChild(lab);
-  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); pushRecent(code); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); toast(displayCode(code)+(n===1?" ✓ registrada":" · repetida ×"+n)); });
+  p.addEventListener("click",()=>{ setCount(code,getCount(code)+1); refreshCellInDom(code); updateStats(); pushRecent(code); p.classList.add("added"); plus.textContent="✓"; const n=getCount(code); lab.textContent=" "+displayCode(code)+(n>1?" ×"+n:""); toast((n===1?(hype()+" 👍🗿 "+displayCode(code)+" ✓"):(displayCode(code)+" · repetida ×"+n))); });
   return p;
 }
 const manualCode=document.getElementById("manualCode");
