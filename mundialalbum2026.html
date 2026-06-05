@@ -877,7 +877,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.6</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.7</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1009,7 +1009,7 @@ const VALID_SPECIAL = new Set(SPECIAL_CODES);
 const TEAM_COLOR = {}; GROUPS.forEach(g=>g.teams.forEach(t=>{ TEAM_COLOR[t[0]]=g.color; }));
 const TEAM_INFO = {
  MEX:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Abre el Mundial vs Sudáfrica en el Estadio Azteca."},
- RSA:{conf:"África (CAF)",clas:"Ganó su grupo en las eliminatorias africanas",dato:"Juega el partido inaugural contra México."},
+ RSA:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Juega el partido inaugural contra México.",tab:{g:5,e:3,p:2,gf:15,gc:9,pts:18,pos:"1º Grupo C"}},
  KOR:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Suma 11 Mundiales seguidos."},
  CZE:{conf:"UEFA",clas:"Repechaje europeo (terminó 2º de grupo)",dato:"Ganó dos llaves de repechaje para entrar."},
  CAN:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Coanfitrión del Mundial."},
@@ -1017,7 +1017,7 @@ const TEAM_INFO = {
  QAT:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue anfitrión en 2022; esta vez clasificó en la cancha."},
  SUI:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
  BRA:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"5 veces campeón del mundo, el único con 5 estrellas.",tab:{g:8,e:4,p:6,gf:24,gc:17,pts:28,pos:"5º en Sudamérica"}},
- MAR:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Primer país en clasificar a este Mundial (5-0 a Níger). Semifinalista en 2022."},
+ MAR:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Ganó los 8 partidos de su grupo. Primer país en clasificar (5-0 a Níger) y semifinalista en 2022.",tab:{g:8,e:0,p:0,gf:22,gc:2,pts:24,pos:"1º Grupo E"}},
  HAI:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"Vuelve a un Mundial después de 1974."},
  SCO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Escocia regresa a una Copa del Mundo."},
  USA:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Organiza su primer Mundial masculino desde 1994."},
@@ -1026,35 +1026,35 @@ const TEAM_INFO = {
  TUR:{conf:"UEFA",clas:"Repechaje europeo",dato:"Venció a Kosovo en la final del repechaje."},
  GER:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"4 veces campeón del mundo."},
  CUW:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"¡Debutante! Curazao, uno de los territorios más pequeños en llegar a un Mundial."},
- CIV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ CIV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Regresa a un Mundial tras 2014. Goleó 9-0 a Seychelles y no recibió ni un gol en todo el grupo.",tab:{g:8,e:2,p:0,gf:25,gc:0,pts:26,pos:"1º Grupo F"}},
  ECU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Mejor defensa de Sudamérica (solo 5 goles en contra), pese a partir con −3 puntos de sanción.",tab:{g:8,e:8,p:2,gf:14,gc:5,pts:29,pos:"2º en Sudamérica"}},
  NED:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"3 veces subcampeón del mundo."},
  JAP:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue el primer país del mundo en clasificar (marzo 2025)."},
  SWE:{conf:"UEFA",clas:"Repechaje europeo",dato:"Clasificó con un 3-2 sobre Polonia."},
- TUN:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ TUN:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"¡No le marcaron ni un solo gol en las 10 fechas! (0 en contra).",tab:{g:9,e:1,p:0,gf:22,gc:0,pts:28,pos:"1º Grupo H"}},
  BEL:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
- EGY:{conf:"África (CAF)",clas:"Ganó su grupo africano",fig:"Mohamed Salah",dato:"Liderada por Mohamed Salah."},
+ EGY:{conf:"África (CAF)",clas:"Ganó su grupo africano",fig:"Mohamed Salah",dato:"Invicto en su grupo (8 triunfos), liderada por Mohamed Salah.",tab:{g:8,e:2,p:0,gf:20,gc:2,pts:26,pos:"1º Grupo A"}},
  IRN:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
  NZL:{conf:"Oceanía (OFC)",clas:"Ganó la eliminatoria de Oceanía",dato:"Único representante de Oceanía."},
  ESP:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Campeón de Europa vigente; una de las favoritas."},
- CPV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"¡Debutante! Cabo Verde, uno de los países más pequeños en un Mundial."},
+ CPV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"¡Debutante! Cabo Verde, uno de los países más pequeños en un Mundial.",tab:{g:7,e:2,p:1,gf:16,gc:8,pts:23,pos:"1º Grupo D"}},
  KSA:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
  URU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"2 veces campeón del mundo (1930 y 1950).",tab:{g:7,e:7,p:4,gf:22,gc:12,pts:28,pos:"4º en Sudamérica"}},
  FRA:{conf:"UEFA",clas:"Ganó su grupo europeo (5 triunfos y 1 empate)",fig:"Kylian Mbappé",dato:"Subcampeón en 2022; una de las grandes favoritas."},
- SEN:{conf:"África (CAF)",clas:"Ganó su grupo africano (invicto)",dato:"Invicto en su grupo, solo 3 goles en contra."},
+ SEN:{conf:"África (CAF)",clas:"Ganó su grupo africano (invicto)",dato:"Invicto en su grupo, solo 3 goles en contra.",tab:{g:7,e:3,p:0,gf:22,gc:3,pts:24,pos:"1º Grupo B"}},
  IRQ:{conf:"Asia (AFC)",clas:"Repechaje intercontinental",dato:"Eliminó a Bolivia 2-1 el 31 de marzo para clasificar."},
  NOR:{conf:"UEFA",clas:"Ganó el Grupo I: 8 victorias en 8 partidos",fig:"Erling Haaland",dato:"Goleó 11-1 a Moldavia. Haaland fue el máximo goleador de TODA la clasificación mundial (16 goles). Vuelve a un Mundial tras casi 30 años."},
  ARG:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",fig:"Lionel Messi",dato:"Campeón del mundo vigente (2022). Messi fue el goleador de las Eliminatorias (8 goles).",tab:{g:12,e:2,p:4,gf:31,gc:10,pts:38,pos:"1º en Sudamérica"}},
- ALG:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ ALG:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Regresa a un Mundial tras 2014. Ganó su grupo con 24 goles a favor.",tab:{g:8,e:1,p:1,gf:24,gc:8,pts:25,pos:"1º Grupo G"}},
  AUT:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
  JOR:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Jordania llega por primera vez a un Mundial."},
  POR:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Cristiano Ronaldo",dato:"Con Cristiano Ronaldo, en lo que sería su último Mundial."},
- COD:{conf:"África (CAF)",clas:"Repechaje intercontinental (fue 2º de grupo)",dato:"Quedó 2º detrás de Senegal y ganó el repechaje."},
+ COD:{conf:"África (CAF)",clas:"Repechaje intercontinental (fue 2º de grupo)",dato:"Quedó 2º detrás de Senegal, eliminó a Nigeria en penales y ganó el repechaje a Jamaica.",tab:{g:7,e:1,p:2,gf:15,gc:6,pts:22,pos:"2º Grupo B → repechaje"}},
  UZB:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Uzbekistán llega por primera vez."},
  COL:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su clasificación con triunfo en la recta final.",tab:{g:7,e:7,p:4,gf:28,gc:18,pts:28,pos:"3º en Sudamérica"}},
  ENG:{conf:"UEFA",clas:"Ganó su grupo europeo (campaña perfecta)",fig:"Harry Kane",dato:"Dominó su grupo; una de las favoritas al título."},
  CRO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Luka Modrić",dato:"Subcampeón en 2018 y semifinalista en 2022."},
- GHA:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ GHA:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Ganó su grupo con 8 victorias en 10 partidos.",tab:{g:8,e:1,p:1,gf:23,gc:6,pts:25,pos:"1º Grupo I"}},
  PAN:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"Su segunda Copa del Mundo."}
 };
 /* nombres de jugadores por código (checklist Panini 2026) */
