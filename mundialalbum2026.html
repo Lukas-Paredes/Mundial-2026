@@ -141,6 +141,8 @@
   .grp-h .grp-pg .gp-val:empty:before{content:attr(data-ph); color:var(--mut2); font-family:var(--font-ui); font-weight:600;}
   .grp-h .grp-pg .gp-val:focus{color:var(--ink);}
   .team-name .cd-pg{color:var(--c-blue); font-weight:800; font-family:var(--font-ui);}
+  .team-h.tappable{cursor:pointer;}
+  .team-h.tappable .nm:after{content:" ⓘ"; font-size:11px; color:var(--mut2); font-weight:700; vertical-align:middle;}
 
   .team{position:relative; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:15px 15px 16px; margin-bottom:13px; box-shadow:var(--shadow); overflow:hidden;}
   .team:before{content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--accent,#0067B9); pointer-events:none;}
@@ -857,6 +859,7 @@
   </div>
   <button class="set-btn" id="btnCloud2">Nube y compartir</button>
   <button class="set-btn" id="btnTrade">Listas para canjes (faltan / repetidas)</button>
+  <button class="set-btn" id="btnGasto">💸 ¿Cuánto he gastado?</button>
   <button class="set-btn" id="btnExcel">Exportar a Excel (.xlsx)</button>
   <button class="set-btn" id="btnExcelImport">Importar desde Excel (.xlsx)</button>
   <button class="set-btn" id="btnDrive">Guardar en Google Drive (automático)</button>
@@ -871,7 +874,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.2</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.5</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -882,6 +885,21 @@
   <textarea id="tradeText" class="trade-text" readonly></textarea>
   <button class="btn btn-blue" style="width:100%;margin-top:10px" id="tradeCopy">📋 Copiar lista</button>
   <div class="tip">Copia y mándala por WhatsApp a tus amigos para cambiar láminas. 🔁</div>
+</div></div>
+
+<!-- GASTO -->
+<div class="ov" id="ovGasto"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp">¿Cuánto he gastado?</h2><button class="x" data-close>✕</button></div>
+  <div class="field"><label>Precio por sobre ($)</label><input id="gPrice" type="number" inputmode="numeric" min="0" step="50" value="1400"></div>
+  <div class="field"><label>Láminas por sobre</label><input id="gSize" type="number" inputmode="numeric" min="1" step="1" value="7"></div>
+  <div id="gastoOut" style="margin-top:14px"></div>
+  <div class="tip">Estimación: asume que todas tus láminas (incluidas las repetidas) vinieron de sobres. Si canjeaste o te regalaron, el gasto real es menor. 💡</div>
+</div></div>
+
+<!-- FICHA DE EQUIPO -->
+<div class="ov" id="ovTeam"><div class="sheet">
+  <div class="sheet-h"><h2 class="disp" id="tiName">—</h2><button class="x" data-close>✕</button></div>
+  <div id="tiBody"></div>
 </div></div>
 
 <!-- LUJITO: lo más importante -->
@@ -986,6 +1004,56 @@ GROUPS.forEach(g=>g.teams.forEach(t=>{ const code=t[0],name=t[1],flag=t[2];
 const VALID_TEAM = new Set(ALL_TEAM_CODES);
 const VALID_SPECIAL = new Set(SPECIAL_CODES);
 const TEAM_COLOR = {}; GROUPS.forEach(g=>g.teams.forEach(t=>{ TEAM_COLOR[t[0]]=g.color; }));
+const TEAM_INFO = {
+ MEX:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Abre el Mundial vs Sudáfrica en el Estadio Azteca."},
+ RSA:{conf:"África (CAF)",clas:"Ganó su grupo en las eliminatorias africanas",dato:"Juega el partido inaugural contra México."},
+ KOR:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Suma 11 Mundiales seguidos."},
+ CZE:{conf:"UEFA",clas:"Repechaje europeo (terminó 2º de grupo)",dato:"Ganó dos llaves de repechaje para entrar."},
+ CAN:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Coanfitrión del Mundial."},
+ BIH:{conf:"UEFA",clas:"Repechaje europeo (ganó en penales)",dato:"Dejó fuera a Italia en la final del repechaje."},
+ QAT:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue anfitrión en 2022; esta vez clasificó en la cancha."},
+ SUI:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
+ BRA:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"5 veces campeón del mundo, el único con 5 estrellas."},
+ MAR:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"Primer país en clasificar a este Mundial (5-0 a Níger). Semifinalista en 2022."},
+ HAI:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"Vuelve a un Mundial después de 1974."},
+ SCO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Escocia regresa a una Copa del Mundo."},
+ USA:{conf:"CONCACAF",clas:"Anfitrión (clasificó automáticamente)",dato:"Organiza su primer Mundial masculino desde 1994."},
+ PAR:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su cupo con un 0-0 ante Ecuador… ¡y declararon feriado nacional!"},
+ AUS:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
+ TUR:{conf:"UEFA",clas:"Repechaje europeo",dato:"Venció a Kosovo en la final del repechaje."},
+ GER:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"4 veces campeón del mundo."},
+ CUW:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"¡Debutante! Curazao, uno de los territorios más pequeños en llegar a un Mundial."},
+ CIV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ ECU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:""},
+ NED:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"3 veces subcampeón del mundo."},
+ JAP:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"Fue el primer país del mundo en clasificar (marzo 2025)."},
+ SWE:{conf:"UEFA",clas:"Repechaje europeo",dato:"Clasificó con un 3-2 sobre Polonia."},
+ TUN:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ BEL:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
+ EGY:{conf:"África (CAF)",clas:"Ganó su grupo africano",fig:"Mohamed Salah",dato:"Liderada por Mohamed Salah."},
+ IRN:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
+ NZL:{conf:"Oceanía (OFC)",clas:"Ganó la eliminatoria de Oceanía",dato:"Único representante de Oceanía."},
+ ESP:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:"Campeón de Europa vigente; una de las favoritas."},
+ CPV:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:"¡Debutante! Cabo Verde, uno de los países más pequeños en un Mundial."},
+ KSA:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:""},
+ URU:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"2 veces campeón del mundo (1930 y 1950)."},
+ FRA:{conf:"UEFA",clas:"Ganó su grupo europeo (5 triunfos y 1 empate)",fig:"Kylian Mbappé",dato:"Subcampeón en 2022; una de las grandes favoritas."},
+ SEN:{conf:"África (CAF)",clas:"Ganó su grupo africano (invicto)",dato:"Invicto en su grupo, solo 3 goles en contra."},
+ IRQ:{conf:"Asia (AFC)",clas:"Repechaje intercontinental",dato:"Eliminó a Bolivia 2-1 el 31 de marzo para clasificar."},
+ NOR:{conf:"UEFA",clas:"Ganó el Grupo I: 8 victorias en 8 partidos",fig:"Erling Haaland",dato:"37 goles a favor; goleó 11-1 a Moldavia. Vuelve a un Mundial tras casi 30 años."},
+ ARG:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",fig:"Lionel Messi",dato:"Campeón del mundo vigente (2022)."},
+ ALG:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ AUT:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",dato:""},
+ JOR:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Jordania llega por primera vez a un Mundial."},
+ POR:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Cristiano Ronaldo",dato:"Con Cristiano Ronaldo, en lo que sería su último Mundial."},
+ COD:{conf:"África (CAF)",clas:"Repechaje intercontinental (fue 2º de grupo)",dato:"Quedó 2º detrás de Senegal y ganó el repechaje."},
+ UZB:{conf:"Asia (AFC)",clas:"Clasificó por la fase asiática",dato:"¡Debutante! Uzbekistán llega por primera vez."},
+ COL:{conf:"Sudamérica (CONMEBOL)",clas:"Clasificó por las Eliminatorias sudamericanas",dato:"Selló su clasificación con triunfo en la recta final."},
+ ENG:{conf:"UEFA",clas:"Ganó su grupo europeo (campaña perfecta)",fig:"Harry Kane",dato:"Dominó su grupo; una de las favoritas al título."},
+ CRO:{conf:"UEFA",clas:"Ganó su grupo en la fase europea",fig:"Luka Modrić",dato:"Subcampeón en 2018 y semifinalista en 2022."},
+ GHA:{conf:"África (CAF)",clas:"Ganó su grupo africano",dato:""},
+ PAN:{conf:"CONCACAF",clas:"Clasificó por la zona de CONCACAF",dato:"Su segunda Copa del Mundo."}
+};
 /* nombres de jugadores por código (checklist Panini 2026) */
 const PLAYER={"MEX1":"Escudo","MEX2":"Luis Malagón","MEX3":"Johan Vasquez","MEX4":"Jorge Sánchez","MEX5":"Cesar Montes","MEX6":"Jesus Gallardo","MEX7":"Israel Reyes","MEX8":"Diego Lainez","MEX9":"Carlos Rodriguez","MEX10":"Edson Alvarez","MEX11":"Orbelin Pineda","MEX12":"Marcel Ruiz","MEX13":"Foto del equipo","MEX14":"Érick Sánchez","MEX15":"Hirving Lozano","MEX16":"Santiago Giménez","MEX17":"Raúl Jiménez","MEX18":"Alexis Vega","MEX19":"Roberto Alvarado","MEX20":"Cesar Huerta","RSA1":"Escudo","RSA2":"Ronwen Williams","RSA3":"Sipho Chaine","RSA4":"Aubrey Modiba","RSA5":"Samukele Kabini","RSA6":"Mbekezeli Mbokazi","RSA7":"Khulumani Ndamane","RSA8":"Siyabonga Ngezana","RSA9":"Khuliso Mudau","RSA10":"Nkosinathi Sibisi","RSA11":"Teboho Mokoena","RSA12":"Thalente Mbatha","RSA13":"Foto del equipo","RSA14":"Bathasi Aubaas","RSA15":"Yaya Sithole","RSA16":"Sipho Mbule","RSA17":"Lyle Foster","RSA18":"Iqraam Rayners","RSA19":"Mohau Nkota","RSA20":"Oswin Appollis","KOR1":"Escudo","KOR2":"Hyeon-woo Jo","KOR3":"Seung-Gyu Kim","KOR4":"Min-jae Kim","KOR5":"Yu-min Cho","KOR6":"Young-woo Seol","KOR7":"Han-beom Lee","KOR8":"Tae-seok Lee","KOR9":"Myung-jae Lee","KOR10":"Jae-sung Lee","KOR11":"In-beom Hwang","KOR12":"Kang-in Lee","KOR13":"Foto del equipo","KOR14":"Seung-ho Paik","KOR15":"Jens Castrop","KOR16":"Dongg-yeong Lee","KOR17":"Gue-sung Cho","KOR18":"Heung-min Son","KOR19":"Hee-chan Hwang","KOR20":"Hyeon-Gyu Oh","CZE1":"Escudo","CZE2":"Matej Kovar","CZE3":"Jindrich Stanek","CZE4":"Ladislav Krejci","CZE5":"Vladimir Coufal","CZE6":"Jaroslav Zeleny","CZE7":"Tomas Holes","CZE8":"David Zima","CZE9":"Michal Sadilek","CZE10":"Lukas Provod","CZE11":"Lukas Cerv","CZE12":"Tomas Soucek","CZE13":"Foto del equipo","CZE14":"Pavel Sulc","CZE15":"Matej Vydra","CZE16":"Vasil Kusej","CZE17":"Tomas Chory","CZE18":"Vaclav Cerny","CZE19":"Adam Hlozek","CZE20":"Patrik Schick","CAN1":"Escudo","CAN2":"Dayne St.Clair","CAN3":"Alphonso Davies","CAN4":"Alistair Johnston","CAN5":"Samuel Adekugbe","CAN6":"Riche Larvea","CAN7":"Derek Cornelius","CAN8":"Moïse Bombito","CAN9":"Kamal Miller","CAN10":"Stephen Eustáquio","CAN11":"Ismaël Koné","CAN12":"Jonathan Osorio","CAN13":"Foto del equipo","CAN14":"Jacob Shaffelburg","CAN15":"Mathieu Choinière","CAN16":"Niko Sigur","CAN17":"Tajon Buchanan","CAN18":"Liam Millar","CAN19":"Cyle Larin","CAN20":"Jonathan David","BIH1":"Escudo","BIH2":"Nikola Vasilj","BIH3":"Amer Dedic","BIH4":"Sead Kolasinac","BIH5":"Tarik Muharemovic","BIH6":"Nihad Mujakic","BIH7":"Nikola Katic","BIH8":"Amir Hadziahmetovic","BIH9":"Benjamin Tahirovic","BIH10":"Armin Gigovic","BIH11":"Ivan Sunjic","BIH12":"Ivan Basic","BIH13":"Foto del equipo","BIH14":"Dzenis Burnic","BIH15":"Esmir Bajraktarevic","BIH16":"Amar Memic","BIH17":"Ermedin Demirovic","BIH18":"Edin Dzeko","BIH19":"Samed Bazdar","BIH20":"Haris Tabakovic","QAT1":"Escudo","QAT2":"Meshaal Barsham","QAT3":"Sultan Albrake","QAT4":"Lucas Mendes","QAT5":"Homam Ahmed","QAT6":"Boualem Khoukhi","QAT7":"Pedro Miguel","QAT8":"Tarek Salman","QAT9":"Mohamed Al-Mannai","QAT10":"Karim Boudiaf","QAT11":"Assim Madibo","QAT12":"Ahmed Fatehi","QAT13":"Foto del equipo","QAT14":"Mohammed Waad","QAT15":"Abdulaziz Hatem","QAT16":"Hassan Al-Haydos","QAT17":"Edmilson Junior","QAT18":"Akram Hassan Afif","QAT19":"Ahmed Al Ganehi","QAT20":"Almoez Ali","SUI1":"Escudo","SUI2":"Gregor Kobel","SUI3":"Yvon Mvogo","SUI4":"Manuel Akanji","SUI5":"Ricardo Rodriguez","SUI6":"Nico Elvedi","SUI7":"Aurèle Amenda","SUI8":"Silvan Widmer","SUI9":"Granit Xhaka","SUI10":"Denis Zakaria","SUI11":"Remo Freuler","SUI12":"Fabian Rieder","SUI13":"Foto del equipo","SUI14":"Ardon Jashari","SUI15":"Johan Manzambi","SUI16":"Michel Aebischer","SUI17":"Breel Embolo","SUI18":"Ruben Vargas","SUI19":"Dan Ndoye","SUI20":"Zeki Amdouni","BRA1":"Escudo","BRA2":"Alisson","BRA3":"Bento","BRA4":"Marquinhos","BRA5":"Éder Militão","BRA6":"Gabriel Magalhães","BRA7":"Danilo","BRA8":"Wesley","BRA9":"Lucas Paquetá","BRA10":"Casemiro","BRA11":"Bruno Guimarães","BRA12":"Luiz Henrique","BRA13":"Foto del equipo","BRA14":"Vinicius Júnior","BRA15":"Rodrygo","BRA16":"João Pedro","BRA17":"Matheus Cunha","BRA18":"Gabriel Martinelli","BRA19":"Raphinha","BRA20":"Estévão","MAR1":"Escudo","MAR2":"Yassine Bounou","MAR3":"Munir El Kajoui","MAR4":"Achraf Hakimi","MAR5":"Noussair Mazraoui","MAR6":"Nayef Aguerd","MAR7":"Roman Saiss","MAR8":"Jawad El Yamio","MAR9":"Adam Masina","MAR10":"Sofyan Amrabat","MAR11":"Azzedine Ounahi","MAR12":"Eliesse Ben Seghir","MAR13":"Foto del equipo","MAR14":"Bilal El Khannouss","MAR15":"Ismael Saibari","MAR16":"Youssef En-Nesyri","MAR17":"Abde Ezzalzouli","MAR18":"Soufiane Rahimi","MAR19":"Brahim Diaz","MAR20":"Ayoub El Kaabi","HAI1":"Escudo","HAI2":"Johny Placide","HAI3":"Carlens Arcus","HAI4":"Martin Expérience","HAI5":"Jean-Kevin Duverne","HAI6":"Ricardo Adé","HAI7":"Duke Lacroix","HAI8":"Garven Metusala","HAI9":"Hannes Delcroix","HAI10":"Leverton Pierre","HAI11":"Danley Jean Jacques","HAI12":"Jean-Ricner Bellegarde","HAI13":"Foto del equipo","HAI14":"Christopher Attys","HAI15":"Derrick Etienne Jr","HAI16":"Josue Casimir","HAI17":"Ruben Providence","HAI18":"Duckens Nazon","HAI19":"Louicius Deedson","HAI20":"Frantzdy Pierrot","SCO1":"Escudo","SCO2":"Angus Gunn","SCO3":"Jack Hendry","SCO4":"Kieran Tierney","SCO5":"Aaron Hickey","SCO6":"Andrew Robertson","SCO7":"Scott McKenna","SCO8":"John Souttar","SCO9":"Anthony Ralston","SCO10":"Grant Hanley","SCO11":"Scott McTominay","SCO12":"Billy Gilmour","SCO13":"Foto del equipo","SCO14":"Lewis Ferguson","SCO15":"Ryan Christie","SCO16":"Kenny McLean","SCO17":"John McGinn","SCO18":"Lyndon Dykes","SCO19":"Che Adams","SCO20":"Ben Gannon-Doak","USA1":"Escudo","USA2":"Math Freese","USA3":"Chris Richards","USA4":"Tim Ream","USA5":"Mark McKenzie","USA6":"Alex Freeman","USA7":"Antonee Robinson","USA8":"Tyler Adams","USA9":"Tanner Tessmann","USA10":"Weston McKenny","USA11":"Christian Roldan","USA12":"Timothy Weah","USA13":"Foto del equipo","USA14":"Diego Luna","USA15":"Malik Tillman","USA16":"Christian Pulisic","USA17":"Brenden Aaronson","USA18":"Ricardo Pepi","USA19":"Haji Wright","USA20":"Folarin Balogun","PAR1":"Escudo","PAR2":"Roberto Fernandez","PAR3":"Orlando Gill","PAR4":"Gustavo Gomez","PAR5":"Fabián Balbuena","PAR6":"Juan José Cáceres","PAR7":"Omar Alderete","PAR8":"Junior Alonso","PAR9":"Mathías Villasanti","PAR10":"Diego Gomez","PAR11":"Damián Bobadilla","PAR12":"Andres Cubas","PAR13":"Foto del equipo","PAR14":"Matias Galarza Fonda","PAR15":"Julio Enciso","PAR16":"Alejandro Romero Gamarra","PAR17":"Miguel Almirón","PAR18":"Ramon Sosa","PAR19":"Angel Romero","PAR20":"Antonio Sanabria","AUS1":"Escudo","AUS2":"Mathew Ryan","AUS3":"Joe Gauci","AUS4":"Harry Souttar","AUS5":"Alessandro Circati","AUS6":"Jordan Bos","AUS7":"Aziz Behich","AUS8":"Cameron Burgess","AUS9":"Lewis Miller","AUS10":"Milos Degenek","AUS11":"Jackson Irvine","AUS12":"Riley McGree","AUS13":"Foto del equipo","AUS14":"Aiden O'Neill","AUS15":"Connor Metcalfe","AUS16":"Patrick Yazbek","AUS17":"Craig Goodwin","AUS18":"Kusini Vengi","AUS19":"Nestory Irankunda","AUS20":"Mohamed Touré","TUR1":"Escudo","TUR2":"Ugurcan Cakir","TUR3":"Mert Muldur","TUR4":"Zeki Celik","TUR5":"Abdulkerim Bardakci","TUR6":"Caglar Soyuncu","TUR7":"Merih Demiral","TUR8":"Ferdi Kadioglu","TUR9":"Kaan Ayhan","TUR10":"Ismail Yuksek","TUR11":"Hakan Calhanoglu","TUR12":"Orkun Kokcu","TUR13":"Foto del equipo","TUR14":"Arda Guler","TUR15":"Irfan Can Kahveci","TUR16":"Yunus Akgun","TUR17":"Can Uzun","TUR18":"Baris Alper Yilmaz","TUR19":"Kerem Akturkoglu","TUR20":"Kenan Yildiz","GER1":"Escudo","GER2":"Marc-André ter Stegen","GER3":"Jonathan Tah","GER4":"David Raum","GER5":"Nico Schlotterbeck","GER6":"Antonio Rüdiger","GER7":"Waldemar Anton","GER8":"Ridle Baku","GER9":"Maximilian Mittelstadt","GER10":"Joshua Kimmich","GER11":"Florian Wirtz","GER12":"Felix Nmecha","GER13":"Foto del equipo","GER14":"Leon Goretzka","GER15":"Jamal Musiala","GER16":"Serge Gnabry","GER17":"Kai Havertz","GER18":"Leroy Sane","GER19":"Karim Adeyemi","GER20":"Nick Woltemade","CUW1":"Escudo","CUW2":"Eloy Room","CUW3":"Armando Obispo","CUW4":"Sherel Floranus","CUW5":"Jurien Gaari","CUW6":"Joshua Brenet","CUW7":"Roshon Van Eijma","CUW8":"Shurandy Sambo","CUW9":"Livano Comenencia","CUW10":"Godfried Roemeratoe","CUW11":"Juninho Bacuna","CUW12":"Leandro Bacuna","CUW13":"Foto del equipo","CUW14":"Tahith Chong","CUW15":"Kenji Gorre","CUW16":"Jearl Margaritha","CUW17":"Jurgen Locadia","CUW18":"Jeremy Antonisse","CUW19":"Gervane Kastaneer","CUW20":"Sontje Hansen","CIV1":"Escudo","CIV2":"Yahia Fofana","CIV3":"Ghislain Konan","CIV4":"Wilfried Singo","CIV5":"Odilon Kossounou","CIV6":"Evan Ndicka","CIV7":"Willy Boly","CIV8":"Emmanuel Agbadou","CIV9":"Ousmane Diomande","CIV10":"Franck Kessie","CIV11":"Seko Fofana","CIV12":"Ibrahim Sangare","CIV13":"Foto del equipo","CIV14":"Jean-Philippe Gbamin","CIV15":"Amad Diallo","CIV16":"Sébastien Haller","CIV17":"Simon Adingra","CIV18":"Yan Diomande","CIV19":"Evann Guessand","CIV20":"Oumar Diakite","ECU1":"Escudo","ECU2":"Hernán Galíndez","ECU3":"Gonzalo Valle","ECU4":"Piero Hincapié","ECU5":"Pervis Estupiñán","ECU6":"Willian Pacho","ECU7":"Ángelo Preciado","ECU8":"Joel Ordóñez","ECU9":"Moises Caicedo","ECU10":"Alan Franco","ECU11":"Kendry Paez","ECU12":"Pedro Vite","ECU13":"Foto del equipo","ECU14":"John Veboah","ECU15":"Leonardo Campana","ECU16":"Gonzalo Plata","ECU17":"Nilson Angulo","ECU18":"Alan Minda","ECU19":"Kevin Rodriguez","ECU20":"Enner Valencia","NED1":"Escudo","NED2":"Bart Verbruggen","NED3":"Virgil van Dijk","NED4":"Micky van de Ven","NED5":"Jurrien Timber","NED6":"Denzel Dumfries","NED7":"Nathan Aké","NED8":"Jeremie Frimpong","NED9":"Jan Paul van Hecke","NED10":"Tijjani Reijnders","NED11":"Ryan Gravenberch","NED12":"Teun Koopmeiners","NED13":"Foto del equipo","NED14":"Frenkie de Jong","NED15":"Xavi Simons","NED16":"Justin Kluivert","NED17":"Memphis Depay","NED18":"Donyell Malen","NED19":"Wout Weghorst","NED20":"Cody Gakpo","JAP1":"Escudo","JAP2":"Zion Suzuki","JAP3":"Henry Heroki Mochizuki","JAP4":"Ayumu Seko","JAP5":"Junnosuke Suzuki","JAP6":"Shogo Taniguchi","JAP7":"Tsuyoshi Watanabe","JAP8":"Kaishu Sano","JAP9":"Yuki Soma","JAP10":"Ao Tanaka","JAP11":"Daichi Kamada","JAP12":"Takefusa Kubo","JAP13":"Foto del equipo","JAP14":"Ritsu Doan","JAP15":"Keito Nakamura","JAP16":"Takumi Minamino","JAP17":"Shuto Machino","JAP18":"Junya Ito","JAP19":"Koki Ogawa","JAP20":"Ayase Ueda","SWE1":"Escudo","SWE2":"Victor Johansson","SWE3":"Isak Hien","SWE4":"Gabriel Gudmundsson","SWE5":"Emil Holm","SWE6":"Victor Nilsson Lindelöf","SWE7":"Gustaf Lagerbielke","SWE8":"Lucas Bergvall","SWE9":"Hugo Larsson","SWE10":"Jesper Karlström","SWE11":"Yasin Ayari","SWE12":"Mattias Svanberg","SWE13":"Foto del equipo","SWE14":"Daniel Svensson","SWE15":"Ken Sema","SWE16":"Roony Bardghji","SWE17":"Dejan Kulusevski","SWE18":"Anthony Elanga","SWE19":"Alexander Isak","SWE20":"Viktor Gyökeres","TUN1":"Escudo","TUN2":"Bechir Ben Said","TUN3":"Aymen Dahmen","TUN4":"Yan Valery","TUN5":"Montassar Talbi","TUN6":"Yassine Meriah","TUN7":"Ali Abdi","TUN8":"Dylan Bronn","TUN9":"Ellyes Skhiri","TUN10":"Aissa Laidouni","TUN11":"Ferjani Sassi","TUN12":"Mohamed Ali Ben Romdhane","TUN13":"Foto del equipo","TUN14":"Hannibal Mejbri","TUN15":"Elias Achouri","TUN16":"Elias Saad","TUN17":"Hazem Mastouri","TUN18":"Ismael Gharbi","TUN19":"Sayfallah Ltaief","TUN20":"Naim Sliti","BEL1":"Escudo","BEL2":"Thibaut Courtois","BEL3":"Arthur Theate","BEL4":"Timothy Castagne","BEL5":"Zeno Debast","BEL6":"Brandon Mechele","BEL7":"Maxim De Cuyper","BEL8":"Thomas Meunier","BEL9":"Youri Tielemans","BEL10":"Amadou Onana","BEL11":"Nicolas Raskin","BEL12":"Alexis Saelemaekers","BEL13":"Foto del equipo","BEL14":"Hans Vanaken","BEL15":"Kevin De Bruyne","BEL16":"Jérémy Doku","BEL17":"Charles De Ketelaere","BEL18":"Leandro Trossard","BEL19":"Loïs Openda","BEL20":"Romelu Lukaku","EGY1":"Escudo","EGY2":"Mohamed El Shenawy","EGY3":"Mohamed Hany","EGY4":"Mohamed Hamdy","EGY5":"Yasser Ibrahim","EGY6":"Khaled Sobhi","EGY7":"Ramy Rabia","EGY8":"Hossam Abdelmaguid","EGY9":"Ahmed Fatouh","EGY10":"Marwan Attia","EGY11":"Zizo","EGY12":"Hamdy Fathy","EGY13":"Foto del equipo","EGY14":"Mohamed Lasheen","EGY15":"Emam Ashour","EGY16":"Osama Faisal","EGY17":"Mohamed Salah","EGY18":"Mostafa Mohamed","EGY19":"Trezeguet","EGY20":"Omar Marmoush","IRN1":"Escudo","IRN2":"Alireza Beiranvand","IRN3":"Morteza Pouraliganji","IRN4":"Ehsan Hajsafi","IRN5":"Milad Mohammadi","IRN6":"Shojae Khalilzadeh","IRN7":"Ramin Rezaeian","IRN8":"Hossein Kanaani","IRN9":"Sadegh Moharrami","IRN10":"Saleh Hardani","IRN11":"Saeed Ezatolahi","IRN12":"Saman Ghoddos","IRN13":"Foto del equipo","IRN14":"Omid Noorafkan","IRN15":"Roozbeh Cheshmi","IRN16":"Mohammad Mohebi","IRN17":"Sardar Azmoun","IRN18":"Mehdi Taremi","IRN19":"Alireza Jahanbakhsh","IRN20":"Ali Gholizadeh","NZL1":"Escudo","NZL2":"Max Crocombe Payne","NZL3":"Alex Paulsen","NZL4":"Michael Boxall","NZL5":"Liberato Cacace","NZL6":"Tim Payne","NZL7":"Tyler Bindon","NZL8":"Francis de Vries","NZL9":"Finn Surman","NZL10":"Joe Bell","NZL11":"Sarpreet Singh","NZL12":"Ryan Thomas","NZL13":"Foto del equipo","NZL14":"Matthew Garbett","NZL15":"Marko Stamenić","NZL16":"Ben Old","NZL17":"Chris Wood","NZL18":"Elijah Just","NZL19":"Callum McCowatt","NZL20":"Kosta Barbarouses","ESP1":"Escudo","ESP2":"Unai Simon","ESP3":"Robin Le Normand","ESP4":"Aymeric Laporte","ESP5":"Dean Huijsen","ESP6":"Pedro Porro","ESP7":"Dani Carvajal","ESP8":"Marc Cucurella","ESP9":"Martín Zubimendi","ESP10":"Rodri","ESP11":"Pedri","ESP12":"Fabian Ruiz","ESP13":"Foto del equipo","ESP14":"Mikel Merino","ESP15":"Lamine Yamal","ESP16":"Dani Olmo","ESP17":"Nico Williams","ESP18":"Ferran Torres","ESP19":"Álvaro Morata","ESP20":"Mikel Oyarzabal","CPV1":"Escudo","CPV2":"Vozinha","CPV3":"Logan Costa","CPV4":"Pico","CPV5":"Diney","CPV6":"Steven Moreira","CPV7":"Wagner Pina","CPV8":"Joao Paulo","CPV9":"Yannick Semedo","CPV10":"Kevin Pina","CPV11":"Patrick Andrade","CPV12":"Jamiro Monteiro","CPV13":"Foto del equipo","CPV14":"Deroy Duarte","CPV15":"Garry Rodrigues","CPV16":"Jovane Cabral","CPV17":"Ryan Mendes","CPV18":"Dailon Livramento","CPV19":"Willy Semedo","CPV20":"Bebe","KSA1":"Escudo","KSA2":"Nawaf Alaqidi","KSA3":"Abdulrahman Al-Sanbi","KSA4":"Saud Abdulhamid","KSA5":"Nawaf Bouwashl","KSA6":"Jihad Thakri","KSA7":"Moteb Al-Harbi","KSA8":"Hassan Altambakti","KSA9":"Musab Aljuwayr","KSA10":"Ziyad Aljohani","KSA11":"Abdullah Alkhaibari","KSA12":"Nasser Aldawsari","KSA13":"Foto del equipo","KSA14":"Saleh Abu Alshamat","KSA15":"Marwan Alsahafi","KSA16":"Salem Aldawsari","KSA17":"Abdulrahman Al-Aboud","KSA18":"Feras Akbrikan","KSA19":"Saleh Alshehri","KSA20":"Abdullah Al-Hamdan","URU1":"Escudo","URU2":"Sergio Rochet","URU3":"Santiago Mele","URU4":"Ronald Araujo","URU5":"José María Giménez","URU6":"Sebastian Caceres","URU7":"Mathias Olivera","URU8":"Guillermo Varela","URU9":"Nahitan Nandez","URU10":"Federico Valverde","URU11":"Giorgian De Arrascaeta","URU12":"Rodrigo Bentancur","URU13":"Foto del equipo","URU14":"Manuel Ugarte","URU15":"Nicolás de la Cruz","URU16":"Maxi Araujo","URU17":"Darwin Núñez","URU18":"Federico Viñas","URU19":"Rodrigo Aguirre","URU20":"Facundo Pellistri","FRA1":"Escudo","FRA2":"Mike Maignan","FRA3":"Theo Hernandez","FRA4":"William Saliba","FRA5":"Jules Kounde","FRA6":"Ibrahima Konate","FRA7":"Dayot Upamecano","FRA8":"Lucas Digne","FRA9":"Aurélien Tchouaméni","FRA10":"Eduardo Camavinga","FRA11":"Manu Kone","FRA12":"Adrien Rabiot","FRA13":"Foto del equipo","FRA14":"Michael Olise","FRA15":"Ousmane Dembele","FRA16":"Bradley Barcola","FRA17":"Désiré Doué","FRA18":"Kingsley Coman","FRA19":"Hugo Ekitike","FRA20":"Kylian Mbappe","SEN1":"Escudo","SEN2":"Edouard Mendy","SEN3":"Yehvann Diouf","SEN4":"Moussa Niakhaté","SEN5":"Abdoulaye Seck","SEN6":"Ismail Jakobs","SEN7":"El Hadji Malick Diouf","SEN8":"Kalidou Koulibaly","SEN9":"Idrissa Gana Gueye","SEN10":"Pape Matar Sarr","SEN11":"Pape Gueye","SEN12":"Habib Diarra","SEN13":"Foto del equipo","SEN14":"Lamine Camara","SEN15":"Sadio Mane","SEN16":"Ismaïla Sarr","SEN17":"Boulaye Dia","SEN18":"Iliman Ndiaye","SEN19":"Nicolas Jackson","SEN20":"Krepin Diatta","IRQ1":"Escudo","IRQ2":"Jalal Hassan","IRQ3":"Rebin Sulaka","IRQ4":"Hussein Ali","IRQ5":"Akam Hashem","IRQ6":"Merchas Doski","IRQ7":"Zaid Tahseen","IRQ8":"Manaf Younis","IRQ9":"Zidane Iqbal","IRQ10":"Amir Al-Ammari","IRQ11":"Ibrahim Bayesh","IRQ12":"Ali Jasim","IRQ13":"Foto del equipo","IRQ14":"Youssef Amyn","IRQ15":"Aimar Sher","IRQ16":"Marko Farji","IRQ17":"Osama Rashid","IRQ18":"Ali Al-Hamadi","IRQ19":"Aymen Hussein","IRQ20":"Mohanad Ali","NOR1":"Escudo","NOR2":"Orjan Nyland","NOR3":"Julian Ryerson","NOR4":"Leo Ostigård","NOR5":"Kristoffer Vassbakk Ajer","NOR6":"Marcus Holmgren Pedersen","NOR7":"David Møller Wolfe","NOR8":"Torbjørn Heggem","NOR9":"Morten Thorsby","NOR10":"Martin Ødegaard","NOR11":"Sander Berge","NOR12":"Andreas Schjelderup","NOR13":"Foto del equipo","NOR14":"Patrick Berg","NOR15":"Erling Haaland","NOR16":"Alexander Sørloth","NOR17":"Aron Dønnum","NOR18":"Jorgen Strand Larsen","NOR19":"Antonio Nusa","NOR20":"Oscar Bobb","ARG1":"Escudo","ARG2":"Emiliano Martinez","ARG3":"Nahuel Molina","ARG4":"Cristian Romero","ARG5":"Nicolas Otamendi","ARG6":"Nicolas Tagliafico","ARG7":"Leonardo Balerdi","ARG8":"Enzo Fernandez","ARG9":"Alexis Mac Allister","ARG10":"Rodrigo De Paul","ARG11":"Exequiel Palacios","ARG12":"Leandro Paredes","ARG13":"Foto del equipo","ARG14":"Nico Paz","ARG15":"Franco Mastantuono","ARG16":"Nico Gonzalez","ARG17":"Lionel Messi","ARG18":"Lautaro Martinez","ARG19":"Julian Alvarez","ARG20":"Giuliano Simeone","ALG1":"Escudo","ALG2":"Alexis Guendouz","ALG3":"Ramy Bensebaini","ALG4":"Youcef Atal","ALG5":"Rayan Aït-Nouri","ALG6":"Mohamed Amine Tougai","ALG7":"Aïssa Mandi","ALG8":"Ismael Bennacer","ALG9":"Houssem Aouar","ALG10":"Hicham Boudaoui","ALG11":"Ramiz Zerrouki","ALG12":"Nabil Bentalab","ALG13":"Foto del equipo","ALG14":"Farés Chaibi","ALG15":"Riyad Mahrez","ALG16":"Said Benrahma","ALG17":"Anis Hadj Moussa","ALG18":"Amine Gouiri","ALG19":"Baghdad Bounedjah","ALG20":"Mohammed Amoura","AUT1":"Escudo","AUT2":"Alexander Schlager","AUT3":"Patrick Pentz","AUT4":"David Alaba","AUT5":"Kevin Danso","AUT6":"Philipp Lienhart","AUT7":"Stefan Posch","AUT8":"Phillipp Mwene","AUT9":"Alexander Prass","AUT10":"Xaver Schlager","AUT11":"Marcel Sabitzer","AUT12":"Konrad Laimer","AUT13":"Foto del equipo","AUT14":"Florian Grillitsch","AUT15":"Nicolas Seiwald","AUT16":"Romano Schmid","AUT17":"Patrick Wimmer","AUT18":"Christoph Baumgartner","AUT19":"Michael Gregoritsch","AUT20":"Marko Arnautović","JOR1":"Escudo","JOR2":"Yazeed Abulaila","JOR3":"Ihsan Haddad","JOR4":"Mohammad Abu Hashish","JOR5":"Yazan Al-Arab","JOR6":"Abdallah Nasib","JOR7":"Saleem Obaid","JOR8":"Mohammad Abualnadi","JOR9":"Ibrahim Saadeh","JOR10":"Nizar Al-Rashdan","JOR11":"Noor Al-Rawabdeh","JOR12":"Mohannad Abu Taha","JOR13":"Foto del equipo","JOR14":"Amer Jamous","JOR15":"Musa Al-Taamari","JOR16":"Yazan Al-Naimat","JOR17":"Mahmoud Al-Mardi","JOR18":"Ali Olwan","JOR19":"Mohammad Abu Zrayq","JOR20":"Ibrahim Sabra","POR1":"Escudo","POR2":"Diogo Costa","POR3":"Jose Sa","POR4":"Ruben Dias","POR5":"João Cancelo","POR6":"Diogo Dalot","POR7":"Nuno Mendes","POR8":"Gonçalo Inácio","POR9":"Bernardo Silva","POR10":"Bruno Fernandes","POR11":"Ruben Neves","POR12":"Vitinha","POR13":"Foto del equipo","POR14":"João Neves","POR15":"Cristiano Ronaldo","POR16":"Francisco Trincao","POR17":"João Felix","POR18":"Gonçalo Ramos","POR19":"Pedro Neto","POR20":"Rafael Leão","COD1":"Escudo","COD2":"Lionel Mpasi","COD3":"Aaron Wan-Bissaka","COD4":"Axel Tuanzebe","COD5":"Arthur Masuaku","COD6":"Chancel Mbemba","COD7":"Joris Kayembe","COD8":"Charles Pickel","COD9":"Ngal'ayel Mukau","COD10":"Edo Kayembe","COD11":"Samuel Moutoussamy","COD12":"Noah Sadiki","COD13":"Foto del equipo","COD14":"Théo Bongonda","COD15":"Meschak Elia","COD16":"Yoane Wissa","COD17":"Brian Cipenga","COD18":"Fiston Mayele","COD19":"Cédric Bakambu","COD20":"Nathanaël Mbuku","UZB1":"Escudo","UZB2":"Utkir Yusupov","UZB3":"Farrukh Savfiev","UZB4":"Sherzod Nasrullaev","UZB5":"Umar Eshmurodov","UZB6":"Husniddin Aliqulov","UZB7":"Rustamjon Ashurmatov","UZB8":"Khojiakbar Alijonov","UZB9":"Abdukodir Khusanov","UZB10":"Odiljon Hamrobekov","UZB11":"Otabek Shukurov","UZB12":"Jamshid Iskanderov","UZB13":"Foto del equipo","UZB14":"Azizbek Turgunboev","UZB15":"Khojimat Erkinov","UZB16":"Eldor Shomurodov","UZB17":"Oston Urunov","UZB18":"Jaloliddin Masharipov","UZB19":"Igor Sergeev","UZB20":"Abbosbek Fayzullaev","COL1":"Escudo","COL2":"Camilo Vargas","COL3":"David Ospina","COL4":"Dávinson Sánchez","COL5":"Yerry Mina","COL6":"Daniel Munoz","COL7":"Johan Mojica","COL8":"Jhon Lucumí","COL9":"Santiago Arias","COL10":"Jefferson Lerma","COL11":"Kevin Castaño","COL12":"Richard Rios","COL13":"Foto del equipo","COL14":"James Rodriguez","COL15":"Juan Fernando Quintero","COL16":"Jorge Carrascal","COL17":"Jon Arias","COL18":"Jhon Cordova","COL19":"Luis Suarez","COL20":"Luis Diaz","ENG1":"Escudo","ENG2":"Jordan Pickford","ENG3":"John Stones","ENG4":"Marc Guéhi","ENG5":"Ezri Konsa","ENG6":"Trent Alexander-Arnold","ENG7":"Reece James","ENG8":"Dan Burn","ENG9":"Jordan Henderson","ENG10":"Declan Rice","ENG11":"Jude Bellingham","ENG12":"Cole Palmer","ENG13":"Foto del equipo","ENG14":"Morgan Rogers","ENG15":"Anthony Gordon","ENG16":"Phil Foden","ENG17":"Bukayo Saka","ENG18":"Harry Kane","ENG19":"Marcus Rashford","ENG20":"Ollie Watkins","CRO1":"Escudo","CRO2":"Dominik Livaković","CRO3":"Duje Caleta-Car","CRO4":"Josko Gvardiol","CRO5":"Josip Stanišić","CRO6":"Luka Vušković","CRO7":"Josip Sutalo","CRO8":"Kristijan Jakic","CRO9":"Luka Modrić","CRO10":"Mateo Kovacic","CRO11":"Martin Baturina","CRO12":"Lovro Majer","CRO13":"Foto del equipo","CRO14":"Mario Pasalic","CRO15":"Petar Sucic","CRO16":"Ivan Perišić","CRO17":"Marco Pasalic","CRO18":"Ante Budimir","CRO19":"Andrej Kramarić","CRO20":"Franjo Ivanovic","GHA1":"Escudo","GHA2":"Lawrence Ati Zigi","GHA3":"Tariq Lamptey","GHA4":"Mohammed Salisu","GHA5":"Alidu Seidu","GHA6":"Alexander Djiku","GHA7":"Gideon Mensah","GHA8":"Caleb Yirenkyi","GHA9":"Abdul Issahaku Fatawu","GHA10":"Thomas Partey","GHA11":"Salis Abdul Samed","GHA12":"Kamaldeen Sulemana","GHA13":"Foto del equipo","GHA14":"Mohammed Kudus","GHA15":"Inaki Williams","GHA16":"Jordan Ayew","GHA17":"Andrew Ayew","GHA18":"Joseph Paintsil","GHA19":"Osman Bukari","GHA20":"Antoine Semenyo","PAN1":"Escudo","PAN2":"Orlando Mosquera","PAN3":"Luis Mejia","PAN4":"Fidel Escobar","PAN5":"Andres Andrade","PAN6":"Michael Amir Murillo","PAN7":"Eric Davis","PAN8":"Jose Cordoba","PAN9":"Cesar Blackman","PAN10":"Cristian Martinez","PAN11":"Aníbal Godoy","PAN12":"Adalberto Carrasquilla","PAN13":"Foto del equipo","PAN14":"Édgar Bárcenas","PAN15":"Carlos Harvey","PAN16":"Ismael Díaz","PAN17":"Jose Fajardo","PAN18":"Cecilio Waterman","PAN19":"Jose Luiz Rodriguez","PAN20":"Alberto Quintero"};
 function deburr(s){ try{ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }catch(e){ return String(s).toLowerCase(); } }
@@ -1083,8 +1151,39 @@ function _fanGoat(){     // 🐐 himno: build + acorde mayor enorme en tres octa
   _brass(392.00,0.74,0.95,0.11,2400);
   _brass(523.25,0.74,0.95,0.13,2400);     // cima
 }
-function sfxTier(tier){
+function _swoop(f0,f1,start,dur,vol,cut){   // glissando ascendente (efecto, no voz)
+  const c=audioCtx(); if(!c) return;
+  const t=c.currentTime+start;
+  const filt=c.createBiquadFilter(); filt.type="lowpass"; filt.frequency.value=cut||2600; filt.Q.value=0.6;
+  const g=c.createGain();
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(vol,t+0.04);
+  g.gain.setValueAtTime(vol,t+dur*0.62);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  filt.connect(g); g.connect(c.destination);
+  [0,-7,7].forEach(cents=>{
+    const o=c.createOscillator(); o.type="sawtooth";
+    try{ o.detune.value=cents; }catch(e){}
+    o.frequency.setValueAtTime(f0,t);
+    o.frequency.exponentialRampToValueAtTime(f1,t+dur*0.8);
+    o.connect(filt); o.start(t); o.stop(t+dur+0.03);
+  });
+}
+function _fanSiu(){      // CR7: subida tipo "siuuu" + golpe triunfal (homenaje sintetizado, no su voz)
+  _swoop(330,880,0.00,0.52,0.16,2800);
+  _brass(523.25,0.56,0.42,0.14,2400);
+  _brass(392.00,0.56,0.42,0.11,2400);
+  _brass(261.63,0.56,0.42,0.10);
+}
+function _fanMessi(){    // Messi: gambeta que acelera ("encara, encara…") y resuelve (homenaje sintetizado, no el relato)
+  [0.00,0.14,0.26,0.36,0.44].forEach(st=>_brass(440.00,st,0.10,0.12,2200));
+  _brass(587.33,0.56,0.48,0.15,2400);   // ¡definición!
+  _brass(293.66,0.56,0.48,0.10);
+}
+function sfxTier(tier, code){
   if(!soundOn()) return;
+  if(code==="POR15"){ _fanSiu();   return; }
+  if(code==="ARG17"){ _fanMessi(); return; }
   switch(tier){
     case "bronce":   _fanBronce();   break;
     case "plata":    _fanPlata();    break;
@@ -1104,10 +1203,26 @@ function sfxTeam(){      // ✅ equipo completo: carrera ascendente alegre (dist
 function sfxStar(){ sfxTier("oro"); }   // compatibilidad
 ["pointerdown","touchstart","keydown"].forEach(ev=>window.addEventListener(ev,()=>{ try{audioCtx();}catch(e){} },{once:true,passive:true}));
 
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true,sound:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true,sound:true,packPrice:1400,packSize:7}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
+function openTeamInfo(code){
+  const meta=CODE_TEAM[code+"1"]; const info=TEAM_INFO[code]||{};
+  const acc=TEAM_COLOR[code]||"#0067B9";
+  document.getElementById("tiName").innerHTML=(meta?meta.flag+" ":"")+(meta?meta.name:code);
+  const have=teamHave(code);
+  const row=(l,v)=>'<div style="display:flex;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)"><span style="color:var(--mut);font-weight:700;font-size:12.5px">'+l+'</span><span style="font-weight:700;color:var(--ink);text-align:right;max-width:64%">'+v+'</span></div>';
+  let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px">';
+  if(info.conf) html+='<span style="background:var(--surface2);border:1px solid var(--line2);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ink2)">'+info.conf+'</span>';
+  html+='<span style="background:rgba(0,128,43,.12);border:1px solid rgba(0,128,43,.3);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ok-d)">📒 '+have+'/20 en tu álbum</span></div>';
+  if(info.clas) html+=row("Cómo clasificó", info.clas);
+  if(info.fig) html+=row("Figura", info.fig);
+  if(info.dato) html+='<div style="margin-top:14px;background:var(--surface2);border:1px solid var(--line);border-left:4px solid '+acc+';border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--ink2);line-height:1.5"><b style="color:'+acc+'">Dato:</b> '+info.dato+'</div>';
+  if(!info.clas && !info.fig && !info.dato) html+='<div class="tip" style="text-align:left">Ficha de este equipo en camino. 🔜</div>';
+  document.getElementById("tiBody").innerHTML=html;
+  document.getElementById("ovTeam").classList.add("show");
+}
 function setCount(c,v){
   if(cloud.viewOnly) return;
   v=Math.max(0,v|0);
@@ -1241,9 +1356,11 @@ function showNextStar(){
   if(tierEl){ const tk=(d.kind!=="extra")&&CRACK_TIER[d.code]; const tier=tk&&TIERS.find(t=>t.key===tk); if(tier){ tierEl.textContent=tier.icon+" Tier "+tier.name; tierEl.style.background=tier.color; tierEl.style.display="inline-block"; } else tierEl.style.display="none"; }
   const valEl=document.getElementById("starValue");
   if(valEl){ const v=(d.kind==="extra")?"":playerValue(d.code); valEl.textContent=v; valEl.style.display=v?"block":"none"; }
+  if(d.code==="POR15") fact="¡SIUUUU! 🇵🇹 — "+fact;
+  else if(d.code==="ARG17") fact="¡Encara Messi, encara Messi…! 🇦🇷 — "+fact;
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
-  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; sfxTier((d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"));
+  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; sfxTier((d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"), d.code);
   launchConfetti();
   ov.classList.add("show");
 }
@@ -1330,6 +1447,7 @@ function makeTeam(code,name,flag,term){
   const _tpg=teamPageRange(code);
   const th=document.createElement("div"); th.className="team-h";
   th.innerHTML=flagHTML(code, flag)+'<div class="team-name"><div class="weare">We Are</div><div class="nm">'+name+'</div><div class="cd">'+code+' · 1–20'+(_tpg?' · <span class="cd-pg">📄 '+_tpg+'</span>':'')+'</div></div><div class="tprog '+(have===20?'full':'')+'"><div class="fr">'+have+'/20</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  th.classList.add("tappable"); th.setAttribute("title","Ver ficha del equipo"); th.addEventListener("click",()=>openTeamInfo(code));
   team.appendChild(th);
   const cells=document.createElement("div"); cells.className="cells"; let vis=0;
   for(let i=1;i<=20;i++){ const c=code+i; const cell=buildCell(c,String(i));
@@ -2257,6 +2375,26 @@ document.getElementById("tradeCopy").onclick=()=>{ const ta=document.getElementB
   if(navigator.clipboard){ navigator.clipboard.writeText(v).then(()=>toast("Lista copiada ✓"),()=>toast("No se pudo copiar")); }
   else { ta.removeAttribute("readonly"); ta.select(); try{ document.execCommand("copy"); toast("Lista copiada ✓"); }catch(e){ toast("Selecciónala y copia manual"); } ta.setAttribute("readonly",""); } };
 document.getElementById("btnTrade").onclick=()=>{ ovSet.classList.remove("show"); tradeMode="miss"; const seg=document.getElementById("tradeSeg"); [...seg.children].forEach((x,i)=>x.classList.toggle("active",i===0)); renderTrade(); ovTrade.classList.add("show"); };
+function _fmtCLP(n){ return "$"+Math.round(n).toLocaleString("es-CL"); }
+function _gRow(l,v){ return '<div style="display:flex;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)"><span style="color:var(--ink2);font-weight:600;font-size:13.5px">'+l+'</span><span class="mono" style="font-weight:700;color:var(--ink)">'+v+'</span></div>'; }
+function renderGasto(){
+  const price=Math.max(0, parseInt(document.getElementById("gPrice").value,10)||0);
+  const size=Math.max(1, parseInt(document.getElementById("gSize").value,10)||1);
+  const codes=allActiveCodes(); let fisicas=0, unicas=0, repes=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1){ unicas++; fisicas+=n; if(n>=2) repes+=n-1; } });
+  const total=codes.length, sobres=fisicas/size, gasto=sobres*price;
+  const porNueva = unicas? gasto/unicas : 0, pct = total? Math.round(unicas/total*100):0;
+  document.getElementById("gastoOut").innerHTML =
+    '<div style="text-align:center;margin:2px 0 14px"><div style="font-size:12px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.06em">Plata gastada (estimada)</div>'
+    +'<div class="disp" style="font-size:44px;color:var(--c-pink);line-height:1;margin-top:4px">'+_fmtCLP(gasto)+'</div>'
+    +'<div style="font-size:12.5px;color:var(--mut);margin-top:6px">\u2248 '+Math.round(sobres).toLocaleString("es-CL")+' sobres \u00b7 '+pct+'% del \u00e1lbum</div></div>'
+    +_gRow("L\u00e1minas que tengo", unicas+" / "+total)
+    +_gRow("L\u00e1minas f\u00edsicas (con repetidas)", fisicas.toLocaleString("es-CL"))
+    +_gRow("Repetidas (para cambio)", repes.toLocaleString("es-CL"))
+    +_gRow("Costo por l\u00e1mina nueva", _fmtCLP(porNueva));
+}
+document.getElementById("btnGasto").onclick=()=>{ ovSet.classList.remove("show"); document.getElementById("gPrice").value=state.config.packPrice||1400; document.getElementById("gSize").value=state.config.packSize||7; renderGasto(); document.getElementById("ovGasto").classList.add("show"); };
+["gPrice","gSize"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("input",()=>{ state.config.packPrice=Math.max(0,parseInt(document.getElementById("gPrice").value,10)||0); state.config.packSize=Math.max(1,parseInt(document.getElementById("gSize").value,10)||1); save(); renderGasto(); }); });
 
 /* ---------- HUB: Datos + Valores (beta) ---------- */
 function lxMostLeastTeam(){
