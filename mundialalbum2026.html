@@ -871,7 +871,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.1</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 9.2</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -1029,10 +1029,10 @@ function _tone(freq,start,dur,type,vol){
 }
 function soundOn(){ try{ return state.config.sound!==false; }catch(e){ return true; } }
 function sfxPop(){ if(!soundOn()) return; _tone(660,0,0.10,"triangle",0.15); _tone(990,0.05,0.12,"triangle",0.12); }
-function _brass(freq,start,dur,vol){
+function _brass(freq,start,dur,vol,cut){
   const c=audioCtx(); if(!c) return;
   const t=c.currentTime+start;
-  const filt=c.createBiquadFilter(); filt.type="lowpass"; filt.frequency.value=1850; filt.Q.value=0.6; // corta lo chillón
+  const filt=c.createBiquadFilter(); filt.type="lowpass"; filt.frequency.value=cut||1850; filt.Q.value=0.6; // corta lo chillón
   const g=c.createGain();
   g.gain.setValueAtTime(0.0001,t);
   g.gain.linearRampToValueAtTime(vol,t+0.03);                 // ataque suave (como soplido)
@@ -1045,16 +1045,63 @@ function _brass(freq,start,dur,vol){
     o.connect(filt); o.start(t); o.stop(t+dur+0.03);
   });
 }
-function sfxStar(){
-  if(!soundOn()) return;
-  // fanfarria medieval cálida (heraldo en Do mayor) — nada chillona
-  _brass(523.25,0.00,0.16,0.13);
-  _brass(523.25,0.18,0.16,0.13);
-  _brass(523.25,0.36,0.16,0.13);
-  _brass(392.00,0.54,0.18,0.13);
-  _brass(523.25,0.74,0.60,0.15);   // llegada triunfal
-  _brass(261.63,0.74,0.60,0.10);   // octava grave = nobleza
+/* === fanfarrias medievales por tier (escalan en grandeza) === */
+function _fanBronce(){   // 🥉 humilde y grave: 2 notas, cuarta ascendente
+  _brass(196.00,0.00,0.16,0.13);
+  _brass(261.63,0.16,0.36,0.14);
 }
+function _fanPlata(){    // 🥈 arpegio mayor ascendente, más luminoso
+  _brass(261.63,0.00,0.14,0.13);
+  _brass(329.63,0.15,0.14,0.13);
+  _brass(392.00,0.30,0.42,0.14);
+}
+function _fanOro(){      // 🥇 heraldo clásico de realeza (nota repetida + llegada + octava grave)
+  _brass(523.25,0.00,0.14,0.13);
+  _brass(523.25,0.16,0.14,0.13);
+  _brass(523.25,0.32,0.14,0.13);
+  _brass(392.00,0.48,0.16,0.13);
+  _brass(523.25,0.66,0.50,0.15);
+  _brass(261.63,0.66,0.50,0.10);
+}
+function _fanDiamante(){ // 💎 más largo, sube más alto + destello (filtro más abierto)
+  _brass(392.00,0.00,0.12,0.12,2400);
+  _brass(523.25,0.13,0.12,0.12,2400);
+  _brass(659.25,0.26,0.12,0.12,2400);
+  _brass(783.99,0.40,0.16,0.13,2400);
+  _brass(523.25,0.60,0.55,0.14,2400);
+  _brass(659.25,0.60,0.55,0.12,2400);
+  _brass(261.63,0.60,0.55,0.09);
+}
+function _fanGoat(){     // 🐐 himno: build + acorde mayor enorme en tres octavas
+  _brass(523.25,0.00,0.14,0.12,2400);
+  _brass(523.25,0.16,0.14,0.12,2400);
+  _brass(659.25,0.32,0.16,0.12,2400);
+  _brass(783.99,0.50,0.20,0.13,2400);
+  _brass(130.81,0.74,0.95,0.10);          // octava sub = peso
+  _brass(261.63,0.74,0.95,0.11);
+  _brass(329.63,0.74,0.95,0.11,2400);
+  _brass(392.00,0.74,0.95,0.11,2400);
+  _brass(523.25,0.74,0.95,0.13,2400);     // cima
+}
+function sfxTier(tier){
+  if(!soundOn()) return;
+  switch(tier){
+    case "bronce":   _fanBronce();   break;
+    case "plata":    _fanPlata();    break;
+    case "diamante": _fanDiamante(); break;
+    case "goat":     _fanGoat();     break;
+    default:         _fanOro();      // oro o cualquier crack sin tier explícito
+  }
+}
+function sfxTeam(){      // ✅ equipo completo: carrera ascendente alegre (distinta al heraldo)
+  if(!soundOn()) return;
+  _brass(392.00,0.00,0.12,0.13);
+  _brass(523.25,0.12,0.12,0.13);
+  _brass(659.25,0.24,0.12,0.13);
+  _brass(783.99,0.36,0.42,0.14,2400);
+  _brass(261.63,0.36,0.42,0.09);
+}
+function sfxStar(){ sfxTier("oro"); }   // compatibilidad
 ["pointerdown","touchstart","keydown"].forEach(ev=>window.addEventListener(ev,()=>{ try{audioCtx();}catch(e){} },{once:true,passive:true}));
 
 function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true,sound:true}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
@@ -1099,7 +1146,7 @@ function celebrateTeam(code,name){
   clearTimeout(_celebrateTimer);
   _celebrateTimer=setTimeout(()=>{
     const names=_celebrateQueue.splice(0);
-    launchConfetti(); sfxStar();
+    launchConfetti(); sfxTeam();
     const t=document.getElementById("toast"); if(!t) return;
     t.textContent = names.length===1 ? ("¡Completaste "+names[0]+"! 👍🗿") : ("¡Completaste "+names.length+" equipos! 👍🗿");
     t.classList.add("show","party");
@@ -1196,7 +1243,7 @@ function showNextStar(){
   if(valEl){ const v=(d.kind==="extra")?"":playerValue(d.code); valEl.textContent=v; valEl.style.display=v?"block":"none"; }
   document.getElementById("starFact").textContent=fact;
   document.getElementById("starProb").textContent=prob;
-  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; sfxStar();
+  const _sc=document.getElementById("starClose"); if(_sc) _sc.textContent=hype()+" 👍🗿"; sfxTier((d.kind==="extra")?"goat":(CRACK_TIER[d.code]||"oro"));
   launchConfetti();
   ov.classList.add("show");
 }
