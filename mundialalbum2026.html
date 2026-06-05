@@ -17,7 +17,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="stylesheet" href="css/estilos.css?v=11" />
 </head>
 <body>
 
@@ -42,36 +42,7 @@
 <header>
   <div class="geoband" id="geoband" aria-hidden="true"></div>
   <div class="hero">
-    <svg class="trophy" viewBox="0 0 120 200" role="img" aria-label="Copa del Mundo" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="tpGold" x1=".15" y1="0" x2=".85" y2="1">
-          <stop offset="0" stop-color="#FDEFB4"/><stop offset=".32" stop-color="#F4CB52"/><stop offset=".62" stop-color="#D69E2C"/><stop offset="1" stop-color="#A9761B"/>
-        </linearGradient>
-        <linearGradient id="tpMal" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#2BA06A"/><stop offset="1" stop-color="#0C5734"/>
-        </linearGradient>
-      </defs>
-      <g stroke="#7a5410" stroke-width="1.4" stroke-linejoin="round">
-        <path d="M48 150 L72 150 L70 158 L50 158 Z" fill="url(#tpGold)"/>
-        <path d="M50 158 L70 158 L72 168 L48 168 Z" fill="url(#tpMal)"/>
-        <path d="M48 168 L72 168 L71 171 L49 171 Z" fill="url(#tpGold)"/>
-        <path d="M49 171 L71 171 L76 185 L44 185 Z" fill="url(#tpMal)"/>
-        <path d="M54 84 C49 104 45 124 44 145 L44 149 Q48 141 52 150 Q56 141 60 152 Q64 141 68 150 Q72 141 76 149 L76 145 C75 124 71 104 66 84 C63 87 57 87 54 84 Z" fill="url(#tpGold)"/>
-        <path d="M40 48 C42 62 50 76 58 86 L60 84 C52 74 45 62 43 50 C42 48 41 47 40 48 Z" fill="url(#tpGold)"/>
-        <path d="M80 48 C78 62 70 76 62 86 L60 84 C68 74 75 62 77 50 C78 48 79 47 80 48 Z" fill="url(#tpGold)"/>
-        <circle cx="60" cy="82" r="3.4" fill="url(#tpGold)"/>
-        <circle cx="60" cy="42" r="24" fill="url(#tpGold)"/>
-      </g>
-      <path d="M48 38 q8 -7 15 -2 q5 4 1 9 q-8 5 -15 -1 q-4 -4 -1 -5 Z" fill="#9E6B16" opacity=".34"/>
-      <path d="M64 45 q7 -2 10 3 q2 5 -4 6 q-6 1 -8 -4 Z" fill="#9E6B16" opacity=".3"/>
-      <path d="M63 22 C67 33 65 44 60 52" stroke="#7a5410" stroke-width="1.4" opacity=".42" fill="none" stroke-linecap="round"/>
-      <ellipse cx="50" cy="32" rx="7" ry="9" fill="#fff" opacity=".42"/>
-      <g stroke="#9E6B16" stroke-width="1.4" opacity=".4" fill="none" stroke-linecap="round">
-        <path d="M58 88 C53 108 49 126 47 140"/>
-        <path d="M60 88 L60 148"/>
-        <path d="M62 88 C67 108 71 126 73 140"/>
-      </g>
-    </svg>
+    <img class="trophy" src="img/copa.png" alt="Copa del Mundo" />
     <div class="hero-lock">
       <span class="hero-kick">Colección de figuritas</span>
       <span class="hero-big">Mundial <b>2026</b></span>
@@ -445,8 +416,8 @@
 <div id="confetti" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/datos.js"></script>
-<script src="js/app.js"></script>
+<script src="js/datos.js?v=11"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>
 
