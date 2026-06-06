@@ -94,10 +94,10 @@
   </div>
 </div>
 <div id="viewBanner">
-  <span>👁️ Estás viendo un álbum compartido · <b>solo lectura</b></span>
-  <button id="viewBack">← Volver al mío</button>
+  <span>👁️ Viendo el álbum de <b id="viewWho">un amigo</b> · <b>solo lectura</b></span>
+  <button id="viewBack">← Volver a mi álbum</button>
 </div>
-<button id="viewBackFab" aria-label="Volver a mi álbum">← Volver a MI álbum</button>
+<button id="viewBackFab" aria-label="Volver a mi álbum">← Volver a mi álbum</button>
 
 <div class="toolbar">
   <div class="qa">
@@ -110,6 +110,10 @@
     <button class="fbtn" data-f="have">Que tengo <span class="b" id="cHave">0</span></button>
     <button class="fbtn" data-f="miss">Que faltan <span class="b" id="cMiss">0</span></button>
     <button class="fbtn" data-f="dup">Repetidas <span class="b" id="cDup">0</span></button>
+  </div>
+  <div class="modebar">
+    <button id="subToggle" class="mode-btn" type="button" aria-pressed="false">➖ Modo restar</button>
+    <span class="mode-hint" id="modeHint"></span>
   </div>
   <div class="search"><span class="si" id="searchIco"></span><input id="search" type="text" name="album-buscar" aria-label="Buscar selección, código o jugador" placeholder="Busca selección o jugador (ej. Argentina, Messi)…" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly/></div>
   <div class="sortrow">
@@ -348,13 +352,13 @@
   <div id="hubProgreso"><div id="pgBody"></div></div>
 
   <div id="hubRanking" style="display:none">
-    <button id="rkBackBtn">← Volver a MI álbum</button>
+    <button id="rkBackBtn">← Volver a mi álbum</button>
     <div class="rk-nick">
       <label>Tu nick <span class="rk-eye">👁️ es el que ven todos en la tabla</span></label>
       <input id="rkNick" class="rk-in rk-in-main" type="text" maxlength="20" placeholder="ej: Titán Carrito" autocomplete="off">
       <div class="rk-row2">
         <div class="rk-col">
-          <label class="rk-lab-sm">Tu nombre <span class="rk-priv">(privado)</span></label>
+          <label class="rk-lab-sm">Tu nombre <span class="rk-priv">(se ve en la tabla)</span></label>
           <input id="rkName" class="rk-in rk-in-sm" type="text" maxlength="30" placeholder="ej: Lucas" autocomplete="off">
         </div>
         <div class="rk-col">
@@ -363,7 +367,7 @@
         </div>
       </div>
       <button id="rkSave" class="rk-savebtn">Guardar</button>
-      <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — tu <b>nombre</b> queda privado (solo lo ve el admin). Deja el nick vacío y guarda para salir.</div>
+      <div class="rk-hint">Ponte un nick para aparecer. Los demás ven tu <b>nick</b>, tu <b>nombre</b>, tu <b>ciudad</b> y tu <b>%</b>. Deja el nick vacío y guarda para salir.</div>
     </div>
     <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
     <div class="rk-tap">👀 Toca a alguien para ver su álbum y las láminas que tiene</div>
