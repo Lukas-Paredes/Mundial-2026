@@ -408,7 +408,10 @@ function buildCell(code,label,opts){
   // click izquierdo: simple = marcar/desmarcar (o editor si ya es repetida) · doble = +1 (atajo)
   d.addEventListener("click",()=>{
     if(lp){ lp=false; return; }                 // fue mantener-apretado: ya abrió el editor
-    if(d._clkT){ clearTimeout(d._clkT); d._clkT=null; quickEdit(1); return; }  // doble click: +1
+    if(d._clkT){ clearTimeout(d._clkT); d._clkT=null;
+      if(getCount(code)>=1){ quickEdit(1); }                                  // ya la tienes -> +1 (repetida)
+      else { setCount(code,1); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); }  // no la tienes -> solo marcar, sin alerta
+      return; }
     d._clkT=setTimeout(()=>{ d._clkT=null;
       const cur=getCount(code);
       if(cur>=2){ openEditor(code); return; }    // repetidas: abre el editor para no borrarlas sin querer
