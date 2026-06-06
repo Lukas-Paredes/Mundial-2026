@@ -388,6 +388,7 @@ function cellContent(d,code,label){
   const nn=getCount(code);
   if(st===2){ const b=document.createElement("span"); b.className="badge"; b.textContent="+"+(nn-1); d.appendChild(b); }
 }
+var subMode=false;
 function buildCell(code,label,opts){
   opts=opts||{};
   const n=getCount(code),st=cellState(code);
@@ -408,6 +409,7 @@ function buildCell(code,label,opts){
   // click izquierdo: simple = marcar/desmarcar (o editor si ya es repetida) · doble = +1 (atajo)
   d.addEventListener("click",()=>{
     if(lp){ lp=false; return; }                 // fue mantener-apretado: ya abrió el editor
+    if(subMode){ if(getCount(code)>0) quickEdit(-1); return; }   // modo restar: cada toque resta 1
     if(d._clkT){ clearTimeout(d._clkT); d._clkT=null;
       if(getCount(code)>=1){ quickEdit(1); }                                  // ya la tienes -> +1 (repetida)
       else { setCount(code,1); refreshCellInDom(code); updateStats(); if(currentFilter!=="all") render(); }  // no la tienes -> solo marcar, sin alerta
@@ -738,6 +740,15 @@ document.getElementById("edPlus").onclick=()=>{ setCount(editCode,getCount(editC
 document.getElementById("edMinus").onclick=()=>{ setCount(editCode,getCount(editCode)-1); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
 document.getElementById("edRemove").onclick=()=>{ setCount(editCode,0); refreshEditor(); refreshCellInDom(editCode); updateStats(); };
 document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show"); if(currentFilter!=="all") render(); };
+var _sb=document.getElementById("subToggle"); if(_sb) _sb.onclick=function(){
+  subMode=!subMode;
+  _sb.classList.toggle("on", subMode);
+  _sb.textContent = subMode ? "➖ Restando" : "➖ Modo restar";
+  _sb.setAttribute("aria-pressed", subMode?"true":"false");
+  document.body.classList.toggle("submode", subMode);
+  var _mh=document.getElementById("modeHint"); if(_mh) _mh.textContent = subMode ? "👆 toca una lámina pa\u0027 quitarla" : "";
+  toast(subMode ? "Modo restar ON — toca pa\u0027 quitar ➖" : "Modo restar OFF ➕");
+};
 function refreshCellInDom(code){
   updateSquadRow(code);
   const cell=main.querySelector('.cell[data-code="'+cssEsc(code)+'"]'); if(!cell) return;
@@ -1253,12 +1264,13 @@ function renderRanking(){
   if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) para entrar al ranking 🙌</div>'; return; }
   list.innerHTML='<div class="rk-empty">Cargando…</div>';
   Promise.resolve(pushLeaderboard()).catch(()=>null).then(()=> cloud.db.collection("leaderboard").get() ).then(snap=>{
-    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
+    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, name:x.name||"", city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
     rows.sort((a,b)=> (b.pct-a.pct) || (b.tengo-a.tengo));
     if(!rows.length){ list.innerHTML='<div class="rk-empty">Nadie se ha puesto nick todavía.<br>¡Sé el primero! 🥇</div>'; return; }
     const me=cloud.user.uid;
     list.innerHTML=rows.map((r,i)=>{ const pos=i+1; const top=pos<=3?(" top"+pos):""; const mine=r.uid===me?" me":"";
-      const place=r.city?("📍 "+esc(r.city)+" · "):"";
+      const who=[ r.name?esc(r.name):"", r.city?("📍 "+esc(r.city)):"" ].filter(Boolean).join(" · ");
+      const place=who?who+" · ":"";
       const posLabel = pos===1 ? '👑' : pos===2 ? '🥈' : pos===3 ? '🥉' : pos;
       return '<div class="rk-row'+top+mine+'" data-uid="'+esc(r.uid)+'"><div class="rk-pos">'+posLabel+'</div>'
         +'<div class="rk-mid"><div class="rk-nm">'+esc(r.nick)+(mine?' <span class="rk-meta">(tú)</span>':'')+'</div>'
@@ -1268,8 +1280,9 @@ function renderRanking(){
     }).join("");
   }).catch(e=>{ const denied=e&&e.code==="permission-denied"; list.innerHTML='<div class="rk-empty">'+(denied?'Falta pegar las reglas de Firebase pal ranking 🔒<br><span class="rk-meta">Revisa la sección «leaderboard» de las reglas.</span>':'No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span>')+'</div>'; });
 }
-function viewPersonAlbum(uid){
+function viewPersonAlbum(uid, nick){
   document.getElementById("ovLujito").classList.remove("show");
+  var _vw=document.getElementById("viewWho"); if(_vw) _vw.textContent=nick||"un amigo";
   sortMode="overview";
   const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="overview")); }
   goToAlbum(uid);
@@ -1502,7 +1515,7 @@ document.getElementById("rkList").addEventListener("click",e=>{
   const row=e.target.closest(".rk-row"); if(!row) return;
   const uid=row.dataset.uid; if(!uid||!cloud.user) return;
   if(uid===cloud.user.uid){ document.getElementById("ovLujito").classList.remove("show"); return; }
-  viewPersonAlbum(uid);
+  var _nm=row.querySelector(".rk-nm"); viewPersonAlbum(uid, _nm?_nm.textContent.trim():"");
 });
 
 /* ---------- go ---------- */
