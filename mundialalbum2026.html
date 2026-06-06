@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="Mi Álbum">
 <meta name="theme-color" content="#0067B9">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <link rel="stylesheet" href="css/estilos.css?v=11" />
 </head>
 <body>
@@ -350,11 +350,12 @@
   <div id="hubRanking" style="display:none">
     <button id="rkBackBtn">← Volver a MI álbum</button>
     <div class="rk-nick">
-      <label>Tu nick y de dónde eres</label>
-      <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off">
+      <label>Tu nombre, nick y de dónde eres</label>
+      <input id="rkName" class="rk-in" type="text" maxlength="30" placeholder="Tu nombre (ej: Lucas)" autocomplete="off">
+      <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off" style="margin-top:8px">
       <input id="rkCity" class="rk-in" type="text" maxlength="24" placeholder="Ciudad (ej: Calbuco)" autocomplete="off" style="margin-top:8px">
       <button id="rkSave" class="rk-savebtn">Guardar</button>
-      <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — nunca tu correo. Deja el nick vacío y guarda para salir.</div>
+      <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — tu <b>nombre</b> queda privado (solo lo ve el admin). Deja el nick vacío y guarda para salir.</div>
     </div>
     <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
     <div class="rk-tap">👀 Toca a alguien para ver su álbum y las láminas que tiene</div>
@@ -378,7 +379,7 @@
 <div id="confetti" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/datos.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
+<script defer src="js/datos.js?v=11"></script>
+<script defer src="js/app.js?v=11"></script>
 </body>
 </html>
