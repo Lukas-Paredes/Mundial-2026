@@ -350,10 +350,18 @@
   <div id="hubRanking" style="display:none">
     <button id="rkBackBtn">← Volver a MI álbum</button>
     <div class="rk-nick">
-      <label>Tu nombre, nick y de dónde eres</label>
-      <input id="rkName" class="rk-in" type="text" maxlength="30" placeholder="Tu nombre (ej: Lucas)" autocomplete="off">
-      <input id="rkNick" class="rk-in" type="text" maxlength="20" placeholder="Nick (ej: ElCachañero)" autocomplete="off" style="margin-top:8px">
-      <input id="rkCity" class="rk-in" type="text" maxlength="24" placeholder="Ciudad (ej: Calbuco)" autocomplete="off" style="margin-top:8px">
+      <label>Tu nick <span class="rk-eye">👁️ es el que ven todos en la tabla</span></label>
+      <input id="rkNick" class="rk-in rk-in-main" type="text" maxlength="20" placeholder="ej: Titán Carrito" autocomplete="off">
+      <div class="rk-row2">
+        <div class="rk-col">
+          <label class="rk-lab-sm">Tu nombre <span class="rk-priv">(privado)</span></label>
+          <input id="rkName" class="rk-in rk-in-sm" type="text" maxlength="30" placeholder="ej: Lucas" autocomplete="off">
+        </div>
+        <div class="rk-col">
+          <label class="rk-lab-sm">Ciudad</label>
+          <input id="rkCity" class="rk-in rk-in-sm" type="text" maxlength="24" placeholder="ej: Calbuco" autocomplete="off">
+        </div>
+      </div>
       <button id="rkSave" class="rk-savebtn">Guardar</button>
       <div class="rk-hint">Ponte un nick para aparecer. Los demás solo ven tu <b>nick</b>, tu <b>ciudad</b> y tu <b>%</b> — tu <b>nombre</b> queda privado (solo lo ve el admin). Deja el nick vacío y guarda para salir.</div>
     </div>
