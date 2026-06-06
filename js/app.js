@@ -148,7 +148,7 @@ function playClipOrSynth(code, tier){
 }
 ["pointerdown","touchstart","keydown"].forEach(ev=>window.addEventListener(ev,()=>{ try{audioCtx();}catch(e){} },{once:true,passive:true}));
 
-function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",city:"",celebrate:true,sound:true,packPrice:1400,packSize:7}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
+function normState(r){ r=r||{}; r.version=2; r.config=Object.assign({specials:true,extras:false,extraNames:{},specialPages:{},groupPages:{},teamsStartPage:0,nick:"",name:"",city:"",celebrate:true,sound:true,packPrice:1400,packSize:7}, r.config||{}); r.counts=r.counts||{}; if(r.counts){ Object.keys(r.counts).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); if(m){ const nk="FWC"+m[1]; if(!r.counts[nk]) r.counts[nk]=r.counts[k]; delete r.counts[k]; } }); } return r; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} scheduleCloudWrite(); scheduleDriveSync(); }
 function getCount(c){ return state.counts[c]||0; }
 function teamHave(code){ let h=0; for(let i=1;i<=20;i++) if(getCount(code+i)>0) h++; return h; }
@@ -666,7 +666,7 @@ function render(){
       const team=document.createElement("div"); team.className="team";
       const pname=state.config.extraNames["p"+p]||("Jugador "+p);
       let have=0; EXTRA_COLORS.forEach(a=>{ if(getCount("X"+p+a[0])>0) have++; });
-      team.innerHTML='<div class="team-h"><span class="flag">✨</span><div class="team-name"><div class="nm" contenteditable="true" data-pl="'+p+'" spellcheck="false">'+pname+'</div><div class="cd">Extra · 4 colores</div></div><div class="tprog '+(have===4?'full':'')+'"><div class="fr">'+have+'/4</div><div class="bar"><i style="width:'+(have/4*100)+'%"></i></div></div></div>';
+      team.innerHTML='<div class="team-h"><span class="flag">✨</span><div class="team-name"><div class="nm" contenteditable="true" data-pl="'+p+'" spellcheck="false">'+escHTML(pname)+'</div><div class="cd">Extra · 4 colores</div></div><div class="tprog '+(have===4?'full':'')+'"><div class="fr">'+have+'/4</div><div class="bar"><i style="width:'+(have/4*100)+'%"></i></div></div></div>';
       const cells=document.createElement("div"); cells.className="cells"; cells.style.gridTemplateColumns="repeat(4,1fr)"; let vis=0;
       EXTRA_COLORS.forEach(a=>{ const c="X"+p+a[0]; const cell=buildCell(c,a[2]); const show=matchE&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); });
       team.appendChild(cells); if(vis===0) team.classList.add("hide");
@@ -713,7 +713,7 @@ let editCode=null; const ovEdit=document.getElementById("ovEdit");
 function openEditor(code){
   editCode=code; const meta=CODE_TEAM[code]; let who=SPECIAL_NAMES[code]?("⭐ "+SPECIAL_NAMES[code]):"Especial FIFA";
   if(meta) who=flagHTML(meta.code, meta.flag, "flaginline")+meta.name+" · Grupo "+meta.group;
-  else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+(state.config.extraNames["p"+p]||("Jugador "+p)); }
+  else if(code[0]==="X"){ const p=code.match(/X(\d+)/)[1]; who="✨ "+escHTML(state.config.extraNames["p"+p]||("Jugador "+p)); }
   document.getElementById("edCode").textContent=displayCode(code); document.getElementById("edWho").innerHTML=who;
   const pn=playerName(code); const ep=document.getElementById("edPlayer"); ep.textContent=pn; ep.style.display=pn?"block":"none";
   const ps=playerPos(code); const epz=document.getElementById("edPos"); epz.textContent=ps; epz.style.display=ps?"inline-block":"none";
@@ -989,14 +989,14 @@ function showAdminUI(){ const box=document.getElementById("adminBox"); if(box) b
 async function adminFetchAll(){
   if(!cloud.ready || !cloud.user || !cloud.db) throw new Error("Inicia sesión en la nube primero (⚙️ → Nube)");
   const users=new Map();
-  try{ const snap=await cloud.db.collection("leaderboard").get(); snap.forEach(d=>{ const x=d.data()||{}; users.set(d.id,{uid:d.id, nick:x.nick||"", city:x.city||""}); }); }catch(e){}
-  try{ const asnap=await cloud.db.collection("albums").get(); asnap.forEach(d=>{ if(!users.has(d.id)) users.set(d.id,{uid:d.id, nick:"", city:""}); }); }catch(e){}
+  try{ const snap=await cloud.db.collection("leaderboard").get(); snap.forEach(d=>{ const x=d.data()||{}; users.set(d.id,{uid:d.id, nick:x.nick||"", name:x.name||"", city:x.city||""}); }); }catch(e){}
+  try{ const asnap=await cloud.db.collection("albums").get(); asnap.forEach(d=>{ if(!users.has(d.id)) users.set(d.id,{uid:d.id, nick:"", name:"", city:""}); }); }catch(e){}
   if(!users.size) throw new Error("No hay álbumes en la nube todavía");
   const out=[];
   for(const u of users.values()){
     try{ const doc=await cloud.db.collection("albums").doc(u.uid).get(); const data=doc.exists?(doc.data()||{}):{};
-      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), city:(u.city||data.city||""), counts:(data.counts||{}), extraNames:(data.extraNames||{}), specialPages:(data.specialPages||{}), updatedAt:(data.updatedAt||0)}); }
-    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), city:(u.city||""), counts:{}, extraNames:{}, specialPages:{}, updatedAt:0}); }
+      out.push({uid:u.uid, nick:(u.nick||data.nick||"(sin nick)"), name:(u.name||data.name||""), city:(u.city||data.city||""), counts:(data.counts||{}), extraNames:(data.extraNames||{}), specialPages:(data.specialPages||{}), updatedAt:(data.updatedAt||0)}); }
+    catch(e){ out.push({uid:u.uid, nick:(u.nick||"(sin nick)"), name:(u.name||""), city:(u.city||""), counts:{}, extraNames:{}, specialPages:{}, updatedAt:0}); }
   }
   return out;
 }
@@ -1010,10 +1010,10 @@ function userStats(counts){
 function buildAdminWorkbook(users){
   users=users.slice().sort((a,b)=> userStats(b.counts).tengo - userStats(a.counts).tengo);
   const wb=XLSX.utils.book_new();
-  const head=["#","Nick","Ciudad","Tengo","Faltan","Repetidas","%","Equipos (de 48)","Actualizado"];
+  const head=["#","Nick","Nombre","Ciudad","Tengo","Faltan","Repetidas","%","Equipos (de 48)","Actualizado"];
   const rows=[["MUNDIAL 2026 — TODOS LOS ÁLBUMES (admin)"],["Generado", new Date().toLocaleString()],[],head];
-  users.forEach((u,i)=>{ const s=userStats(u.counts); rows.push([i+1,u.nick,u.city,s.tengo,s.faltan,s.repe,s.pct+"%",s.full+"/48", u.updatedAt?new Date(u.updatedAt).toLocaleString():""]); });
-  const wsR=XLSX.utils.aoa_to_sheet(rows); wsR["!cols"]=[{wch:4},{wch:18},{wch:16},{wch:7},{wch:7},{wch:10},{wch:6},{wch:14},{wch:20}];
+  users.forEach((u,i)=>{ const s=userStats(u.counts); rows.push([i+1,u.nick,u.name,u.city,s.tengo,s.faltan,s.repe,s.pct+"%",s.full+"/48", u.updatedAt?new Date(u.updatedAt).toLocaleString():""]); });
+  const wsR=XLSX.utils.aoa_to_sheet(rows); wsR["!cols"]=[{wch:4},{wch:18},{wch:20},{wch:16},{wch:7},{wch:7},{wch:10},{wch:6},{wch:14},{wch:20}];
   XLSX.utils.book_append_sheet(wb,wsR,"Resumen");
   const th=["Nick"]; GROUPS.forEach(g=>g.teams.forEach(t=>th.push(t[0]))); th.push("Esp.");
   const tm=[th];
@@ -1234,14 +1234,16 @@ function pushLeaderboard(){
   const nick=(state.config.nick||"").trim().slice(0,20);
   if(!nick) return Promise.resolve(false); // sin nick: NO escribe ni borra (así no se borra solo)
   const city=(state.config.city||"").trim().slice(0,24);
+  const name=(state.config.name||"").trim().slice(0,30);
   const s=leaderStats();
-  return cloud.db.collection("leaderboard").doc(cloud.user.uid).set({ nick:nick, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).then(()=>true);
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).set({ nick:nick, name:name, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).then(()=>true);
 }
 function leaveLeaderboard(){
   if(!cloud.ready||!cloud.user||!cloud.db) return Promise.resolve();
   return cloud.db.collection("leaderboard").doc(cloud.user.uid).delete().catch(()=>{});
 }
 function renderRanking(){
+  const nameIn=document.getElementById("rkName"); if(nameIn) nameIn.value=state.config.name||"";
   const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
   const cityIn=document.getElementById("rkCity"); if(cityIn) cityIn.value=state.config.city||"";
   const list=document.getElementById("rkList");
@@ -1483,7 +1485,8 @@ document.getElementById("hTitle").onclick=()=>{ if(document.body.classList.conta
 document.getElementById("rkSave").onclick=()=>{
   const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
   const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
-  state.config.nick=v; state.config.city=c;
+  const nm=(document.getElementById("rkName").value||"").trim().slice(0,30);
+  state.config.nick=v; state.config.city=c; state.config.name=nm;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
   scheduleCloudWrite(); // guarda nick/ciudad también en tu álbum (te sigue entre aparatos)
   if(!v){ leaveLeaderboard().then(renderRanking); toast("Saliste del ranking"); return; }
