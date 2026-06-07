@@ -653,7 +653,7 @@ function render(){
       const row=document.createElement("div"); row.className="srow"+(s===1?" have":s===2?" dup":""); row.dataset.code=c;
       row.innerHTML='<span class="snum">'+numLabel+(n>1?'<span class="sdup">+'+(n-1)+'</span>':'')+'</span>'
         +'<span class="sinfo"><span class="sname">'+escHTML(nm)+'</span><span class="scode">'+c+'</span></span>'
-        +'<span class="sright"><span class="pgic">📄</span><span class="specpage" contenteditable="true" spellcheck="false">'+escHTML(pg)+'</span></span>';
+        +'<span class="sright"><span class="specpage" contenteditable="true" spellcheck="false">'+escHTML(pg)+'</span></span>';
       const pgEl=row.querySelector(".specpage");
       pgEl.addEventListener("click",e=>e.stopPropagation());
       pgEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); pgEl.blur(); } });
@@ -743,7 +743,7 @@ document.getElementById("edDone").onclick=()=>{ ovEdit.classList.remove("show");
 var _sb=document.getElementById("subToggle"); if(_sb) _sb.onclick=function(){
   subMode=!subMode;
   _sb.classList.toggle("on", subMode);
-  _sb.textContent = subMode ? "➖ Restando" : "➖ Modo restar";
+  _sb.textContent = subMode ? "➖ Restando" : "➖ Restar";
   _sb.setAttribute("aria-pressed", subMode?"true":"false");
   document.body.classList.toggle("submode", subMode);
   var _mh=document.getElementById("modeHint"); if(_mh) _mh.textContent = subMode ? "👆 toca una lámina pa\u0027 quitarla" : "";
