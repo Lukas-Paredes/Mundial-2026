@@ -85,11 +85,12 @@
 
   .filters{display:flex; gap:7px; margin-top:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
   .filters::-webkit-scrollbar{display:none;}
-  .modebar{display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;}
+
   .mode-btn{flex:0 0 auto; padding:8px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--surface); color:var(--ink2); font-size:13px; font-weight:800; cursor:pointer; transition:.15s;}
   .mode-btn:active{transform:scale(.97);}
   .mode-btn.on{background:#E2231A; border-color:#E2231A; color:#fff; box-shadow:0 4px 14px rgba(226,35,26,.35);}
-  .mode-hint{font-size:12px; font-weight:800; color:#E2231A;}
+  #subToggle{margin-left:auto; white-space:nowrap;}
+
   body.submode .cell.have, body.submode .cell.dup{box-shadow:0 0 0 2px #E2231A inset;}
   .fbtn{flex:0 0 auto; padding:8px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--surface); color:var(--ink2); font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:.15s;}
   .fbtn:hover{border-color:var(--c-blue);}
@@ -203,7 +204,7 @@
   .srow.dup .snum{background:linear-gradient(155deg,#ffc341,var(--dup-d)); color:#4a3500; border-style:solid; border-color:transparent;}
   .srow .snum .sdup{position:absolute; top:-6px; right:-6px; background:var(--c-pink); color:#fff; font-size:10px; font-weight:800; min-width:16px; height:16px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 3px; border:2px solid var(--surface);}
   .srow .sinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
-  .srow .sname{font-weight:700; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .srow .sname{font-weight:700; font-size:15px; color:var(--ink); word-break:break-word;}
   .srow .sstat{font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--c-green); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .srow .sright{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
   .srow .spos{font-size:10px; font-weight:800; letter-spacing:.03em; color:var(--mut2); background:var(--surface); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; white-space:nowrap;}
@@ -211,9 +212,9 @@
   .srow .scode{font-family:var(--font-mono); font-size:11px; color:var(--mut2); font-weight:700; letter-spacing:.02em;}
   .spec-list .sright{display:flex; flex-direction:row; align-items:center; gap:5px;}
   .srow .pgic{font-size:13px; opacity:.65;}
-  .srow .specpage{min-width:30px; text-align:center; font-family:var(--font-ui); font-weight:800; font-size:13px; color:var(--c-blue); border:1px dashed var(--line2); border-radius:10px; padding:3px 8px; cursor:text; transition:border-color .15s;}
-  .srow .specpage:empty:before{content:"pág?"; color:var(--mut2); font-weight:600;}
-  .srow .specpage:focus{outline:none; border-color:var(--c-blue); border-style:solid; background:rgba(91,160,230,.08);}
+  .srow .specpage{min-width:24px; text-align:center; font-family:var(--font-ui); font-weight:700; font-size:12px; color:var(--c-blue); border:1px solid transparent; border-radius:6px; padding:2px 5px; cursor:text; transition:border-color .15s;}
+  .srow .specpage:empty:before{content:"pág."; color:var(--mut2); font-weight:500; font-size:11px;}
+  .srow .specpage:focus{outline:none; border-color:var(--line2); background:var(--surface);}
   .cracks-sum{font-size:15px; color:var(--ink2); font-weight:700; margin:0 2px 14px;}
   .cracks-sum b{color:var(--c-pink); font-family:var(--font-disp); font-size:18px;}
   .tier-sec{margin-bottom:18px;}
@@ -561,7 +562,7 @@
     .reveal-on .grp:nth-child(n+6){animation-delay:.34s;}
     @keyframes revealUp{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
   }
-  @media (prefers-reduced-motion: reduce)
+  @media (prefers-reduced-motion: reduce){
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
     .cft{display:none;}
   }
