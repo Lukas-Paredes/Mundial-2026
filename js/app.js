@@ -1201,4 +1201,405 @@ function fillPersonal(){
   codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
   const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
   let completos=0; GROUPS.forEach(g=>g.teams.forEach(t=>{ if(teamHave(t[0])===20) completos++; }));
-  let html='<div cl
+  let html='<div class="lx-grid">'
+    +'<div class="lx-stat" style="--a:var(--c-green)"><div class="lx-n">'+pct+'%</div><div class="lx-l">Completado</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-blue)"><div class="lx-n">'+faltan+'</div><div class="lx-l">Te faltan</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-amber)"><div class="lx-n">'+repe+'</div><div class="lx-l">Para cambio</div></div>'
+    +'<div class="lx-stat" style="--a:var(--c-pink)"><div class="lx-n">'+completos+'/48</div><div class="lx-l">Equipos listos</div></div>'
+    +'</div>';
+  if(tengo===0){
+    html+='<div class="lx-fact"><span class="lx-ic">👀</span><div class="lx-tx">Aún no marcas láminas. Anota algunas (ej. <b>ARG5</b>) y vuelve para ver tus números.</div></div>';
+  } else {
+    const ml=lxMostLeastTeam(), bg=lxBestGroup();
+    html+='<div class="lx-fact"><span class="lx-ic">🏆</span><div class="lx-tx">Tu equipo más completo: <b>'+ml.best.name+'</b> ('+ml.best.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">🎯</span><div class="lx-tx">El que más te falta: <b>'+ml.worst.name+'</b> ('+ml.worst.h+'/20).</div></div>';
+    html+='<div class="lx-fact"><span class="lx-ic">📈</span><div class="lx-tx">Tu grupo más avanzado: <b>Grupo '+bg.id+'</b> ('+bg.pct+'%).</div></div>';
+    if(faltan>0){ const y=(7*faltan/total).toFixed(1); html+='<div class="lx-fact"><span class="lx-ic">📦</span><div class="lx-tx">Por ahora, de cada sobre de 7 te caerían ~<b>'+y+'</b> láminas nuevas.</div></div>'; }
+    else { html+='<div class="lx-fact"><span class="lx-ic">🎉</span><div class="lx-tx"><b>¡Completaste el álbum!</b> Eres de los pocos que lo logran. Crack.</div></div>'; }
+  }
+  document.getElementById("lxPersonal").innerHTML=html;
+}
+/* progreso: gráficos simples */
+function renderProgreso(){
+  const codes=allActiveCodes(); const total=codes.length; let tengo=0, repe=0;
+  codes.forEach(c=>{ const n=getCount(c); if(n>=1)tengo++; if(n>=2)repe+=n-1; });
+  const faltan=total-tengo, pct=total?Math.round(tengo/total*100):0;
+  let html='<div class="pg-overall"><div class="pg-bignum">'+pct+'%</div>'
+    +'<div class="pg-sub"><b style="color:var(--ok-d)">'+tengo+'</b> tengo · <b>'+faltan+'</b> faltan · <b style="color:var(--dup-d)">'+repe+'</b> repetidas</div>'
+    +'<div class="pg-track pg-big"><i style="width:'+pct+'%"></i></div></div>';
+  html+='<h3 class="lx-h" style="margin-top:16px"><span class="lx-dot" style="background:var(--c-blue)"></span> Avance por grupo</h3>';
+  GROUPS.forEach(g=>{ let h=0; g.teams.forEach(t=>h+=teamHave(t[0])); const gp=Math.round(h/80*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:'+g.color+'"></i>Grupo '+g.id+'</span>'
+      +'<div class="pg-track"><i style="width:'+gp+'%; background:'+g.color+'"></i></div>'
+      +'<span class="pg-pct">'+gp+'%</span></div>';
+  });
+  if(state.config.specials){ let h=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0)h++; }); const sp=Math.round(h/SPECIAL_CODES.length*100);
+    html+='<div class="pg-row"><span class="pg-lbl"><i class="pg-dot" style="background:var(--c-amber)"></i>Especiales</span>'
+      +'<div class="pg-track"><i style="width:'+sp+'%; background:var(--c-amber)"></i></div><span class="pg-pct">'+sp+'%</span></div>';
+  }
+  html+='<div class="lx-src" style="margin-top:10px">Cada barra muestra cuánto llevas de ese grupo (de 80 láminas).</div>';
+  document.getElementById("pgBody").innerHTML=html;
+}
+/* ranking / leaderboard */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function leaderStats(){ const codes=allActiveCodes(); const total=codes.length; let tengo=0; codes.forEach(c=>{ if(getCount(c)>0)tengo++; }); return { tengo, total, pct: total?Math.round(tengo/total*100):0 }; }
+function pushLeaderboard(){
+  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return Promise.resolve(false);
+  const nick=(state.config.nick||"").trim().slice(0,20);
+  if(!nick) return Promise.resolve(false); // sin nick: NO escribe ni borra (así no se borra solo)
+  const city=(state.config.city||"").trim().slice(0,24);
+  const name=(state.config.name||"").trim().slice(0,30);
+  const s=leaderStats();
+  const age=(state.config.age||"").toString().trim().slice(0,3);
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).set({ nick:nick, name:name, age:age, city:city, pct:s.pct, tengo:s.tengo, total:s.total, updatedAt:Date.now() }).then(()=>true);
+}
+function leaveLeaderboard(){
+  if(!cloud.ready||!cloud.user||!cloud.db) return Promise.resolve();
+  return cloud.db.collection("leaderboard").doc(cloud.user.uid).delete().catch(()=>{});
+}
+function renderRanking(){
+  const nameIn=document.getElementById("rkName"); if(nameIn) nameIn.value=state.config.name||"";
+  const nickIn=document.getElementById("rkNick"); if(nickIn) nickIn.value=state.config.nick||"";
+  const cityIn=document.getElementById("rkCity"); if(cityIn) cityIn.value=state.config.city||"";
+  const ageIn=document.getElementById("rkAge"); if(ageIn) ageIn.value=state.config.age||"";
+  const list=document.getElementById("rkList");
+  if(!cloud.ready||!cloud.user||!cloud.db){ list.innerHTML='<div class="rk-empty">Inicia sesión (⚙️ → Nube) para entrar al ranking 🙌</div>'; return; }
+  list.innerHTML='<div class="rk-empty">Cargando…</div>';
+  Promise.resolve(pushLeaderboard()).catch(()=>null).then(()=> cloud.db.collection("leaderboard").get() ).then(snap=>{
+    const rows=[]; snap.forEach(d=>{ const x=d.data()||{}; if(x.nick) rows.push({uid:d.id, nick:x.nick, name:x.name||"", age:x.age||"", city:x.city||"", pct:x.pct||0, tengo:x.tengo||0, total:x.total||0}); });
+    rows.sort((a,b)=> (b.pct-a.pct) || (b.tengo-a.tengo));
+    if(!rows.length){ list.innerHTML='<div class="rk-empty">Nadie se ha puesto nick todavía.<br>¡Sé el primero! 🥇</div>'; return; }
+    const me=cloud.user.uid;
+    list.innerHTML=rows.map((r,i)=>{ const pos=i+1; const top=pos<=3?(" top"+pos):""; const mine=r.uid===me?" me":"";
+      const who=[ r.name?esc(r.name):"", r.age?(esc(r.age)+" años"):"", r.city?("📍 "+esc(r.city)):"" ].filter(Boolean).join(" · ");
+      const place=who?who+" · ":"";
+      const posLabel = pos===1 ? '👑' : pos===2 ? '🥈' : pos===3 ? '🥉' : pos;
+      return '<div class="rk-row'+top+mine+'" data-uid="'+esc(r.uid)+'"><div class="rk-pos">'+posLabel+'</div>'
+        +'<div class="rk-mid"><div class="rk-nm">'+esc(r.nick)+(mine?' <span class="rk-meta">(tú)</span>':'')+'</div>'
+        +'<div class="rk-bar"><i style="width:'+r.pct+'%"></i></div>'
+        +'<div class="rk-meta">'+place+r.tengo+'/'+r.total+' láminas</div></div>'
+        +'<div class="rk-pct">'+r.pct+'%</div><div class="rk-go">›</div></div>';
+    }).join("");
+  }).catch(e=>{ const denied=e&&e.code==="permission-denied"; list.innerHTML='<div class="rk-empty">'+(denied?'Falta pegar las reglas de Firebase pal ranking 🔒<br><span class="rk-meta">Revisa la sección «leaderboard» de las reglas.</span>':'No pude cargar el ranking 😕<br><span class="rk-meta">'+(e.code||"error")+'</span>')+'</div>'; });
+}
+function viewPersonAlbum(uid, nick){
+  document.getElementById("ovLujito").classList.remove("show");
+  var _vw=document.getElementById("viewWho"); if(_vw) _vw.textContent=nick||"un amigo";
+  sortMode="overview";
+  const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="overview")); }
+  goToAlbum(uid);
+  try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); }
+}
+/* tabs */
+function hubShow(t){
+  document.getElementById("hubProgreso").style.display = t==="progreso"?"block":"none";
+  document.getElementById("hubDatos").style.display = t==="datos"?"block":"none";
+  document.getElementById("hubRanking").style.display = t==="ranking"?"block":"none";
+  [...document.getElementById("hubSeg").children].forEach(x=>x.classList.toggle("active", x.dataset.h===t));
+  if(t==="progreso") renderProgreso();
+  if(t==="ranking") renderRanking();
+}
+document.getElementById("hubSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; hubShow(b.dataset.h); });
+function openHub(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="Datos";
+  hubShow("progreso");
+  document.getElementById("ovLujito").classList.add("show");
+}
+function openRankingTop(){
+  fillPersonal();
+  const seg=document.getElementById("hubSeg"); if(seg) seg.style.display="none";
+  const tt=document.getElementById("hubTitle"); if(tt) tt.textContent="🏆 Ranking";
+  hubShow("ranking");
+  document.getElementById("ovLujito").classList.add("show");
+}
+document.getElementById("btnHub").onclick=openHub;
+document.getElementById("btnRankingTop").onclick=openRankingTop;
+document.getElementById("btnCracks").onclick=openCracks;
+/* Mini-barra fija: aparece al bajar y mantiene los botones a mano */
+document.getElementById("mbCracks").onclick=openCracks;
+document.getElementById("mbRanking").onclick=openRankingTop;
+document.getElementById("mbHub").onclick=openHub;
+document.getElementById("mbSet").onclick=()=>document.getElementById("btnSet").click();
+(function(){
+  let ticking=false;
+  function onScroll(){ document.body.classList.toggle("scrolled", (window.scrollY||window.pageYOffset||0)>150); }
+  window.addEventListener("scroll",function(){ if(!ticking){ requestAnimationFrame(function(){ onScroll(); ticking=false; }); ticking=true; } }, {passive:true});
+  onScroll();
+})();
+
+/* ---------- overlays close ---------- */
+document.querySelectorAll(".ov").forEach(ov=>{ ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-close]")) ov.classList.remove("show"); }); });
+
+/* ---------- toast ---------- */
+let toastTimer; function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),1900); }
+
+/* ================= CLOUD (Firebase) ================= */
+const CFG_KEY="albumCloudCfg_v1";
+const cloud={ ready:false, auth:null, db:null, user:null, albumId:null, unsub:null, applyingRemote:false, writeTimer:null };
+const ovCloud=document.getElementById("ovCloud");
+document.getElementById("cloudPill").onclick=openCloud;
+
+const BAKED_FB_CFG={apiKey:"AIzaSyAyTSwAj_N9Dg_aoGXu1EId0IRMdoqNrBw",authDomain:"figuritas-mundial-2026-3f58b.firebaseapp.com",projectId:"figuritas-mundial-2026-3f58b",storageBucket:"figuritas-mundial-2026-3f58b.firebasestorage.app",messagingSenderId:"923867824881",appId:"1:923867824881:web:b45ee5c6a9ce15f4619f50",measurementId:"G-Q3VJL10VE1"};
+function getSavedCfg(){ try{ const s=JSON.parse(localStorage.getItem(CFG_KEY)); if(s&&s.apiKey) return s; }catch(e){} return BAKED_FB_CFG; }
+function parseFirebaseConfig(text){
+  const keys=["apiKey","authDomain","projectId","storageBucket","messagingSenderId","appId"]; const cfg={};
+  keys.forEach(k=>{ const m=text.match(new RegExp(k+"\\s*:\\s*[\"']([^\"']+)[\"']")); if(m) cfg[k]=m[1]; });
+  if(!cfg.authDomain && cfg.projectId) cfg.authDomain=cfg.projectId+".firebaseapp.com";
+  return (cfg.apiKey&&cfg.projectId&&cfg.appId)?cfg:null;
+}
+function initCloud(){
+  const cfg=getSavedCfg(); if(!cfg||!cfg.apiKey) return false;
+  if(typeof firebase==="undefined") return false;
+  try{ if(!firebase.apps.length) firebase.initializeApp(cfg); cloud.auth=firebase.auth(); cloud.db=firebase.firestore(); cloud.ready=true;
+    cloud.auth.onAuthStateChanged(u=>{ cloud.user=u; onAuthChange(u); }); return true;
+  }catch(e){ console.warn("Firebase init",e); return false; }
+}
+function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
+
+function onAuthChange(u){
+  if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
+  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
+  updateCloudUI();
+  if(typeof showAdminUI==="function") showAdminUI();
+}
+function applyViewOnly(){ document.body.classList.toggle("viewonly", !!cloud.viewOnly); }
+function subscribeAlbum(){
+  if(!cloud.user||!cloud.db) return; if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; }
+  cloud.albumId=currentAlbumId();
+  cloud.viewOnly = !!(cloud.user && cloud.albumId && cloud.albumId !== cloud.user.uid);
+  applyViewOnly();
+  const ref=cloud.db.collection("albums").doc(cloud.albumId);
+  cloud.unsub=ref.onSnapshot(doc=>{
+    if(!doc.exists){
+      if(cloud.viewOnly){ toast("No encontré ese álbum 🤔 — revisa el código"); return; }
+      pushCloud(true); return;
+    }
+    const data=doc.data()||{};
+    cloud.applyingRemote=true;
+    state.counts = (data.counts && typeof data.counts==="object") ? data.counts : {};
+    if(data.extraNames && typeof data.extraNames==="object") state.config.extraNames=data.extraNames;
+    if(data.specialPages && typeof data.specialPages==="object") state.config.specialPages=data.specialPages;
+    if(data.groupPages && typeof data.groupPages==="object") state.config.groupPages=data.groupPages;
+    if(!cloud.viewOnly){ if(typeof data.nick==="string") state.config.nick=data.nick; if(typeof data.city==="string") state.config.city=data.city; }
+    try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
+    render(); cloud.applyingRemote=false;
+  }, err=>{ toast("Nube: "+(err.code||"error de lectura")); });
+}
+function scheduleCloudWrite(){ if(!cloud.ready||!cloud.user||cloud.applyingRemote||cloud.viewOnly) return; clearTimeout(cloud.writeTimer); cloud.writeTimer=setTimeout(()=>pushCloud(false),700); }
+function pushCloud(seed){
+  if(!cloud.ready||!cloud.user||!cloud.db||cloud.viewOnly) return; const id=currentAlbumId(); if(!id) return;
+  cloud.db.collection("albums").doc(id).set({ counts:state.counts, extraNames:state.config.extraNames, specialPages:state.config.specialPages||{}, groupPages:state.config.groupPages||{}, nick:state.config.nick||"", city:state.config.city||"", updatedAt:Date.now() }).catch(e=>{ if(!seed) toast("Nube: error al guardar"); });
+  pushLeaderboard();
+}
+function goToAlbum(code){
+  state.config.sharedCode = code || "";
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  subscribeAlbum(); updateCloudUI();
+}
+
+function openCloud(){ updateCloudUI(); ovCloud.classList.add("show"); }
+function updateCloudUI(){
+  const cfg=getSavedCfg();
+  const setup=document.getElementById("cloudSetup"), auth=document.getElementById("cloudAuth"), usr=document.getElementById("cloudUser");
+  const pill=document.getElementById("cloudPill"), pillTxt=document.getElementById("cloudPillTxt");
+  if(!cfg||!cfg.apiKey){ setup.style.display="block"; auth.style.display="none"; usr.style.display="none"; pill.classList.remove("on"); pillTxt.innerHTML="Solo en este equipo · <b>toca para sincronizar</b>"; return; }
+  if(!cloud.ready) initCloud();
+  if(cloud.user){
+    setup.style.display="none"; auth.style.display="none"; usr.style.display="block";
+    const email=cloud.user.email||"cuenta"; document.getElementById("userEmail").textContent=email;
+    document.getElementById("userAv").textContent=(email[0]||"?").toUpperCase();
+    document.getElementById("myAlbumCode").textContent=cloud.user.uid;
+    document.getElementById("joinCode").value=state.config.sharedCode||"";
+    const st=document.getElementById("syncTip"); if(st) st.textContent = cloud.viewOnly ? "👁️ Estás viendo un álbum compartido (solo lectura)." : "Sincronizado ✓ — los cambios se guardan solos.";
+    pill.classList.add("on"); pillTxt.innerHTML='<b>'+email+'</b> · sincronizado';
+  } else {
+    setup.style.display="none"; auth.style.display="block"; usr.style.display="none";
+    pill.classList.remove("on"); pillTxt.innerHTML="Nube lista · <b>inicia sesión</b>";
+  }
+}
+/* save config */
+document.getElementById("cfgSave").onclick=()=>{
+  const cfg=parseFirebaseConfig(document.getElementById("cfgInput").value); const err=document.getElementById("cfgErr");
+  if(!cfg){ err.textContent="No pude leer la config. Pega el bloque completo (apiKey, projectId y appId)."; return; }
+  err.textContent=""; localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+  cloud.ready=false; const ok=initCloud();
+  if(ok){ toast("Nube conectada ☁️"); updateCloudUI(); } else { err.textContent="Se guardó, recarga la página para activar."; }
+};
+document.getElementById("cfgEdit").onclick=()=>{ const cfg=getSavedCfg(); document.getElementById("cfgInput").value=cfg?JSON.stringify(cfg,null,2):""; document.getElementById("cloudAuth").style.display="none"; document.getElementById("cloudSetup").style.display="block"; };
+/* auth segmented */
+let authMode="login";
+document.getElementById("segLogin").onclick=()=>{ authMode="login"; document.getElementById("segLogin").classList.add("active"); document.getElementById("segSignup").classList.remove("active"); document.getElementById("authGo").textContent="Entrar"; document.getElementById("authErr").textContent=""; };
+document.getElementById("segSignup").onclick=()=>{ authMode="signup"; document.getElementById("segSignup").classList.add("active"); document.getElementById("segLogin").classList.remove("active"); document.getElementById("authGo").textContent="Crear cuenta"; document.getElementById("authErr").textContent=""; };
+document.getElementById("authGo").onclick=async()=>{
+  if(!cloud.ready && !initCloud()){ document.getElementById("authErr").textContent="Configura Firebase primero."; return; }
+  const email=document.getElementById("authEmail").value.trim(), pass=document.getElementById("authPass").value, err=document.getElementById("authErr"); err.style.color="";
+  if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
+  err.textContent="Conectando…";
+  try{
+    if(authMode==="signup") await cloud.auth.createUserWithEmailAndPassword(email,pass);
+    else await cloud.auth.signInWithEmailAndPassword(email,pass);
+    err.textContent=""; document.getElementById("authPass").value=""; toast("¡Listo! Sesión iniciada ✓");
+  }catch(e){
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No existe esa cuenta. Crea una.","auth/wrong-password":"Contraseña incorrecta.","auth/invalid-credential":"Correo o contraseña incorrectos.","auth/email-already-in-use":"Ese correo ya tiene cuenta. Entra.","auth/weak-password":"Contraseña muy débil (6+).","auth/network-request-failed":"Sin conexión.","auth/operation-not-allowed":"Activa Correo/contraseña en Firebase → Authentication."};
+    err.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  }
+};
+document.getElementById("signOut").onclick=()=>{ if(cloud.auth) cloud.auth.signOut(); toast("Sesión cerrada"); };
+
+/* ----- Puerta de login obligatoria ----- */
+let agMode="login";
+function agSet(m){ agMode=m; document.getElementById("agLogin").classList.toggle("active",m==="login"); document.getElementById("agSignup").classList.toggle("active",m==="signup"); document.getElementById("agGo").textContent=m==="login"?"Entrar":"Crear cuenta"; document.getElementById("agErr").textContent=""; }
+document.getElementById("agLogin").onclick=()=>agSet("login");
+document.getElementById("agSignup").onclick=()=>agSet("signup");
+document.getElementById("agGo").onclick=async()=>{
+  const err=document.getElementById("agErr"); err.style.color="";
+  if(!cloud.ready && !initCloud()){ err.textContent="Necesitas conexión a internet para entrar."; return; }
+  const email=document.getElementById("agEmail").value.trim(), pass=document.getElementById("agPass").value;
+  if(!email||pass.length<6){ err.textContent="Correo válido y contraseña de 6+ caracteres."; return; }
+  err.textContent="Conectando…";
+  try{
+    if(agMode==="signup") await cloud.auth.createUserWithEmailAndPassword(email,pass);
+    else await cloud.auth.signInWithEmailAndPassword(email,pass);
+    document.getElementById("agPass").value="";
+  }catch(e){
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No existe esa cuenta. Crea una.","auth/wrong-password":"Contraseña incorrecta.","auth/invalid-credential":"Correo o contraseña incorrectos.","auth/email-already-in-use":"Ese correo ya tiene cuenta. Entra.","auth/weak-password":"Contraseña muy débil (6+).","auth/network-request-failed":"Sin conexión.","auth/operation-not-allowed":"Falta activar Correo/contraseña en Firebase → Authentication."};
+    err.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  }
+};
+document.getElementById("agPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("agGo").click(); });
+
+/* ----- Recuperar / crear nueva contraseña ----- */
+function sendPasswordReset(email, errEl, withToast){
+  if(!cloud.ready && !initCloud()){ errEl.style.color=""; errEl.textContent="Necesitas conexión a internet."; return; }
+  email=(email||"").trim();
+  if(!email || !/.+@.+\..+/.test(email)){ errEl.style.color=""; errEl.textContent="Escribe tu correo arriba y vuelve a tocar."; return; }
+  errEl.style.color=""; errEl.textContent="Enviando correo…";
+  cloud.auth.sendPasswordResetEmail(email).then(()=>{
+    errEl.style.color="var(--ok-d)";
+    errEl.textContent="✓ Te mandamos un correo para crear una contraseña nueva. Revisa tu bandeja (y la carpeta de spam).";
+    if(withToast) toast("Correo de recuperación enviado 📧");
+  }).catch(e=>{
+    errEl.style.color="";
+    const map={"auth/invalid-email":"Correo inválido.","auth/user-not-found":"No hay ninguna cuenta con ese correo.","auth/missing-email":"Escribe tu correo primero.","auth/network-request-failed":"Sin conexión.","auth/too-many-requests":"Demasiados intentos, espera un poco e intenta de nuevo."};
+    errEl.textContent=map[e.code]||("Error: "+(e.code||e.message));
+  });
+}
+document.getElementById("agForgot").onclick=()=>sendPasswordReset(document.getElementById("agEmail").value, document.getElementById("agErr"), false);
+document.getElementById("authForgot").onclick=()=>sendPasswordReset(document.getElementById("authEmail").value, document.getElementById("authErr"), true);
+document.getElementById("changePw").onclick=()=>{ if(cloud.user) sendPasswordReset(cloud.user.email, document.getElementById("cpwMsg"), true); };
+document.getElementById("copyCode").onclick=()=>{ const v=document.getElementById("myAlbumCode").textContent; if(navigator.clipboard) navigator.clipboard.writeText(v).then(()=>toast("Código copiado ✓"),()=>toast(v)); else toast(v); };
+document.getElementById("joinGo").onclick=()=>{
+  const v=document.getElementById("joinCode").value.trim();
+  goToAlbum(v);
+  toast(v?"Viendo álbum compartido 👁️ (solo lectura)":"Volviste a tu álbum ✓");
+};
+function backToMyAlbum(){ sortMode="group"; const seg=document.getElementById("sortSeg"); if(seg){ [...seg.children].forEach(x=>x.classList.toggle("active", x.dataset.s==="group")); } goToAlbum(""); updateCloudUI(); toast("¡Volviste a tu álbum! ✓"); }
+document.getElementById("viewBack").onclick=backToMyAlbum;
+document.getElementById("viewBackFab").onclick=backToMyAlbum;
+document.getElementById("rkBackBtn").onclick=()=>{ const m=document.getElementById("ovLujito"); if(m) m.classList.remove("show"); if(document.body.classList.contains("viewonly")) backToMyAlbum(); else { try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); } } };
+document.getElementById("hTitle").onclick=()=>{ if(document.body.classList.contains("viewonly")) backToMyAlbum(); };
+document.getElementById("rkSave").onclick=()=>{
+  const v=(document.getElementById("rkNick").value||"").trim().slice(0,20);
+  const c=(document.getElementById("rkCity").value||"").trim().slice(0,24);
+  const nm=(document.getElementById("rkName").value||"").trim().slice(0,30);
+  const _ag=parseInt(document.getElementById("rkAge").value||"0")||0;
+  state.config.nick=v; state.config.city=c; state.config.name=nm; state.config.age=(_ag>=1&&_ag<=99)?String(_ag):"";
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  scheduleCloudWrite(); // guarda nick/ciudad también en tu álbum (te sigue entre aparatos)
+  if(!v){ leaveLeaderboard().then(renderRanking); toast("Saliste del ranking"); return; }
+  toast("Guardando…");
+  pushLeaderboard().then(()=>{ toast("Nick guardado ✓"); renderRanking(); })
+    .catch(e=>{ toast(e&&e.code==="permission-denied" ? "Falta pegar las reglas de Firebase 🔒" : "No se pudo guardar el nick ✗"); renderRanking(); });
+};
+document.getElementById("rkRefresh").onclick=renderRanking;
+document.getElementById("rkList").addEventListener("click",e=>{
+  const row=e.target.closest(".rk-row"); if(!row) return;
+  const uid=row.dataset.uid; if(!uid||!cloud.user) return;
+  if(uid===cloud.user.uid){ document.getElementById("ovLujito").classList.remove("show"); return; }
+  var _nm=row.querySelector(".rk-nm"); viewPersonAlbum(uid, _nm?_nm.textContent.trim():"");
+});
+
+/* ---------- go ---------- */
+/* Anti-autollenado de Chrome/Edge: los campos parten "readonly" para que el
+   navegador NO inyecte el correo/clave guardados; al tocarlos se desbloquean. */
+["quickAdd","search","joinCode"].forEach(function(id){
+  var el=document.getElementById(id); if(!el) return;
+  var unlock=function(){ el.removeAttribute("readonly"); };
+  ["focus","pointerdown","mousedown","touchstart","keydown"].forEach(function(ev){ el.addEventListener(ev,unlock); });
+});
+/* Olas de color que fluyen (We Are 26, versión orgánica) */
+const WAVE_COLS=["#E2231A","#F58220","#F2A20C","#8DC63F","#00802B","#00857C","#41B6E6","#0067B9","#2E3192","#6A1B9A","#C2186A","#A4123F"];
+function waveRnd(a,b){ return a+Math.random()*(b-a); }
+function wavePickColors(n){ const out=[]; let prev=-1; for(let i=0;i<n;i++){ let c; do{ c=Math.floor(Math.random()*WAVE_COLS.length); }while(c===prev); prev=c; out.push(WAVE_COLS[c]); } return out; }
+function waveSvg(vertical, count, viewW, viewH){
+  const main = vertical ? viewW : viewH, cross = vertical ? viewH : viewW;
+  const step = main/count, wob = step*0.34;
+  const P = (m,cr)=> vertical ? (m.toFixed(1)+","+cr.toFixed(1)) : (cr.toFixed(1)+","+m.toFixed(1));
+  function boundary(k){ const base=k*step;
+    if(k===0) return [0,0,0,0];
+    if(k===count) return [main,main,main,main];
+    return [base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob), base+waveRnd(-wob,wob)];
+  }
+  const B=[]; for(let k=0;k<=count;k++) B.push(boundary(k));
+  const cols=wavePickColors(count);
+  const fwd = a => "C "+P(a[1],cross/3)+" "+P(a[2],2*cross/3)+" "+P(a[3],cross);
+  const rev = a => "C "+P(a[2],2*cross/3)+" "+P(a[1],cross/3)+" "+P(a[0],0);
+  let paths="";
+  for(let k=0;k<count;k++){ const t=B[k], b=B[k+1];
+    paths+='<path d="M '+P(t[0],0)+" "+fwd(t)+" L "+P(b[3],cross)+" "+rev(b)+' Z" fill="'+cols[k]+'"/>';
+  }
+  return '<svg preserveAspectRatio="none" viewBox="0 0 '+viewW+' '+viewH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">'+paths+'</svg>';
+}
+function buildGeoBand(){ const band=document.getElementById("geoband"); if(band) band.innerHTML=waveSvg(true, 14, 1200, 80); }
+function buildRails(){ ["railL","railR"].forEach(id=>{ const r=document.getElementById(id); if(!r) return; const pat=r.querySelector(".railpat"); if(pat) pat.innerHTML=waveSvg(false, 16, 100, 800); }); }
+const ICONS={
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>'
+  ,repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>'
+  ,sheet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>'
+  ,cloudUp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"/></svg>'
+  ,braces:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg>'
+  ,trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>'
+  ,key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>'
+  ,logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>'
+  ,unplug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 5 3-3"/><path d="m2 22 3-3"/><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z"/><path d="M7.5 13.5 10 11"/><path d="M10.5 16.5 13 14"/><path d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z"/></svg>'
+  ,camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>'
+  ,image:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'
+  ,search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+};
+function applyIcons(){
+  const set=(id,svg)=>{ const e=document.getElementById(id); if(e) e.innerHTML=svg; };
+  set("btnCracks",ICONS.star); set("mbCracks",ICONS.star);
+  set("btnRankingTop",ICONS.trophy); set("mbRanking",ICONS.trophy);
+  set("btnHub",ICONS.chart); set("mbHub",ICONS.chart);
+  set("btnSet",ICONS.gear); set("mbSet",ICONS.gear);
+  const cp=document.querySelector("#cloudPill .ic"); if(cp) cp.innerHTML=ICONS.cloud;
+  const setBtn=(id,svg)=>{ const e=document.getElementById(id); if(e) e.insertAdjacentHTML("afterbegin", svg); };
+  setBtn("changePw",ICONS.key); setBtn("cfgEdit",ICONS.gear); setBtn("signOut",ICONS.logout);
+  setBtn("driveChange",ICONS.gear); setBtn("driveDisconnect",ICONS.unplug);
+  setBtn("btnCloud2",ICONS.cloud); setBtn("btnTrade",ICONS.repeat);
+  setBtn("btnExcel",ICONS.sheet); setBtn("btnExcelImport",ICONS.sheet);
+  setBtn("btnDrive",ICONS.cloudUp); setBtn("btnExport",ICONS.braces); setBtn("btnImport",ICONS.braces);
+  setBtn("btnAdminXlsx",ICONS.sheet); setBtn("btnAdminJson",ICONS.braces);
+  setBtn("btnReset",ICONS.trash);
+  const si=document.getElementById("searchIco"); if(si) si.innerHTML=ICONS.search;
+}
+buildGeoBand();
+buildRails();
+applyIcons();
+render();
+updateSearchPlaceholder();
+initCloud();
+updateCloudUI();
+
+/* Accesibilidad: etiquetas para botones de solo ícono + teclado en la pastilla de nube */
+document.querySelectorAll(".x").forEach(b=>{ if(!b.getAttribute("aria-label")) b.setAttribute("aria-label","Cerrar"); });
+(function(){ const cp=document.getElementById("cloudPill"); if(cp){ cp.setAttribute("role","button"); cp.setAttribute("tabindex","0"); cp.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cp.click(); } }); } })();
+
+/* Aparición escalonada solo en la primera carga */
+(function(){ const m=document.getElementById("main"); if(!m) return; m.classList.add("reveal-on"); setTimeout(()=>m.classList.remove("reveal-on"),1700); })();
