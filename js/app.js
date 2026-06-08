@@ -487,6 +487,31 @@ function makeGroupCalendar(g){
   box.innerHTML=html;
   return box;
 }
+function initMatchScrollControls(){
+  document.addEventListener("wheel",e=>{
+    const list=e.target&&e.target.closest?e.target.closest(".matchcal-list"):null;
+    if(!list || list.scrollWidth<=list.clientWidth) return;
+    const move=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+    if(!move) return;
+    e.preventDefault();
+    list.scrollLeft+=move;
+  },{passive:false});
+  let drag=null;
+  document.addEventListener("pointerdown",e=>{
+    const list=e.target&&e.target.closest?e.target.closest(".matchcal-list"):null;
+    if(!list || list.scrollWidth<=list.clientWidth) return;
+    drag={list,x:e.clientX,left:list.scrollLeft};
+    list.classList.add("dragging");
+    try{ list.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  document.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    drag.list.scrollLeft=drag.left-(e.clientX-drag.x);
+  });
+  ["pointerup","pointercancel"].forEach(ev=>document.addEventListener(ev,()=>{
+    if(drag){ drag.list.classList.remove("dragging"); drag=null; }
+  }));
+}
 /* Álbum por club: jugadores del álbum agrupados por club (plantillas 2025-26). Solo lectura. */
 const CLUB_COUNTRIES=[
  {key:"ENG", name:"Inglaterra", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
@@ -1635,6 +1660,7 @@ function applyIcons(){
 buildGeoBand();
 buildRails();
 applyIcons();
+initMatchScrollControls();
 updateSearchPlaceholder();
 const cloudStarted=initCloud();
 if(!cloudStarted){ document.body.classList.remove("auth-pending"); render(); }
