@@ -613,7 +613,7 @@ function render(){
   if(sortMode==="alpha"){
     const flat=[]; GROUPS.forEach(g=>g.teams.forEach(t=>flat.push(t)));
     flat.sort((a,b)=>a[1].localeCompare(b[1],"es"));
-    const gWrap=document.createElement("div"); gWrap.className="grp";
+    const gWrap=document.createElement("div"); gWrap.className="grp grp-specials";
     const gh=document.createElement("div"); gh.className="grp-h";
     gh.innerHTML='<span class="tag" style="background:linear-gradient(90deg,#0067B9,#6A1B9A)">Equipos A–Z</span><span class="line"></span>';
     gWrap.appendChild(gh); let anyVis=false;
@@ -637,7 +637,7 @@ function render(){
   if(state.config.specials){
     const gWrap=document.createElement("div"); gWrap.className="grp";
     gWrap.innerHTML='<div class="grp-h"><span class="tag" style="background:linear-gradient(90deg,#ffb020,#ff8a00)">Especiales</span><span class="line"></span></div>';
-    const team=document.createElement("div"); team.className="team"; team.style.setProperty("--accent","#F2A20C");
+    const team=document.createElement("div"); team.className="team special-team"; team.style.setProperty("--accent","#F2A20C");
     let have=0; SPECIAL_CODES.forEach(c=>{ if(getCount(c)>0) have++; });
     const pct=Math.round(have/SPECIAL_CODES.length*100);
     team.innerHTML='<div class="team-h"><span class="flag">⭐</span><div class="team-name"><div class="nm">Especiales FIFA</div><div class="cd">00 · FWC1–FWC19 · repartidas por el álbum</div></div><div class="tprog '+(have===SPECIAL_CODES.length?'full':'')+'"><div class="fr">'+have+'/'+SPECIAL_CODES.length+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div></div>';
@@ -1359,6 +1359,7 @@ function initCloud(){
 function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedCode.trim())? state.config.sharedCode.trim() : (cloud.user?cloud.user.uid:null); }
 
 function onAuthChange(u){
+  document.body.classList.remove("auth-pending");
   if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
   else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
   updateCloudUI();
@@ -1594,7 +1595,7 @@ buildRails();
 applyIcons();
 render();
 updateSearchPlaceholder();
-initCloud();
+if(!initCloud()) document.body.classList.remove("auth-pending");
 updateCloudUI();
 
 /* Accesibilidad: etiquetas para botones de solo ícono + teclado en la pastilla de nube */
