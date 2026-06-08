@@ -172,8 +172,12 @@
   .matchcal{grid-column:1 / -1; margin:-2px 0 12px; padding:10px; border-radius:18px; background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.68)); border:1px solid var(--line); box-shadow:var(--shadow-sm); overflow:hidden;}
   .matchcal-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 2px 9px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--accent,#0067B9);}
   .matchcal-top span:last-child{font-family:var(--font-mono); color:var(--mut2); font-size:10px;}
-  .matchcal-list{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(214px,1fr); gap:8px; overflow-x:auto; padding-bottom:2px; -webkit-overflow-scrolling:touch;}
-  .matchcal-list::-webkit-scrollbar{display:none;}
+  .matchcal-list{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(214px,1fr); gap:8px; overflow-x:auto; padding:0 2px 12px; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--accent,#0067B9) var(--surface2); cursor:grab; overscroll-behavior-x:contain;}
+  .matchcal-list.dragging{cursor:grabbing; user-select:none;}
+  .matchcal-list::-webkit-scrollbar{display:block; height:8px;}
+  .matchcal-list::-webkit-scrollbar-track{background:var(--surface2); border-radius:999px;}
+  .matchcal-list::-webkit-scrollbar-thumb{background:linear-gradient(90deg,var(--accent,#0067B9),var(--c-amber)); border-radius:999px; border:2px solid var(--surface2);}
+  .matchcal-list::-webkit-scrollbar-thumb:hover{background:linear-gradient(90deg,var(--accent,#0067B9),var(--c-pink));}
   .match-card{min-width:0; border-radius:14px; border:1px solid rgba(26,26,34,.10); background:var(--surface); box-shadow:0 1px 5px rgba(26,26,34,.05); padding:9px 10px; display:grid; grid-template-columns:56px 1fr; gap:9px; align-items:center;}
   .match-time{height:100%; border-radius:11px; background:color-mix(in srgb, var(--accent,#0067B9) 10%, #fff); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--accent,#0067B9); text-align:center;}
   .match-time b{font-size:10px; line-height:1.05; font-weight:900;}
