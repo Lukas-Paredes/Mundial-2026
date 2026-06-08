@@ -467,7 +467,9 @@
   .donate-plan b{display:block; font-size:15px; line-height:1.05;}
   .donate-plan small{display:block; margin-top:4px; color:var(--mut); font-size:11px; font-weight:700;}
   .donate-plan strong{flex:0 0 auto; font-family:var(--font-disp); font-size:24px; color:var(--dup-d); letter-spacing:-.02em;}
-  .donate-plan:nth-child(2){background:linear-gradient(135deg,#fffdf4,#fff4ca); border-color:rgba(242,162,12,.55);}
+  .donate-plan.featured{background:linear-gradient(135deg,#fffdf4,#fff4ca); border-color:rgba(242,162,12,.55);}
+  .donate-plan.custom{background:linear-gradient(135deg,rgba(0,128,43,.07),#fff); border-color:rgba(0,128,43,.34);}
+  .donate-plan.custom strong{font-size:18px; color:var(--ok-d);}
 
   .toast{position:fixed; left:50%; bottom:88px; transform:translateX(-50%); z-index:60; background:var(--ink); color:#fff; padding:12px 19px; border-radius:14px; font-weight:700; font-size:14px; opacity:0; pointer-events:none; transition:.25s; max-width:90vw; text-align:center; box-shadow:0 10px 28px rgba(0,0,0,.28);}
   .toast.show{opacity:1; bottom:100px;}
@@ -688,16 +690,38 @@
   .chip.total{--chip-a:#E0322A;--chip-b:#F58220;}
 
   @media (max-width:520px){
+    .hpad{padding:13px 14px 0;}
+    .htop{display:grid; grid-template-columns:auto minmax(0,1fr); gap:10px 12px; align-items:center;}
+    .ring{grid-column:1; grid-row:1;}
+    .htitle{grid-column:2; grid-row:1; min-width:0;}
+    .htitle .kick{font-size:10px; letter-spacing:.11em; line-height:1.05;}
+    .htitle h1{font-size:clamp(30px,8.5vw,38px); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .hbtns{grid-column:1 / -1; grid-row:2; width:100%; display:flex; gap:7px; align-items:center;}
+    .hbtns .icbtn{flex:0 0 43px; width:43px; height:43px; border-radius:13px;}
+    .hbtns .donate-btn{flex:1 1 auto; height:43px; min-width:112px; padding:0 12px; border-radius:13px; font-size:13px;}
+    #miniBar{gap:7px; padding:7px 10px;}
+    #miniBar .mb-title{display:none;}
+    #miniBar .mb-pct{font-size:12px; padding:5px 8px;}
+    #miniBar .mb-btns{flex:1; display:grid; grid-template-columns:repeat(3,38px) minmax(104px,1fr) 38px; gap:6px; justify-content:stretch;}
+    #miniBar .icbtn{width:38px; height:38px; border-radius:11px;}
+    #miniBar .donate-mini{width:100%; height:38px; padding:0 8px; border-radius:11px; font-size:12px;}
     .chips{gap:8px;}
     .chip{border-radius:16px; padding:13px 5px 11px;}
     .chip:before{left:10px; right:10px;}
     .chip .n{font-size:25px;}
     .chip .l{font-size:9px;}
-    .hbtns{gap:6px;}
-    .donate-btn{padding:0 11px; font-size:11px;}
     .donate-hero{grid-template-columns:66px 1fr; padding:11px;}
     .donate-meme{width:66px; height:66px; border-radius:18px;}
     .donate-title{font-size:17px;}
+  }
+
+  @media (max-width:370px){
+    .hbtns .icbtn{flex-basis:40px; width:40px; height:40px;}
+    .hbtns .donate-btn{height:40px; min-width:98px; font-size:12px;}
+    #miniBar{padding-left:8px; padding-right:8px;}
+    #miniBar .mb-btns{grid-template-columns:repeat(3,36px) minmax(92px,1fr) 36px; gap:5px;}
+    #miniBar .icbtn{width:36px; height:36px;}
+    #miniBar .donate-mini{height:36px; font-size:11px;}
   }
 
   /* ---- v14: especiales ordenadas a todo el ancho ---- */
