@@ -13,7 +13,7 @@
     --font-mono:"Space Mono", ui-monospace, Menlo, Consolas, monospace;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:var(--font-ui); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:var(--font-ui); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden;}
   body{padding-bottom:104px; position:relative;}
   .disp{font-family:var(--font-disp); font-weight:900; letter-spacing:-.01em; text-transform:uppercase;}
   .mono{font-family:var(--font-mono);}
@@ -519,12 +519,12 @@
     main{position:relative; z-index:2;}
   }
   /* ----- Vista general (mapa compacto del álbum) ----- */
-  main.ov-compact{max-width:1200px;}
+  main.ov-compact{max-width:1080px; width:100%; padding-left:12px; padding-right:12px;}
   main.ov-compact .grp{display:grid; grid-template-columns:repeat(2,1fr); column-gap:10px; row-gap:0; margin-bottom:0;}
   main.ov-compact .grp-h{grid-column:1 / -1; margin:8px 2px 4px;}
   main.ov-compact .grp-h .tag{font-size:10px; padding:4px 10px;}
-  main.ov-compact .team{min-width:0; padding:6px 8px 6px; margin-bottom:5px; border-radius:14px; border-width:1px; box-shadow:var(--shadow-sm);}
-  main.ov-compact .team-h{margin-bottom:4px; gap:6px; padding-left:2px;}
+  main.ov-compact .team{width:100%; min-width:0; padding:6px 8px 6px; margin-bottom:5px; border-radius:14px; border-width:1px; box-shadow:var(--shadow-sm);}
+  main.ov-compact .team-h{min-width:0; margin-bottom:4px; gap:6px; padding-left:2px;}
   main.ov-compact .flagimg{width:16px;}
   main.ov-compact .flag{font-size:15px; width:18px;}
   main.ov-compact .team-name .weare{display:none;}
