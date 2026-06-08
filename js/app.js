@@ -1361,7 +1361,7 @@ function currentAlbumId(){ return (state.config.sharedCode&&state.config.sharedC
 function onAuthChange(u){
   document.body.classList.remove("auth-pending");
   if(u){ document.body.classList.add("authed"); subscribeAlbum(); setTimeout(()=>{ if((state.config.nick||"").trim()) pushLeaderboard().catch(()=>{}); }, 1600); }
-  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); }
+  else { document.body.classList.remove("authed"); if(cloud.unsub){ cloud.unsub(); cloud.unsub=null; } cloud.viewOnly=false; applyViewOnly(); render(); }
   updateCloudUI();
   if(typeof showAdminUI==="function") showAdminUI();
 }
@@ -1593,9 +1593,9 @@ function applyIcons(){
 buildGeoBand();
 buildRails();
 applyIcons();
-render();
 updateSearchPlaceholder();
-if(!initCloud()) document.body.classList.remove("auth-pending");
+const cloudStarted=initCloud();
+if(!cloudStarted){ document.body.classList.remove("auth-pending"); render(); }
 updateCloudUI();
 
 /* Accesibilidad: etiquetas para botones de solo ícono + teclado en la pastilla de nube */
