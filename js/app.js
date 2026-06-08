@@ -5,6 +5,20 @@ let state = load();
 function load(){ try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.counts) return normState(r); }catch(e){} return normState({}); }
 const GROUP_PAGES={A:"8–15",B:"16–23",C:"24–31",D:"32–39",E:"40–47",F:"48–55",G:"58–65",H:"66–73",I:"74–81",J:"82–89",K:"90–97",L:"98–105"};
 const SPECIAL_PAGES={"00":"1","FWC9":"106","FWC10":"106","FWC11":"106","FWC12":"107","FWC13":"107","FWC14":"107","FWC15":"108","FWC16":"108","FWC17":"108","FWC18":"109","FWC19":"109"};
+const GROUP_MATCHES={
+  A:[["Jue 11/6","15:00","MEX","RSA"],["Jue 11/6","22:00","KOR","CZE"],["Jue 18/6","12:00","CZE","RSA"],["Jue 18/6","21:00","MEX","KOR"],["Mié 24/6","21:00","RSA","KOR"],["Mié 24/6","21:00","CZE","MEX"]],
+  B:[["Vie 12/6","15:00","CAN","BIH"],["Sáb 13/6","15:00","QAT","SUI"],["Jue 18/6","15:00","SUI","BIH"],["Jue 18/6","18:00","CAN","QAT"],["Mié 24/6","15:00","SUI","CAN"],["Mié 24/6","15:00","BIH","QAT"]],
+  C:[["Sáb 13/6","18:00","BRA","MAR"],["Sáb 13/6","21:00","HAI","SCO"],["Vie 19/6","18:00","SCO","MAR"],["Vie 19/6","20:30","BRA","HAI"],["Mié 24/6","18:00","MAR","HAI"],["Mié 24/6","18:00","SCO","BRA"]],
+  D:[["Vie 12/6","21:00","USA","PAR"],["Dom 14/6","00:00","AUS","TUR"],["Vie 19/6","15:00","USA","AUS"],["Vie 19/6","23:00","TUR","PAR"],["Jue 25/6","22:00","TUR","USA"],["Jue 25/6","22:00","PAR","AUS"]],
+  E:[["Dom 14/6","13:00","GER","CUW"],["Dom 14/6","19:00","CIV","ECU"],["Sáb 20/6","16:00","GER","CIV"],["Sáb 20/6","20:00","ECU","CUW"],["Jue 25/6","16:00","CUW","CIV"],["Jue 25/6","16:00","ECU","GER"]],
+  F:[["Dom 14/6","16:00","NED","JAP"],["Dom 14/6","22:00","SWE","TUN"],["Sáb 20/6","13:00","NED","SWE"],["Dom 21/6","00:00","TUN","JAP"],["Jue 25/6","19:00","TUN","NED"],["Jue 25/6","19:00","JAP","SWE"]],
+  G:[["Lun 15/6","15:00","BEL","EGY"],["Lun 15/6","21:00","IRN","NZL"],["Dom 21/6","15:00","BEL","IRN"],["Dom 21/6","21:00","NZL","EGY"],["Vie 26/6","23:00","NZL","BEL"],["Vie 26/6","23:00","EGY","IRN"]],
+  H:[["Lun 15/6","12:00","ESP","CPV"],["Lun 15/6","18:00","KSA","URU"],["Dom 21/6","12:00","ESP","KSA"],["Dom 21/6","18:00","URU","CPV"],["Vie 26/6","20:00","CPV","KSA"],["Vie 26/6","20:00","URU","ESP"]],
+  I:[["Mar 16/6","15:00","FRA","SEN"],["Mar 16/6","18:00","IRQ","NOR"],["Lun 22/6","17:00","FRA","IRQ"],["Lun 22/6","20:00","NOR","SEN"],["Vie 26/6","15:00","NOR","FRA"],["Vie 26/6","15:00","SEN","IRQ"]],
+  J:[["Mar 16/6","21:00","ARG","ALG"],["Mié 17/6","00:00","AUT","JOR"],["Lun 22/6","13:00","ARG","AUT"],["Lun 22/6","23:00","JOR","ALG"],["Sáb 27/6","22:00","ALG","AUT"],["Sáb 27/6","22:00","JOR","ARG"]],
+  K:[["Mié 17/6","13:00","POR","COD"],["Mié 17/6","22:00","UZB","COL"],["Mar 23/6","13:00","POR","UZB"],["Mar 23/6","22:00","COL","COD"],["Sáb 27/6","19:30","COL","POR"],["Sáb 27/6","19:30","COD","UZB"]],
+  L:[["Mié 17/6","16:00","ENG","CRO"],["Mié 17/6","19:00","GHA","PAN"],["Mar 23/6","16:00","ENG","GHA"],["Mar 23/6","19:00","PAN","CRO"],["Sáb 27/6","17:00","PAN","ENG"],["Sáb 27/6","17:00","CRO","GHA"]]
+};
 function teamPageRange(code){
   if(typeof GROUP_PAGES==="undefined") return "";
   let g=null, idx=-1;
@@ -447,6 +461,32 @@ function makeTeam(code,name,flag,term){
   team.appendChild(cells); if(vis===0) team.classList.add("hide");
   return team;
 }
+function matchTeamLabel(code){
+  const meta=CODE_TEAM[code+"1"];
+  return meta ? meta.name : code;
+}
+function makeGroupCalendar(g){
+  const matches=GROUP_MATCHES[g.id]||[];
+  if(!matches.length) return null;
+  const box=document.createElement("div");
+  box.className="matchcal";
+  box.style.setProperty("--accent", g.color||"#0067B9");
+  let html='<div class="matchcal-top"><span>🗓️ Partidos del grupo</span><span>Hora Chile</span></div><div class="matchcal-list">';
+  matches.forEach(m=>{
+    const a=m[2], b=m[3], ma=CODE_TEAM[a+"1"], mb=CODE_TEAM[b+"1"];
+    html+='<div class="match-card">'
+      +'<div class="match-time"><b>'+escHTML(m[0])+'</b><span>'+escHTML(m[1])+'</span></div>'
+      +'<div class="match-teams">'
+        +'<div class="match-side">'+flagHTML(a,ma?ma.flag:"","match-flag")+'<span>'+escHTML(matchTeamLabel(a))+'</span></div>'
+        +'<div class="match-vs">vs</div>'
+        +'<div class="match-side">'+flagHTML(b,mb?mb.flag:"","match-flag")+'<span>'+escHTML(matchTeamLabel(b))+'</span></div>'
+      +'</div>'
+    +'</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+  return box;
+}
 /* Álbum por club: jugadores del álbum agrupados por club (plantillas 2025-26). Solo lectura. */
 const CLUB_COUNTRIES=[
  {key:"ENG", name:"Inglaterra", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
@@ -629,7 +669,9 @@ function render(){
       _gpEl.addEventListener("click",e=>e.stopPropagation());
       _gpEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); _gpEl.blur(); } });
       _gpEl.addEventListener("blur",()=>{ const v=(_gpEl.textContent||"").replace(/[^0-9–-]/g,"").slice(0,9); _gpEl.textContent=v; if(!state.config.groupPages) state.config.groupPages={}; if(v) state.config.groupPages[g.id]=v; else delete state.config.groupPages[g.id]; save(); });
-      gWrap.appendChild(gh); let groupHasVisible=false;
+      gWrap.appendChild(gh);
+      const cal=makeGroupCalendar(g); if(cal) gWrap.appendChild(cal);
+      let groupHasVisible=false;
       g.teams.forEach(t=>{ const team=makeTeam(t[0],t[1],t[2],term); if(!team.classList.contains("hide")) groupHasVisible=true; gWrap.appendChild(team); });
       if(!groupHasVisible) gWrap.classList.add("hide"); main.appendChild(gWrap);
     });
