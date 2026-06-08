@@ -17,7 +17,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <link rel="stylesheet" href="css/estilos.css?v=17" />
+  <link rel="stylesheet" href="css/estilos.css?v=18" />
 </head>
 <body class="auth-pending">
 
@@ -71,6 +71,7 @@
       <button class="icbtn" id="btnCracks" aria-label="Mis cracks">⭐</button>
       <button class="icbtn" id="btnRankingTop" aria-label="Ranking">🏆</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
+      <button class="donate-btn" id="btnDonate" type="button">💛 Donaciones</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
     </div>
   </div>
@@ -91,6 +92,7 @@
     <button class="icbtn" id="mbCracks" aria-label="Mis cracks">⭐</button>
     <button class="icbtn" id="mbRanking" aria-label="Ranking">🏆</button>
     <button class="icbtn" id="mbHub" aria-label="Datos">📊</button>
+    <button class="icbtn donate-mini" id="mbDonate" aria-label="Donaciones">💛</button>
     <button class="icbtn" id="mbSet" aria-label="Ajustes">⚙</button>
   </div>
 </div>
@@ -199,6 +201,30 @@
   </div>
 </div></div>
 
+<!-- DONACIONES -->
+<div class="ov" id="ovDonate"><div class="sheet donate-sheet">
+  <div class="sheet-h"><h2 class="disp">Donaciones</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="donate-hero">
+    <div class="donate-meme" aria-hidden="true">🥺</div>
+    <div>
+      <div class="donate-title">Apoya el álbum interactivo</div>
+      <div class="donate-copy">Si esta app te sirve, una donación ayuda a mantenerla viva, mejorarla y seguir metiéndole cariño.</div>
+    </div>
+  </div>
+  <div class="donate-plans">
+    <a class="donate-plan" href="https://mpago.la/28w79Pw" target="_blank" rel="noopener">
+      <span><b>Plan Hincha</b><small>Aporte simple</small></span><strong>$1.000</strong>
+    </a>
+    <a class="donate-plan" href="https://mpago.la/28w79Pw" target="_blank" rel="noopener">
+      <span><b>Plan Crack</b><small>Apoyo doble</small></span><strong>$2.000</strong>
+    </a>
+    <a class="donate-plan featured" href="https://mpago.la/28w79Pw" target="_blank" rel="noopener">
+      <span><b>Plan Leyenda</b><small>Para los más motivados</small></span><strong>$5.000</strong>
+    </a>
+  </div>
+  <div class="tip">Se abre Mercado Pago en otra pestaña. Gracias por apoyar esta locura mundialera 💛</div>
+</div></div>
+
 <!-- SETTINGS -->
 <div class="ov" id="ovDrive"><div class="sheet">
   <div class="sheet-h"><h2 class="disp">Google Drive</h2><button class="x" data-close>✕</button></div>
@@ -279,7 +305,7 @@
     <div class="tip" id="adminMsg" style="text-align:left;margin-top:8px">Baja los álbumes de todas las personas que aparecen en el ranking.</div>
   </div>
   <button class="set-btn danger" id="btnReset">Borrar todo y empezar de cero</button>
-  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 10.9</div>
+  <div style="text-align:center; color:var(--mut2); font-size:11px; margin-top:16px; font-weight:600;">Álbum Mundial 2026 · versión 11.0</div>
 </div></div>
 
 <!-- TRADE LISTS -->
@@ -394,6 +420,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script defer src="js/datos.js?v=11"></script>
-<script defer src="js/app.js?v=17"></script>
+<script defer src="js/app.js?v=18"></script>
 </body>
 </html>
