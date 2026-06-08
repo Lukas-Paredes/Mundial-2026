@@ -567,3 +567,88 @@
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
     .cft{display:none;}
   }
+
+  /* ---- visual polish v13: estadisticas con look mas premium ---- */
+  .geoband{
+    position:relative;
+    box-shadow:inset 0 -1px 0 rgba(255,255,255,.38);
+  }
+  .geoband svg{
+    filter:saturate(.92) contrast(.98);
+  }
+  .geoband:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.22));
+  }
+
+  .chips{
+    gap:12px;
+  }
+  .chip{
+    --chip-a:#0067B9;
+    --chip-b:#41B6E6;
+    position:relative;
+    isolation:isolate;
+    border:1px solid rgba(26,26,34,.10);
+    border-radius:20px;
+    padding:16px 8px 13px;
+    background:
+      radial-gradient(120px 62px at 50% 0, color-mix(in srgb, var(--chip-a) 16%, transparent), transparent 72%),
+      linear-gradient(180deg,#fff,#fbfaf8);
+    box-shadow:0 9px 24px rgba(26,26,34,.08), 0 1px 2px rgba(26,26,34,.08);
+    transform:translateZ(0);
+  }
+  .chip:before{
+    content:"";
+    position:absolute;
+    left:14px;
+    right:14px;
+    top:-1px;
+    height:4px;
+    border-radius:0 0 999px 999px;
+    background:linear-gradient(90deg,var(--chip-a),var(--chip-b));
+    box-shadow:0 4px 12px color-mix(in srgb, var(--chip-a) 30%, transparent);
+    z-index:1;
+  }
+  .chip:after{
+    content:"";
+    position:absolute;
+    inset:1px;
+    border-radius:19px;
+    border:1px solid rgba(255,255,255,.72);
+    pointer-events:none;
+    z-index:-1;
+  }
+  .chip .n{
+    position:relative;
+    display:inline-block;
+    font-size:31px;
+    line-height:.95;
+    letter-spacing:0;
+    color:transparent !important;
+    background:linear-gradient(135deg,var(--chip-a),var(--chip-b));
+    -webkit-background-clip:text;
+    background-clip:text;
+    text-shadow:none;
+  }
+  .chip .l{
+    position:relative;
+    color:#535466;
+    font-size:10px;
+    letter-spacing:.08em;
+  }
+  .chip.tengo{--chip-a:#007F3B;--chip-b:#15A56B;}
+  .chip.faltan{--chip-a:#111827;--chip-b:#0067B9;}
+  .chip.repe{--chip-a:#B97700;--chip-b:#F2A20C;}
+  .chip.total{--chip-a:#E0322A;--chip-b:#F58220;}
+
+  @media (max-width:520px){
+    .chips{gap:8px;}
+    .chip{border-radius:16px; padding:13px 5px 11px;}
+    .chip:before{left:10px; right:10px;}
+    .chip .n{font-size:25px;}
+    .chip .l{font-size:9px;}
+  }
