@@ -38,8 +38,8 @@
   .icbtn:active{transform:scale(.94);}
   .icbtn{display:grid; place-items:center;}
   .icbtn svg{width:21px; height:21px;}
-  .donate-btn{height:var(--tap); display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:0 14px; border:none; border-radius:14px; background:linear-gradient(135deg,#ffe45c,#f2a20c); color:#3d2b00; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 8px 18px rgba(242,162,12,.28); white-space:nowrap; transition:transform .12s, filter .18s, box-shadow .18s;}
-  .donate-btn:hover{filter:brightness(1.03); box-shadow:0 10px 22px rgba(242,162,12,.34);}
+  .donate-btn{height:var(--tap); display:inline-flex; align-items:center; justify-content:center; padding:0 16px; border:none; border-radius:14px; background:linear-gradient(135deg,#00802B,#006B25); color:#fff; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 8px 18px rgba(0,128,43,.28); white-space:nowrap; transition:transform .12s, filter .18s, box-shadow .18s;}
+  .donate-btn:hover{filter:brightness(1.05); box-shadow:0 10px 22px rgba(0,128,43,.34);}
   .donate-btn:active{transform:scale(.96);}
   .cloudpill .ic{display:inline-flex; align-items:center;}
   .cloudpill .ic svg{width:15px; height:15px;}
@@ -373,7 +373,7 @@
   #miniBar .mb-title{font-family:var(--font-disp); font-weight:900; font-size:18px; text-transform:uppercase; letter-spacing:-.02em; color:var(--ink); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   #miniBar .mb-btns{display:flex; gap:6px; flex:0 0 auto;}
   #miniBar .icbtn{width:38px; height:38px; font-size:16px; border-radius:10px;}
-  #miniBar .donate-mini{background:linear-gradient(135deg,#ffe45c,#f2a20c); color:#3d2b00;}
+  #miniBar .donate-mini{height:38px; display:inline-flex; align-items:center; justify-content:center; padding:0 12px; border:none; border-radius:10px; background:linear-gradient(135deg,#00802B,#006B25); color:#fff; font-size:12px; font-weight:900; cursor:pointer; box-shadow:var(--shadow-sm); white-space:nowrap;}
   body.viewonly #miniBar{display:none;}
   body.viewonly #viewBanner{display:flex;}
   body.viewonly .qa{display:none;}
@@ -694,8 +694,7 @@
     .chip .n{font-size:25px;}
     .chip .l{font-size:9px;}
     .hbtns{gap:6px;}
-    .donate-btn{width:var(--tap); padding:0; font-size:0;}
-    .donate-btn::before{content:"💛"; font-size:18px;}
+    .donate-btn{padding:0 11px; font-size:11px;}
     .donate-hero{grid-template-columns:66px 1fr; padding:11px;}
     .donate-meme{width:66px; height:66px; border-radius:18px;}
     .donate-title{font-size:17px;}
