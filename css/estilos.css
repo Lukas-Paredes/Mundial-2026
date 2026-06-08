@@ -1,4 +1,4 @@
-  :root{
+:root{
     --bg:#FBFAF8; --surface:#FFFFFF; --surface2:#F3F2EF;
     --ink:#1A1A22; --ink2:#454552; --mut:#6B6B78; --mut2:#9A9AA6;
     --line:#ECEAE6; --line2:#DEDBD4;
@@ -567,4 +567,3 @@
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
     .cft{display:none;}
   }
-
