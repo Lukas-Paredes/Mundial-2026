@@ -1384,10 +1384,13 @@ function openRankingTop(){
 document.getElementById("btnHub").onclick=openHub;
 document.getElementById("btnRankingTop").onclick=openRankingTop;
 document.getElementById("btnCracks").onclick=openCracks;
+function openDonate(){ const ov=document.getElementById("ovDonate"); if(ov) ov.classList.add("show"); }
+document.getElementById("btnDonate").onclick=openDonate;
 /* Mini-barra fija: aparece al bajar y mantiene los botones a mano */
 document.getElementById("mbCracks").onclick=openCracks;
 document.getElementById("mbRanking").onclick=openRankingTop;
 document.getElementById("mbHub").onclick=openHub;
+document.getElementById("mbDonate").onclick=openDonate;
 document.getElementById("mbSet").onclick=()=>document.getElementById("btnSet").click();
 (function(){
   let ticking=false;
