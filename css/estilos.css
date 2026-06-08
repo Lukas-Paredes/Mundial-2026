@@ -546,6 +546,7 @@
   /* ----- Pantalla de login obligatoria ----- */
   #authGate{position:fixed; inset:0; z-index:300; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto;}
   body.authed #authGate{display:none;}
+  body.auth-pending #authGate{display:none;}
   .ag-card{width:100%; max-width:380px; background:var(--surface); border:1.5px solid var(--line); border-radius:22px; padding:28px 22px 22px; box-shadow:var(--shadow);}
   .ag-brand{text-align:center; margin-bottom:18px;}
   .ag-brand .kick{font-family:var(--font-disp); font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--c-blue); display:flex; align-items:center; justify-content:center; gap:7px;}
@@ -651,4 +652,120 @@
     .chip:before{left:10px; right:10px;}
     .chip .n{font-size:25px;}
     .chip .l{font-size:9px;}
+  }
+
+  /* ---- v14: especiales ordenadas a todo el ancho ---- */
+  .grp-specials{
+    display:block;
+  }
+  .grp-specials .grp-h{
+    display:flex;
+  }
+  .special-team{
+    max-width:none;
+    width:100%;
+    padding:16px;
+    background:
+      linear-gradient(180deg, rgba(242,162,12,.08), transparent 86%),
+      var(--surface);
+  }
+  .special-team .team-h{
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .special-team .team-name .cd{
+    white-space:normal;
+    line-height:1.25;
+  }
+  .spec-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+    gap:9px;
+  }
+  .spec-list .srow{
+    min-width:0;
+    min-height:64px;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-radius:16px;
+    background:linear-gradient(180deg,#fff,#f5f3ef);
+    border:1px solid rgba(26,26,34,.10);
+    box-shadow:0 2px 8px rgba(26,26,34,.05);
+  }
+  .spec-list .srow:hover{
+    border-color:rgba(242,162,12,.48);
+  }
+  .spec-list .srow .snum{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    font-size:15px;
+    background:#fff;
+  }
+  .spec-list .srow.have .snum{
+    background:linear-gradient(155deg,#13a452,var(--ok-d));
+  }
+  .spec-list .srow.dup .snum{
+    background:linear-gradient(155deg,#ffc341,var(--dup-d));
+  }
+  .spec-list .srow .sinfo{
+    min-width:0;
+    gap:3px;
+  }
+  .spec-list .srow .sname{
+    font-size:14px;
+    line-height:1.08;
+    font-weight:850;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .spec-list .srow .scode{
+    font-size:10px;
+    letter-spacing:.04em;
+  }
+  .spec-list .sright{
+    min-width:42px;
+    justify-content:flex-end;
+  }
+  .spec-list .srow .specpage{
+    min-width:38px;
+    padding:5px 8px;
+    border-radius:999px;
+    background:rgba(0,103,185,.08);
+    color:var(--c-blue);
+    font-family:var(--font-mono);
+    font-size:12px;
+    font-weight:800;
+  }
+  .spec-list .srow .specpage:empty:before{
+    content:"pág.";
+    font-family:var(--font-ui);
+    color:var(--mut2);
+    font-size:10px;
+    font-weight:800;
+  }
+  .spec-list .srow .specpage:focus{
+    background:#fff;
+    border-color:var(--c-blue);
+    box-shadow:0 0 0 3px rgba(0,103,185,.12);
+  }
+
+  @media (min-width:880px){
+    .grp-specials{
+      grid-template-columns:1fr;
+    }
+    .grp-specials .grp-h,
+    .grp-specials .special-team{
+      grid-column:1 / -1;
+    }
+  }
+
+  @media (max-width:520px){
+    .special-team{padding:13px;}
+    .spec-list{grid-template-columns:1fr;}
+    .spec-list .srow{min-height:60px;}
+    .spec-list .srow .sname{font-size:13px;}
   }
