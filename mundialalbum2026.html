@@ -120,7 +120,7 @@
       <button data-s="overview" title="Todo el álbum de un vistazo" aria-label="Vista general del álbum">Vista</button>
       <button data-s="clubs" title="Álbum por club (se llena solo)" aria-label="Álbum por club">Clubes</button>
     </div>
-    <button id="subToggle" class="mode-btn" type="button" aria-pressed="false">➖ Restar</button>
+    <button id="subToggle" class="mode-btn" type="button" aria-pressed="false">⊖ Restar</button>
   </div>
 </div>
 
@@ -362,9 +362,13 @@
           <label class="rk-lab-sm">Ciudad</label>
           <input id="rkCity" class="rk-in rk-in-sm" type="text" maxlength="24" placeholder="ej: Calbuco" autocomplete="off">
         </div>
+        <div class="rk-col rk-col-age">
+          <label class="rk-lab-sm">Edad</label>
+          <input id="rkAge" class="rk-in rk-in-sm" type="number" min="1" max="99" placeholder="27" autocomplete="off">
+        </div>
       </div>
       <button id="rkSave" class="rk-savebtn">Guardar</button>
-      <div class="rk-hint">Ponte un nick para aparecer. Los demás ven tu <b>nick</b>, tu <b>nombre</b>, tu <b>ciudad</b> y tu <b>%</b>. Deja el nick vacío y guarda para salir.</div>
+      <div class="rk-hint">Ponte un nick para aparecer. Los demás ven tu <b>nick</b>, tu <b>nombre</b>, tu <b>edad</b>, tu <b>ciudad</b> y tu <b>%</b>. Deja el nick vacío y guarda para salir.</div>
     </div>
     <div class="rk-head"><h3 class="lx-h" style="margin:0"><span class="lx-dot" style="background:var(--c-amber)"></span> Tabla de posiciones</h3><button id="rkRefresh" class="rk-ref" title="Actualizar">↻</button></div>
     <div class="rk-tap">👀 Toca a alguien para ver su álbum y las láminas que tiene</div>
@@ -392,3 +396,4 @@
 <script defer src="js/app.js?v=11"></script>
 </body>
 </html>
+
