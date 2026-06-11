@@ -76,6 +76,7 @@ b.appendChild(x);(document.body||document.documentElement).appendChild(b);});})(
     <div class="hbtns">
       <button class="icbtn" id="btnCracks" aria-label="Mis cracks">⭐</button>
       <button class="icbtn" id="btnRankingTop" aria-label="Ranking">🏆</button>
+      <button class="icbtn" id="btnMatch" aria-label="Match de canjes">🔁</button>
       <button class="icbtn" id="btnHub" aria-label="Datos y valores">📊</button>
       <button class="donate-btn" id="btnDonate" type="button">Donaciones</button>
       <button class="icbtn" id="btnSet" aria-label="Ajustes">⚙</button>
@@ -87,6 +88,10 @@ b.appendChild(x);(document.body||document.documentElement).appendChild(b);});})(
     <div class="chip faltan"><div class="n" id="stFaltan">980</div><div class="l">Faltan</div></div>
     <div class="chip repe"><div class="n" id="stRepe">0</div><div class="l">Repetidas</div></div>
     <div class="chip total"><div class="n" id="stTotal">980</div><div class="l">Total</div></div>
+  </div>
+  <div class="fbar" id="fbar" role="progressbar" aria-label="Progreso total del álbum" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="fbar-track"><div class="fbar-fill" id="fbFill"><span class="fbar-glint"></span></div></div>
+    <div class="fbar-meta"><span><b id="fbN">0</b> de <span id="fbT">980</span> láminas pegadas</span><span class="fbar-pct" id="fbPct">0%</span></div>
   </div>
   </div>
 </header>
@@ -426,6 +431,16 @@ b.appendChild(x);(document.body||document.documentElement).appendChild(b);});})(
 </div></div>
 
 <div id="confetti" aria-hidden="true"></div>
+<!-- CANJES -->
+<div class="ov" id="ovMatch"><div class="sheet trade-sheet">
+  <div class="sheet-h"><h2 class="disp">🤝 Match de canjes</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+  <div class="tr-pick">
+    <label class="tr-lab">¿Con quién quieres canjear?</label>
+    <select id="trFriend" class="tr-sel"><option value="">Elige un amigo…</option></select>
+  </div>
+  <div id="trBody"><div class="tr-empty">Elige un amigo del ranking y te muestro los canjes redondos al tiro. 🤝</div></div>
+</div></div>
+
 <button id="topFab" type="button" aria-label="Ir arriba">↑</button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
