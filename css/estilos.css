@@ -500,7 +500,36 @@
   .tprog .bar i{position:relative; overflow:hidden;}
   .tprog.full .bar i::after{content:""; position:absolute; top:0; bottom:0; width:26px; left:-30px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent); animation:barsweep 2.4s linear infinite;}
   @keyframes barsweep{0%{left:-30px} 100%{left:110%}}
-  @media (prefers-reduced-motion:reduce){ .cell.pop{animation:none;} .poprng,.gold-shine{display:none;} .tprog.full .bar i::after{display:none;} }
+  /* P3b: barra grande de progreso (header) */
+  .fbar{margin-top:12px;}
+  .fbar-track{height:14px; border-radius:999px; background:var(--surface2); border:1px solid var(--line2); overflow:hidden;}
+  .fbar-fill{position:relative; height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--c-blue),var(--c-green) 55%,var(--c-amber)); transition:width .7s cubic-bezier(.22,1,.36,1); overflow:hidden;}
+  .fbar-glint{position:absolute; top:0; bottom:0; width:46px; left:-50px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent); animation:barsweep 2.6s linear infinite;}
+  .fbar-meta{display:flex; justify-content:space-between; align-items:baseline; margin-top:6px; font-size:12px; font-weight:700; color:var(--mut);}
+  .fbar-meta b{font-family:var(--font-mono); font-size:16px; color:var(--ink);}
+  .fbar-pct{font-family:var(--font-mono); font-weight:700; font-size:13px; color:var(--c-blue);}
+  @media (prefers-reduced-motion:reduce){ .cell.pop{animation:none;} .poprng,.gold-shine,.fbar-glint{display:none;} .tprog.full .bar i::after{display:none;} }
+  /* ===== CANJES ===== */
+  .trade-sheet{max-width:560px;}
+  .tr-pick{margin-bottom:13px;}
+  .tr-lab{display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); margin-bottom:6px;}
+  .tr-sel{width:100%; height:44px; border-radius:12px; border:1.5px solid var(--line2); background:var(--surface); font-family:var(--font-ui); font-size:14px; font-weight:700; color:var(--ink); padding:0 12px;}
+  .tr-empty{padding:18px 6px; text-align:center; font-size:13px; font-weight:600; color:var(--mut); line-height:1.5;}
+  .tr-sum{font-size:14px; font-weight:700; color:var(--ink2); margin:2px 0 12px; line-height:1.4;}
+  .tr-sec-t{font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.05em; color:var(--mut); margin:14px 0 8px;}
+  .tr-row{border:1.5px solid var(--line); border-radius:14px; padding:9px 10px; margin-bottom:8px; background:var(--surface);}
+  .tr-cat{display:inline-block; color:#fff; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; border-radius:999px; padding:3px 8px; margin-bottom:7px;}
+  .tr-pair{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .tr-side{flex:1; min-width:140px; font-size:10px; font-weight:900; color:var(--mut2); letter-spacing:.04em;}
+  .tr-vs{flex:0 0 auto; font-size:16px; font-weight:900; color:var(--c-blue);}
+  .tr-chip{display:inline-flex; align-items:center; gap:5px; background:var(--surface2); border:1px solid var(--line2); border-radius:999px; padding:4px 9px; font-size:12px; color:var(--ink); margin:3px 3px 0 0; max-width:100%;}
+  .tr-chip b{font-family:var(--font-mono); font-size:11px;}
+  .tr-chip .tr-nm{font-weight:600; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px;}
+  .trflag{font-size:13px;}
+  img.trflag{width:15px; height:auto; border-radius:2px;}
+  .tr-wrap{display:flex; flex-wrap:wrap;}
+  .tr-copy{width:100%; height:44px; margin-top:10px; border:none; border-radius:999px; background:var(--c-green); color:#fff; font-family:var(--font-disp); font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 6px 16px rgba(0,128,43,.3);}
+  .tr-copy:active{transform:scale(.98);}
 
   /* orden A–Z */
   .sortrow{display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;}
