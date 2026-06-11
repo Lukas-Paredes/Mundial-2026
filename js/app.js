@@ -440,6 +440,7 @@ function buildCell(code,label,opts){
       if(currentFilter!=="all") render();
     }, 260);
   });
+  d.dataset.n=getCount(code);
   return d;
 }
 function makeTeam(code,name,flag,term){
@@ -463,6 +464,7 @@ function makeTeam(code,name,flag,term){
     if(isHit) cell.classList.add("hit");
     const show=matchTeam&&passFilter(c); if(!show)cell.classList.add("hide"); else vis++; cells.appendChild(cell); }
   team.appendChild(cells); if(vis===0) team.classList.add("hide");
+  paintGold(team, have===20, false);
   return team;
 }
 function matchTeamLabel(code){
@@ -773,7 +775,9 @@ function updateStats(){
   const codes=allActiveCodes(); const total=codes.length; let tengo=0,repe=0;
   codes.forEach(c=>{ const n=getCount(c); if(n>=1) tengo++; if(n>=2) repe+=n-1; });
   const faltan=total-tengo;
-  document.getElementById("stTengo").textContent=tengo; document.getElementById("stFaltan").textContent=faltan;
+  const _stT=document.getElementById("stTengo");
+  if(_stT){ if(_stT.textContent!==String(tengo) && _stT.animate){ try{ _stT.animate([{transform:"scale(1)"},{transform:"scale(1.25)"},{transform:"scale(1)"}],{duration:320,easing:"cubic-bezier(.3,1.6,.5,1)"}); }catch(e){} } _stT.textContent=tengo; }
+  document.getElementById("stFaltan").textContent=faltan;
   document.getElementById("stRepe").textContent=repe; document.getElementById("stTotal").textContent=total;
   document.getElementById("cAll").textContent=total; document.getElementById("cHave").textContent=tengo;
   document.getElementById("cMiss").textContent=faltan; document.getElementById("cDup").textContent=repe;
@@ -826,12 +830,30 @@ function refreshCellInDom(code){
   const st=cellState(code); cell.classList.remove("have","dup");
   if(st===1) cell.classList.add("have"); else if(st===2) cell.classList.add("dup");
   cellContent(cell, code, cell.dataset.label||cell.textContent);
+  const _now=getCount(code), _prevN=(cell.dataset.n===undefined)?_now:(+cell.dataset.n||0);
+  if(_now>_prevN && !document.body.classList.contains("viewonly")){
+    cell.classList.remove("pop"); void cell.offsetWidth; cell.classList.add("pop");
+    const _r=document.createElement("span"); _r.className="poprng"; cell.appendChild(_r);
+    _r.addEventListener("animationend",()=>_r.remove()); setTimeout(()=>{ if(_r.parentNode) _r.remove(); },800);
+  }
+  cell.dataset.n=_now;
   const teamEl=cell.closest(".team"); if(teamEl) refreshTeamProgress(teamEl); updateRosterRow(code);
+}
+function paintGold(el,on,cel){
+  const was=el.classList.contains("gold");
+  el.classList.toggle("gold",!!on);
+  let b=el.querySelector(".gold-badge"), sh=el.querySelector(".gold-shine");
+  if(on){
+    if(!b){ b=document.createElement("span"); b.className="gold-badge"; b.textContent="★ COMPLETO"; el.appendChild(b); }
+    if(!sh){ sh=document.createElement("span"); sh.className="gold-shine"; el.appendChild(sh); }
+    if(!was && cel){ const nmEl=el.querySelector(".nm"); const nm=nmEl?nmEl.textContent.trim():"Equipo"; try{ toast("🏆 ¡"+nm+" COMPLETO! Tarjeta dorada ✨"); }catch(e){} }
+  } else { if(b) b.remove(); if(sh) sh.remove(); }
 }
 function refreshTeamProgress(teamEl){
   const cells=[...teamEl.querySelectorAll(".cell")]; let have=0; cells.forEach(c=>{ if(getCount(c.dataset.code)>0) have++; });
   const tot=cells.length; const fr=teamEl.querySelector(".fr"),bar=teamEl.querySelector(".bar i"),tp=teamEl.querySelector(".tprog");
   if(fr) fr.textContent=have+"/"+tot; if(bar) bar.style.width=(have/tot*100)+"%"; if(tp) tp.classList.toggle("full",have===tot);
+  paintGold(teamEl, tot>0&&have===tot, !cloud.applyingRemote);
 }
 function cssEsc(s){ return s.replace(/["\\]/g,"\\$&"); }
 function escHTML(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
