@@ -1437,7 +1437,7 @@ function openRankingTop(){
   document.getElementById("ovLujito").classList.add("show");
 }
 document.getElementById("btnHub").onclick=openHub;
-var _btnTr=document.getElementById("btnTrade"); if(_btnTr) _btnTr.onclick=openTrade;
+var _btnMt=document.getElementById("btnMatch"); if(_btnMt) _btnMt.onclick=openTrade;
 document.getElementById("btnRankingTop").onclick=openRankingTop;
 document.getElementById("btnCracks").onclick=openCracks;
 function openDonate(){ const ov=document.getElementById("ovDonate"); if(ov) ov.classList.add("show"); }
@@ -1776,7 +1776,7 @@ let _trFriends=[];
 function openTrade(){
   if(cloud.viewOnly){ toast("Vuelve a tu álbum pa\u0027 canjear 👀"); return; }
   if(!cloud.ready||!cloud.user||!cloud.db){ toast("Conéctate a la nube primero ☁️"); return; }
-  document.getElementById("ovTrade").classList.add("show");
+  document.getElementById("ovMatch").classList.add("show");
   const sel=document.getElementById("trFriend");
   sel.innerHTML='<option value="">Cargando amigos…</option>';
   cloud.db.collection("leaderboard").get().then(snap=>{
@@ -1812,10 +1812,10 @@ function runTrade(uid){
     if(!doc.exists){ body.innerHTML='<div class="tr-empty">'+escHTML(nick)+' aún no sincroniza su álbum. 😴</div>'; return; }
     const data=doc.data()||{}; const theirs={};
     Object.keys(data.counts||{}).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); theirs[m?("FWC"+m[1]):k]=data.counts[k]; });
-    renderTrade(nick, computeTrade(state.counts||{}, theirs));
+    renderMatch(nick, computeTrade(state.counts||{}, theirs));
   }).catch(e=>{ body.innerHTML='<div class="tr-empty">'+(e&&e.code==="permission-denied"?"Falta pegar las reglas de Firebase 🔒":"No se pudo leer su álbum 😕")+'</div>'; });
 }
-function renderTrade(nick,r){
+function renderMatch(nick,r){
   const body=document.getElementById("trBody"); let h="";
   h+='<div class="tr-sum">'+(r.matches.length? "🤝 <b>"+r.matches.length+"</b> canje"+(r.matches.length===1?"":"s")+" redondo"+(r.matches.length===1?"":"s")+" con <b>"+escHTML(nick)+"</b> — mismo valor, los dos ganan:" : "Sin canjes redondos con <b>"+escHTML(nick)+"</b> por ahora 🥲")+'</div>';
   if(r.matches.length){
