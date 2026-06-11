@@ -1437,6 +1437,7 @@ function openRankingTop(){
   document.getElementById("ovLujito").classList.add("show");
 }
 document.getElementById("btnHub").onclick=openHub;
+var _btnTr=document.getElementById("btnTrade"); if(_btnTr) _btnTr.onclick=openTrade;
 document.getElementById("btnRankingTop").onclick=openRankingTop;
 document.getElementById("btnCracks").onclick=openCracks;
 function openDonate(){ const ov=document.getElementById("ovDonate"); if(ov) ov.classList.add("show"); }
@@ -1745,6 +1746,98 @@ if(!cloudStarted){ document.body.classList.remove("auth-pending"); render(); }
   window.addEventListener("scroll",()=>{ const sh=window.scrollY>700; if(sh!==v){ v=sh; tf.classList.toggle("show",sh); } },{passive:true});
   tf.onclick=()=>{ window.scrollTo({top:0,behavior:"smooth"}); };
 })();
+/* ================= CANJES (matchmaker) ================= */
+function tradeCat(code){
+  if(code==="00"||code.indexOf("FWC")===0) return "fwc";
+  if(code[0]==="X") return "extra";
+  if(CRACK_TIER[code]) return CRACK_TIER[code];
+  if(/^[A-Z]{3}1$/.test(code)) return "escudo";
+  return "normal";
+}
+const TRADE_CATS=[
+ {k:"goat",l:"GOAT 🐐",c:"#1A1A22"},
+ {k:"diamante",l:"Diamante 💎",c:"#1899D6"},
+ {k:"oro",l:"Oro 🥇",c:"#E8960B"},
+ {k:"plata",l:"Plata 🥈",c:"#8C8C9A"},
+ {k:"bronce",l:"Bronce 🥉",c:"#B97700"},
+ {k:"fwc",l:"Especiales ⭐",c:"#6A1B9A"},
+ {k:"escudo",l:"Escudos 🛡️",c:"#00802B"},
+ {k:"extra",l:"Extras ✨",c:"#E0322A"},
+ {k:"normal",l:"Normales 1×1",c:"#0067B9"}
+];
+function tradeName(code){ if(code[0]==="X") return ""; return playerName(code)||""; }
+function tradeChip(code){
+  const meta=CODE_TEAM[code];
+  const fl=meta?flagHTML(meta.code,meta.flag,"trflag"):'<span class="flag trflag">⭐</span>';
+  const nm=tradeName(code);
+  return '<span class="tr-chip">'+fl+'<b>'+escHTML(displayCode(code))+'</b>'+(nm?' <span class="tr-nm">'+escHTML(nm)+'</span>':'')+'</span>';
+}
+let _trFriends=[];
+function openTrade(){
+  if(cloud.viewOnly){ toast("Vuelve a tu álbum pa\u0027 canjear 👀"); return; }
+  if(!cloud.ready||!cloud.user||!cloud.db){ toast("Conéctate a la nube primero ☁️"); return; }
+  document.getElementById("ovTrade").classList.add("show");
+  const sel=document.getElementById("trFriend");
+  sel.innerHTML='<option value="">Cargando amigos…</option>';
+  cloud.db.collection("leaderboard").get().then(snap=>{
+    _trFriends=[]; snap.forEach(d=>{ const x=d.data()||{}; if(d.id!==cloud.user.uid && x.nick) _trFriends.push({uid:d.id,nick:String(x.nick)}); });
+    _trFriends.sort((a,b)=>a.nick.localeCompare(b.nick));
+    sel.innerHTML='<option value="">Elige un amigo…</option>'+_trFriends.map(f=>'<option value="'+escHTML(f.uid)+'">'+escHTML(f.nick)+'</option>').join("");
+    if(!_trFriends.length) document.getElementById("trBody").innerHTML='<div class="tr-empty">Aún no hay amigos en el ranking pa\u0027 canjear. 🥲</div>';
+  }).catch(e=>{
+    sel.innerHTML='<option value="">No se pudo cargar 😕</option>';
+    document.getElementById("trBody").innerHTML='<div class="tr-empty">'+(e&&e.code==="permission-denied"?"Falta pegar las reglas de Firebase 🔒":"No se pudo cargar el ranking.")+'</div>';
+  });
+}
+function computeTrade(mine,theirs){
+  const codes=allActiveCodes(); const iGive=[],heGives=[];
+  codes.forEach(c=>{ const m=mine[c]||0,h=theirs[c]||0;
+    if(m>=2&&h===0) iGive.push(c);
+    if(h>=2&&m===0) heGives.push(c); });
+  const matches=[],leftMe=[],leftHim=[];
+  TRADE_CATS.forEach(ct=>{
+    const A=iGive.filter(c=>tradeCat(c)===ct.k), B=heGives.filter(c=>tradeCat(c)===ct.k);
+    const n=Math.min(A.length,B.length);
+    for(let i=0;i<n;i++) matches.push({give:A[i],get:B[i],cat:ct});
+    A.slice(n).forEach(c=>leftMe.push(c)); B.slice(n).forEach(c=>leftHim.push(c));
+  });
+  return {matches,leftMe,leftHim};
+}
+function runTrade(uid){
+  const body=document.getElementById("trBody");
+  if(!uid){ body.innerHTML='<div class="tr-empty">Elige un amigo del ranking y te muestro los canjes redondos al tiro. 🤝</div>'; return; }
+  const fr=_trFriends.find(f=>f.uid===uid); const nick=fr?fr.nick:"tu amigo";
+  body.innerHTML='<div class="tr-empty">Buscando matches con '+escHTML(nick)+'… 🔎</div>';
+  cloud.db.collection("albums").doc(uid).get().then(doc=>{
+    if(!doc.exists){ body.innerHTML='<div class="tr-empty">'+escHTML(nick)+' aún no sincroniza su álbum. 😴</div>'; return; }
+    const data=doc.data()||{}; const theirs={};
+    Object.keys(data.counts||{}).forEach(k=>{ const m=k.match(/^FW(\d{1,2})$/); theirs[m?("FWC"+m[1]):k]=data.counts[k]; });
+    renderTrade(nick, computeTrade(state.counts||{}, theirs));
+  }).catch(e=>{ body.innerHTML='<div class="tr-empty">'+(e&&e.code==="permission-denied"?"Falta pegar las reglas de Firebase 🔒":"No se pudo leer su álbum 😕")+'</div>'; });
+}
+function renderTrade(nick,r){
+  const body=document.getElementById("trBody"); let h="";
+  h+='<div class="tr-sum">'+(r.matches.length? "🤝 <b>"+r.matches.length+"</b> canje"+(r.matches.length===1?"":"s")+" redondo"+(r.matches.length===1?"":"s")+" con <b>"+escHTML(nick)+"</b> — mismo valor, los dos ganan:" : "Sin canjes redondos con <b>"+escHTML(nick)+"</b> por ahora 🥲")+'</div>';
+  if(r.matches.length){
+    r.matches.forEach(m=>{
+      h+='<div class="tr-row"><span class="tr-cat" style="background:'+m.cat.c+'">'+m.cat.l+'</span><div class="tr-pair"><div class="tr-side">TÚ LE DAS '+tradeChip(m.give)+'</div><div class="tr-vs">⇄</div><div class="tr-side">ÉL TE DA '+tradeChip(m.get)+'</div></div></div>';
+    });
+    h+='<button class="tr-copy" id="trCopy">📋 Copiar propuesta pa\u0027 WhatsApp</button>';
+  }
+  if(r.leftHim.length){ h+='<div class="tr-sec-t">Le sobran y a ti te faltan — sin calce, negócialas 😏</div><div class="tr-wrap">'+r.leftHim.map(tradeChip).join("")+'</div>'; }
+  if(r.leftMe.length){ h+='<div class="tr-sec-t">Te sobran y a él le faltan — ofréceselas 🤑</div><div class="tr-wrap">'+r.leftMe.map(tradeChip).join("")+'</div>'; }
+  body.innerHTML=h;
+  const cp=document.getElementById("trCopy");
+  if(cp) cp.onclick=()=>{
+    let t="🔁 Canjes Álbum Mundial 2026 — "+(state.config.nick||"yo")+" ↔ "+nick+"\n";
+    r.matches.forEach((m,i)=>{ const gn=tradeName(m.give),rn=tradeName(m.get);
+      t+=(i+1)+". Te doy "+displayCode(m.give)+(gn?" ("+gn+")":"")+" ⇄ me das "+displayCode(m.get)+(rn?" ("+rn+")":"")+"\n"; });
+    t+="¿Cerramos? 🤝";
+    const fb=()=>{ try{ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); toast("Propuesta copiada 📋"); }catch(e){ toast("No se pudo copiar 😕"); } };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(()=>toast("Propuesta copiada 📋"),fb); } else fb();
+  };
+}
+var _trSel=document.getElementById("trFriend"); if(_trSel) _trSel.addEventListener("change",function(){ runTrade(this.value); });
 updateCloudUI();
 
 /* Accesibilidad: etiquetas para botones de solo ícono + teclado en la pastilla de nube */
