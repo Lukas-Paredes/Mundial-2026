@@ -243,6 +243,13 @@ function celebrateTeam(code,name){
 
 /* ---------- ¡Felicidades! cracks ---------- */
 const STAR_FACTS={
+  "BRA19":"Máximo goleador de la Champions 2024-25 y bicampeón de La Liga con el Barça; vive el mejor momento de su carrera. 🔥",
+  "SWE20":"Bota de Oro de Europa 2025 (39 goles con el Sporting) y campeón de la Premier 2026 con el Arsenal en su primer año. 🦁",
+  "FRA14":"Bicampeón de la Bundesliga con el Bayern; su zurda es de las más finas de Europa. 🎨",
+  "COL20":"Campeón de la Premier 2025 con el Liverpool y de la Bundesliga 2026 con el Bayern; el socio de lujo de James en Colombia. 🇨🇴",
+  "TUR11":"Capitán y cerebro de Turquía; campeón del Scudetto 2026 con el Inter y especialista letal en los penales. 🎯",
+  "EGY20":"Socio de Salah en Egipto; figura del Manchester City campeón de la FA Cup 2026. Pólvora pura. 💥",
+  "SCO11":"MVP de la Serie A 2024-25 y campeón del Scudetto con el Napoli; el héroe que llevó a Escocia de vuelta a un Mundial. 🏴󠁧󠁢󠁳󠁣󠁴󠁿",
   "POR12":"3º del mundo en el Balón de Oro 2025: el cerebro del PSG bicampeón de Europa (2025 y 2026). Mejor mediocampista del mundo. 🧠",
   "POR7":"Top 10 del Balón de Oro 2025 y mejor lateral izquierdo del mundo esa temporada; campeón de la Champions con el PSG y MVP de la final de la Nations League con Portugal. 🛡️",
   "FRA17":"Figura de la final de Champions 2025 con un doblete ante el Inter; subcampeón del Trofeo Kopa al mejor joven y campeón del triplete con el PSG a los 20 años. ✨",
@@ -578,7 +585,7 @@ const STANDING={"Manchester City": "2°", "Arsenal": "🏆 Campeón", "Liverpool
 function playerPos(code){ return POS[code]||''; }
 const PLAYER_STATS={"NOR15": "👟 27 goles · Bota de Oro", "FRA20": "👟 25 goles · Pichichi", "ENG18": "👟 36 goles · goleador Bundesliga", "ARG18": "👟 17 goles · capocannoniere", "JAP20": "👟 25 goles · goleador Eredivisie", "POR15": "⚽ 28 goles 25-26", "POR10": "🅰️ 21 asist. · récord Premier", "SEN16": "🏆 Conference: 9 goles · mejor jugador", "URU11": "🏅 Mejor jugador · Libertadores"};
 function playerStat(code){ return PLAYER_STATS[code]||''; }
-const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 180 M€","ENG11":"≈ 180 M€","NOR15":"≈ 180 M€","BRA14":"≈ 170 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","URU10":"≈ 130 M€","ESP10":"≈ 120 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","ENG12":"≈ 110 M€","ENG16":"≈ 100 M€","POR12":"≈ 90 M€","FRA17":"≈ 90 M€","POR14":"≈ 90 M€","FRA15":"≈ 90 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","NOR10":"≈ 90 M€","BRA15":"≈ 90 M€","POR7":"≈ 80 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","MAR4":"≈ 75 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 65 M€","GER10":"≈ 50 M€","POR10":"≈ 45 M€","POR9":"≈ 45 M€","EGY17":"≈ 45 M€","NED3":"≈ 35 M€","SEN16":"≈ 30 M€","BEL15":"≈ 28 M€","ARG2":"≈ 25 M€","BEL2":"≈ 25 M€","KOR18":"≈ 25 M€","JAP20":"≈ 20 M€","ARG17":"≈ 18 M€","URU11":"≈ 15 M€","POR15":"≈ 10 M€","CRO9":"≈ 4 M€","COL14":"≈ 3 M€"};
+const MARKET_VALUE={"ESP15":"≈ 200 M€","FRA20":"≈ 180 M€","ENG11":"≈ 180 M€","NOR15":"≈ 180 M€","BRA14":"≈ 170 M€","GER11":"≈ 140 M€","ESP11":"≈ 140 M€","ENG17":"≈ 140 M€","GER15":"≈ 130 M€","URU10":"≈ 130 M€","ESP10":"≈ 120 M€","ARG19":"≈ 120 M€","SWE19":"≈ 120 M€","ENG10":"≈ 110 M€","ENG12":"≈ 110 M€","ENG16":"≈ 100 M€","POR12":"≈ 90 M€","FRA17":"≈ 90 M€","POR14":"≈ 90 M€","FRA15":"≈ 90 M€","ENG18":"≈ 90 M€","ARG18":"≈ 90 M€","NOR10":"≈ 90 M€","BRA15":"≈ 90 M€","BRA19":"≈ 80 M€","SWE20":"≈ 75 M€","FRA14":"≈ 110 M€","COL20":"≈ 70 M€","TUR11":"≈ 28 M€","EGY20":"≈ 60 M€","SCO11":"≈ 30 M€","POR7":"≈ 80 M€","ARG8":"≈ 80 M€","FRA4":"≈ 80 M€","MAR4":"≈ 75 M€","CRO4":"≈ 75 M€","ARG9":"≈ 70 M€","POR20":"≈ 65 M€","GER10":"≈ 50 M€","POR10":"≈ 45 M€","POR9":"≈ 45 M€","EGY17":"≈ 45 M€","NED3":"≈ 35 M€","SEN16":"≈ 30 M€","BEL15":"≈ 28 M€","ARG2":"≈ 25 M€","BEL2":"≈ 25 M€","KOR18":"≈ 25 M€","JAP20":"≈ 20 M€","ARG17":"≈ 18 M€","URU11":"≈ 15 M€","POR15":"≈ 10 M€","CRO9":"≈ 4 M€","COL14":"≈ 3 M€"};
 function playerValue(code){ const v=MARKET_VALUE[code]; return v?("💰 Valor aprox.: "+v):""; }
 
 /* ---------- tiers de cracks ---------- */
@@ -592,9 +599,9 @@ const TIERS=[
 const CRACK_TIER={
   "ARG17":"goat","POR15":"goat",
   "FRA20":"diamante","NOR15":"diamante","ESP15":"diamante","BRA14":"diamante","FRA15":"diamante","POR12":"diamante",
-  "ESP10":"oro","MAR4":"oro","EGY17":"oro","CRO9":"oro","BEL15":"oro","ENG18":"oro","NED3":"oro","KOR18":"oro","ESP11":"oro","ARG18":"oro","POR7":"oro","ENG17":"oro",
-  "ENG11":"plata","ENG16":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG19":"plata","NOR10":"plata","ENG10":"plata","BRA15":"plata","BEL2":"plata","COL14":"plata","FRA17":"plata","ARG2":"plata","POR14":"plata","FRA4":"plata",
-  "POR9":"bronce","POR10":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce"
+  "ESP10":"oro","MAR4":"oro","EGY17":"oro","CRO9":"oro","BEL15":"oro","ENG18":"oro","NED3":"oro","KOR18":"oro","ESP11":"oro","ARG18":"oro","POR7":"oro","ENG17":"oro","BRA19":"oro",
+  "ENG11":"plata","ENG16":"plata","GER15":"plata","GER11":"plata","ENG12":"plata","URU10":"plata","ARG19":"plata","NOR10":"plata","ENG10":"plata","BRA15":"plata","BEL2":"plata","COL14":"plata","FRA17":"plata","ARG2":"plata","SWE20":"plata","FRA14":"plata","COL20":"plata","POR14":"plata","FRA4":"plata",
+  "POR9":"bronce","TUR11":"bronce","EGY20":"bronce","SCO11":"bronce","POR10":"bronce","GER10":"bronce","ARG9":"bronce","ARG8":"bronce","CRO4":"bronce","POR20":"bronce","SWE19":"bronce","URU11":"bronce","SEN16":"bronce","JAP20":"bronce"
 };
 function buildCrackCard(code, tier){
   const got=getCount(code)>0, meta=CODE_TEAM[code];
@@ -784,6 +791,28 @@ function updateStats(){
   const pct=total?tengo/total:0, circ=157.1;
   const rf=document.getElementById("ringFill"); rf.style.strokeDashoffset=(circ*(1-pct)).toFixed(1);
   document.getElementById("ringTxt").textContent=Math.round(pct*100)+"%";
+  const _fbF=document.getElementById("fbFill");
+  if(_fbF){
+    const _p=Math.round(pct*100);
+    _fbF.style.width=(pct*100).toFixed(2)+"%";
+    const _fbPct=document.getElementById("fbPct"), _fbT=document.getElementById("fbT"), _fbN=document.getElementById("fbN"), _fb=document.getElementById("fbar");
+    if(_fbPct) _fbPct.textContent=_p+"%";
+    if(_fbT) _fbT.textContent=total;
+    if(_fb) _fb.setAttribute("aria-valuenow",String(_p));
+    if(_fbN){
+      _fbN.dataset.tgt=String(tengo);
+      if(!window._fbInit){
+        window._fbInit=true; const tgt=tengo; let t0=null; const dur=1100;
+        const step=(ts)=>{ if(!t0)t0=ts; let k=Math.min(1,(ts-t0)/dur); k=1-Math.pow(1-k,3);
+          if(_fbN.dataset.tgt!==String(tgt)){ return; }
+          _fbN.textContent=Math.round(tgt*k); if(k<1) requestAnimationFrame(step); };
+        requestAnimationFrame(step);
+      } else {
+        if(_fbN.textContent!==String(tengo) && _fbN.animate){ try{ _fbN.animate([{transform:"scale(1)"},{transform:"scale(1.3)"},{transform:"scale(1)"}],{duration:300,easing:"cubic-bezier(.3,1.6,.5,1)"}); }catch(e){} }
+        _fbN.textContent=String(tengo);
+      }
+    }
+  }
   const _mp=document.getElementById("miniPct"); if(_mp) _mp.textContent=Math.round(pct*100)+"%";
   document.getElementById("ringSvg").setAttribute("aria-label","Progreso del álbum: "+Math.round(pct*100)+"%");
 }
